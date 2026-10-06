@@ -1,0 +1,321 @@
+import React, { useState, useEffect } from 'react';
+import { useApp } from '../context/AppContext';
+import { TopBar } from '../components/TopBar';
+import { OFFICIAL_EMERGENCY_CONTACTS } from '../services/HelpService';
+import { startEmergencySiren, stopEmergencySiren } from '../utils/audioBuzzer';
+import {
+  PhoneCall,
+  Volume2,
+  VolumeX,
+  MapPin,
+  Share2,
+  AlertTriangle,
+  X,
+  CheckCircle2,
+  ShieldAlert,
+} from 'lucide-react';
+
+interface ContactToCall {
+  title: string;
+  number: string;
+  description: string;
+}
+
+export const EmergencyScreen: React.FC = () => {
+  const { deviceLocation, requestDeviceLocation, navigate } = useApp();
+
+  const [sirenOn, setSirenOn] = useState<boolean>(false);
+  const [callModalContact, setCallModalContact] = useState<ContactToCall | null>(null);
+  const [locationSharedNotice, setLocationSharedNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      stopEmergencySiren();
+    };
+  }, []);
+
+  const handleToggleSiren = () => {
+    if (sirenOn) {
+      stopEmergencySiren();
+      setSirenOn(false);
+    } else {
+      startEmergencySiren();
+      setSirenOn(true);
+    }
+  };
+
+  // Emergency Categories
+  const emergencyOptions = [
+    {
+      id: 'medical',
+      icon: '🚑',
+      title: 'मेडिकल सहायता',
+      number: '108',
+      desc: 'सरकारी एम्बुलेंस एवं प्राथमिक चिकित्सा',
+      color: 'from-rose-600 to-red-700',
+    },
+    {
+      id: 'police',
+      icon: '👮',
+      title: 'पुलिस सहायता',
+      number: '112',
+      desc: 'राष्ट्रीय आपातकालीन पुलिस हेल्पलाइन',
+      color: 'from-blue-600 to-indigo-800',
+    },
+    {
+      id: 'fire',
+      icon: '🔥',
+      title: 'आग / अग्निशमन',
+      number: '101',
+      desc: 'आपातकालीन दमकल सेवा',
+      color: 'from-amber-600 to-orange-700',
+    },
+    {
+      id: 'women',
+      icon: '👩',
+      title: 'महिला सहायता',
+      number: '181',
+      desc: 'महिला एवं बाल सुरक्षा हेल्पलाइन',
+      color: 'from-purple-600 to-indigo-700',
+    },
+    {
+      id: 'senior',
+      icon: '👴',
+      title: 'वरिष्ठ नागरिक',
+      number: '14567',
+      desc: 'एल्डरलाइन राष्ट्रीय बुजुर्ग हेल्पलाइन',
+      color: 'from-teal-600 to-emerald-700',
+    },
+    {
+      id: 'divyang',
+      icon: '🧑‍🦽',
+      title: 'दिव्यांग सहायता',
+      number: '06186-222115',
+      desc: 'NextGen व्हीलचेयर एवं सारथी सेवा',
+      color: 'from-cyan-600 to-blue-700',
+    },
+    {
+      id: 'other',
+      icon: '🆘',
+      title: 'अन्य सहायता',
+      number: '06186-222120',
+      desc: 'मेला केंद्रीय नियंत्रण कक्ष (थाना मोड़)',
+      color: 'from-stone-700 to-stone-900',
+    },
+  ];
+
+  // Initiate call confirmation
+  const handleInitiateCall = (option: { title: string; number: string; desc: string }) => {
+    setCallModalContact({
+      title: option.title,
+      number: option.number,
+      description: option.desc,
+    });
+  };
+
+  // Perform verified call
+  const handleConfirmCall = () => {
+    if (!callModalContact) return;
+    window.location.href = `tel:${callModalContact.number}`;
+    setCallModalContact(null);
+  };
+
+  // Share current GPS location card
+  const handleShareLocation = async () => {
+    if (!deviceLocation) {
+      const success = await requestDeviceLocation();
+      if (!success) {
+        alert('आपकी location उपलब्ध नहीं है। कृपया GPS ऑन करें।');
+        return;
+      }
+    }
+
+    const lat = deviceLocation?.latitude.toFixed(5) || '24.65420';
+    const lng = deviceLocation?.longitude.toFixed(5) || '84.43710';
+    const acc = deviceLocation?.accuracy ? `लगभग ${Math.round(deviceLocation.accuracy)} मीटर` : 'उपलब्ध नहीं';
+    const timeStr = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
+    const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
+
+    const textToShare = `🚨 DEO CHHATH SEVA - आपातकालीन स्थान कार्ड\n` +
+      `मेरा वर्तमान स्थान:\n` +
+      `Latitude: ${lat}° N\n` +
+      `Longitude: ${lng}° E\n` +
+      `सटीकता (Accuracy): ${acc}\n` +
+      `समय: ${timeStr}\n` +
+      `नक्शा लिंक: ${mapsLink}\n` +
+      `(NextGen Devbhoomi Foundation - देव छठ सेवा)`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'DEO CHHATH SEVA - Emergency Location',
+          text: textToShare,
+        });
+        setLocationSharedNotice('स्थान सफलतापूर्वक साझा किया गया।');
+        setTimeout(() => setLocationSharedNotice(null), 4000);
+      } catch {
+        // Fallback to copy
+        copyToClipboard(textToShare);
+      }
+    } else {
+      copyToClipboard(textToShare);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    try {
+      navigator.clipboard.writeText(text);
+      setLocationSharedNotice('स्थान की जानकारी कॉपी कर ली गई है। आप इसे WhatsApp/SMS पर भेज सकते हैं।');
+      setTimeout(() => setLocationSharedNotice(null), 4000);
+    } catch {
+      alert(text);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-stone-950 text-white pb-20 flex flex-col font-['Mukta',sans-serif] select-none">
+      <TopBar title="🚨 आपातकालीन सहायता" showBack />
+
+      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+        {/* Success Alert */}
+        {locationSharedNotice && (
+          <div className="bg-emerald-900/90 border border-emerald-500 text-emerald-100 px-4 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 shadow-lg animate-fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>{locationSharedNotice}</span>
+          </div>
+        )}
+
+        {/* Emergency Prompt */}
+        <div className="bg-red-950/70 border-2 border-red-600/70 rounded-3xl p-4 text-center space-y-1 shadow-lg">
+          <span className="text-[11px] font-black uppercase tracking-widest text-red-400 block">
+            तत्काल आपातकालीन सेवा
+          </span>
+          <h2 className="text-xl sm:text-2xl font-black text-white">
+            आप किस प्रकार की सहायता चाहते हैं?
+          </h2>
+          <p className="text-xs text-red-200">
+            सीधे कॉल करने हेतु नीचे संबंधित सेवा पर टैप करें।
+          </p>
+        </div>
+
+        {/* Audible Siren Alert Toggle */}
+        <button
+          onClick={handleToggleSiren}
+          className={`w-full min-h-[50px] rounded-2xl flex items-center justify-center gap-2.5 font-black text-sm transition-all active:scale-98 shadow-md border ${
+            sirenOn
+              ? 'bg-red-600 text-white border-red-400 animate-pulse'
+              : 'bg-stone-900 hover:bg-stone-800 text-stone-200 border-stone-800'
+          }`}
+        >
+          {sirenOn ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-amber-400" />}
+          <span>{sirenOn ? 'अलार्म सायरन बंद करें (STOP SIREN)' : '🔊 भीड़ में ध्यान आकर्षित करने हेतु अलार्म सायरन बजाएं'}</span>
+        </button>
+
+        {/* Large Emergency Action Buttons */}
+        <div className="space-y-2.5">
+          {emergencyOptions.map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => handleInitiateCall(opt)}
+              className={`w-full min-h-[64px] p-3.5 bg-gradient-to-r ${opt.color} rounded-2xl shadow-md text-left flex items-center justify-between active:scale-98 transition-all group border border-white/10`}
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <span className="text-3xl shrink-0 group-hover:scale-110 transition-transform">
+                  {opt.icon}
+                </span>
+                <div className="min-w-0">
+                  <span className="text-base sm:text-lg font-black text-white block leading-tight">
+                    {opt.title}
+                  </span>
+                  <span className="text-xs text-white/80 font-medium truncate block mt-0.5">
+                    {opt.desc}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-stone-950 font-black text-xs rounded-xl shrink-0 shadow-sm">
+                <PhoneCall className="w-3.5 h-3.5 fill-stone-950" />
+                <span>{opt.number}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Emergency Location Card & Sharing */}
+        <div className="bg-stone-900 border border-stone-800 rounded-3xl p-4 space-y-3 shadow-lg">
+          <div className="flex items-center justify-between border-b border-stone-800 pb-2">
+            <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <MapPin className="w-4 h-4 text-amber-400" />
+              <span>आपातकालीन स्थान कार्ड (Emergency Location)</span>
+            </span>
+          </div>
+
+          <div className="space-y-1.5 text-xs font-mono text-stone-300 bg-stone-950 p-3 rounded-2xl border border-stone-800">
+            <p className="text-amber-300 font-sans font-bold text-xs mb-1">DEO CHHATH SEVA</p>
+            <p>
+              Latitude: <span className="text-white font-bold">{deviceLocation ? deviceLocation.latitude.toFixed(5) : '24.65420'}° N</span>
+            </p>
+            <p>
+              Longitude: <span className="text-white font-bold">{deviceLocation ? deviceLocation.longitude.toFixed(5) : '84.43710'}° E</span>
+            </p>
+            <p>
+              Accuracy: <span className="text-white">{deviceLocation?.accuracy ? `±${Math.round(deviceLocation.accuracy)}m` : 'उपलब्ध नहीं'}</span>
+            </p>
+          </div>
+
+          <p className="text-[11px] text-stone-400">
+            “आपकी location केवल आपकी अनुमति के बाद साझा की जाएगी।”
+          </p>
+
+          <button
+            onClick={handleShareLocation}
+            className="w-full min-h-[48px] bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-black text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-md transition-all"
+          >
+            <Share2 className="w-4 h-4" />
+            <span>📍 मेरा स्थान साझा करें (Share Location)</span>
+          </button>
+        </div>
+      </main>
+
+      {/* Emergency Call Confirmation Modal */}
+      {callModalContact && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-stone-900 text-white rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl border border-stone-700 animate-fade-in text-center">
+            <div className="w-14 h-14 bg-red-600/20 border border-red-500 text-red-500 rounded-full flex items-center justify-center mx-auto">
+              <PhoneCall className="w-7 h-7 fill-red-500 animate-pulse" />
+            </div>
+
+            <div className="space-y-1">
+              <h4 className="text-lg font-black text-white">
+                क्या आप इस verified number पर call करना चाहते हैं?
+              </h4>
+              <p className="text-sm font-bold text-amber-400">{callModalContact.title}</p>
+              <p className="text-2xl font-black text-white font-mono pt-1">
+                {callModalContact.number}
+              </p>
+              <p className="text-xs text-stone-400 pt-1">
+                {callModalContact.description}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                onClick={() => setCallModalContact(null)}
+                className="min-h-[46px] bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold text-xs rounded-xl"
+              >
+                रद्द करें
+              </button>
+              <button
+                onClick={handleConfirmCall}
+                className="min-h-[46px] bg-red-600 hover:bg-red-700 active:scale-95 text-white font-black text-xs sm:text-sm rounded-xl shadow-md flex items-center justify-center gap-1.5"
+              >
+                <PhoneCall className="w-4 h-4 fill-white" />
+                <span>📞 कॉल करें</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

@@ -1,0 +1,392 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Replaceable Routing Architecture for DEO CHHATH SEVA
+// Providers: OSRM (OpenStreetMap default), GraphHopper, Valhalla
+
+import { RouteResult, RouteStep, TravelMode } from '../types';
+
+export interface RouteRequestParams {
+  startLatitude: number;
+  startLongitude: number;
+  destinationLatitude: number;
+  destinationLongitude: number;
+  destinationName?: string;
+  travelMode: TravelMode;
+}
+
+export interface RoutingProvider {
+  name: string;
+  providerId: 'OSRM' | 'GRAPHHOPPER' | 'VALHALLA' | 'NONE';
+  isConfigured(): boolean;
+  calculateRoute(params: RouteRequestParams): Promise<RouteResult>;
+}
+
+// Translate routing engine maneuvers into Hindi for elderly & local pilgrims
+export const translateManeuverToHindi = (
+  type: string,
+  modifier?: string,
+  streetName?: string
+): string => {
+  const streetPart = streetName && streetName !== '' ? ` (${streetName})` : '';
+
+  if (type === 'depart') {
+    return `यात्रा प्रारंभ करें और सीधे आगे बढ़ें${streetPart}`;
+  }
+
+  if (type === 'arrive') {
+    return 'आप अपने गंतव्य के पास पहुँच गए हैं।';
+  }
+
+  if (type === 'roundabout' || type === 'rotary') {
+    return `गोलचक्कर से निकलें${streetPart}`;
+  }
+
+  if (type === 'turn') {
+    switch (modifier) {
+      case 'left':
+        return `बाएँ मुड़ें${streetPart}`;
+      case 'right':
+        return `दाएँ मुड़ें${streetPart}`;
+      case 'slight left':
+        return `हल्का बाएँ मुड़ें${streetPart}`;
+      case 'slight right':
+        return `हल्का दाएँ मुड़ें${streetPart}`;
+      case 'sharp left':
+        return `तीखा बाएँ मुड़ें${streetPart}`;
+      case 'sharp right':
+        return `तीखा दाएँ मुड़ें${streetPart}`;
+      case 'uturn':
+        return 'वापस यू-टर्न लें';
+      default:
+        return `मुड़ें${streetPart}`;
+    }
+  }
+
+  if (type === 'continue' || type === 'new name') {
+    return `सीधे जाएँ${streetPart}`;
+  }
+
+  if (type === 'fork') {
+    return modifier === 'left' ? 'काँटे पर बाएँ रास्ते पर चलें' : 'काँटे पर दाएँ रास्ते पर चलें';
+  }
+
+  return `आगे बढ़ें${streetPart}`;
+};
+
+export const formatDistanceDisplay = (meters: number): string => {
+  if (meters < 1000) {
+    return `${Math.round(meters)} मीटर`;
+  }
+  return `${(meters / 1000).toFixed(1)} किमी`;
+};
+
+export const formatDurationDisplay = (seconds: number): string => {
+  const minutes = Math.max(1, Math.round(seconds / 60));
+  if (minutes < 60) {
+    return `${minutes} मिनट`;
+  }
+  const hours = Math.floor(minutes / 60);
+  const remainingMins = minutes % 60;
+  return `${hours} घंटा ${remainingMins} मिनट`;
+};
+
+// 1. OSRM Provider (Open-access OpenStreetMap routing engine)
+export class OSRMProvider implements RoutingProvider {
+  name = 'OSRM OpenStreetMap Engine';
+  providerId = 'OSRM' as const;
+  private baseUrl: string;
+
+  constructor(customUrl?: string) {
+    this.baseUrl =
+      customUrl ||
+      (typeof process !== 'undefined' && process.env?.ROUTING_API_URL) ||
+      'https://router.project-osrm.org';
+  }
+
+  isConfigured(): boolean {
+    return true; // Public OSRM endpoint does not require an API key
+  }
+
+  async calculateRoute(params: RouteRequestParams): Promise<RouteResult> {
+    const {
+      startLatitude,
+      startLongitude,
+      destinationLatitude,
+      destinationLongitude,
+      destinationName = 'गंतव्य स्थल',
+      travelMode,
+    } = params;
+
+    const profile = travelMode === 'WALKING' ? 'foot' : 'car';
+    const coordinates = `${startLongitude},${startLatitude};${destinationLongitude},${destinationLatitude}`;
+    const url = `${this.baseUrl}/route/v1/${profile}/${coordinates}?overview=full&geometries=geojson&steps=true`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+    try {
+      const response = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`OSRM HTTP error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.routes || data.routes.length === 0) {
+        throw new Error('इस स्थान तक सड़क मार्ग उपलब्ध नहीं है।');
+      }
+
+      const primaryRoute = data.routes[0];
+      const distanceMeters = Math.round(primaryRoute.distance);
+      const durationSeconds = Math.round(primaryRoute.duration);
+
+      const geometry: [number, number][] = primaryRoute.geometry.coordinates.map(
+        (pt: [number, number]) => [pt[1], pt[0]]
+      );
+
+      const steps: RouteStep[] = [];
+      if (primaryRoute.legs && primaryRoute.legs[0] && primaryRoute.legs[0].steps) {
+        primaryRoute.legs[0].steps.forEach((step: any, index: number) => {
+          const maneuver = step.maneuver || {};
+          const type = maneuver.type || 'continue';
+          const modifier = maneuver.modifier || '';
+          const streetName = step.name || '';
+
+          const instructionHi = translateManeuverToHindi(type, modifier, streetName);
+          const location: [number, number] = maneuver.location
+            ? [maneuver.location[1], maneuver.location[0]]
+            : [startLatitude, startLongitude];
+
+          steps.push({
+            id: `step-${index}`,
+            instruction: instructionHi,
+            originalInstruction: step.name,
+            maneuverType: type,
+            modifier,
+            distanceMeters: Math.round(step.distance),
+            durationSeconds: Math.round(step.duration),
+            location,
+          });
+        });
+      }
+
+      return {
+        id: `route-${Date.now()}`,
+        start: [startLatitude, startLongitude],
+        destination: [destinationLatitude, destinationLongitude],
+        destinationName,
+        distanceMeters,
+        distanceDisplay: formatDistanceDisplay(distanceMeters),
+        durationSeconds,
+        durationDisplay: formatDurationDisplay(durationSeconds),
+        geometry,
+        steps,
+        travelMode,
+        provider: this.name,
+        calculatedAt: Date.now(),
+        warning:
+          travelMode === 'WALKING'
+            ? 'मेला क्षेत्र में सूर्य मंदिर मार्ग केवल पैदल तीर्थयात्रियों हेतु आरक्षित है।'
+            : undefined,
+      };
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') {
+        throw new Error('मार्ग गणना में समय अधिक लग रहा है।');
+      }
+      throw new Error(err.message || 'OSRM मार्ग सेवा अनुपलब्ध है।');
+    }
+  }
+}
+
+// 2. GraphHopper Provider (Requires ROUTING_API_KEY)
+export class GraphHopperProvider implements RoutingProvider {
+  name = 'GraphHopper Routing Service';
+  providerId = 'GRAPHHOPPER' as const;
+  private apiKey?: string;
+  private baseUrl: string;
+
+  constructor(apiKey?: string, baseUrl?: string) {
+    this.apiKey = apiKey || (typeof process !== 'undefined' ? process.env?.ROUTING_API_KEY : undefined);
+    this.baseUrl = baseUrl || (typeof process !== 'undefined' && process.env?.ROUTING_API_URL) || 'https://graphhopper.com/api/1';
+  }
+
+  isConfigured(): boolean {
+    return !!(this.apiKey && !this.apiKey.includes('placeholder'));
+  }
+
+  async calculateRoute(params: RouteRequestParams): Promise<RouteResult> {
+    if (!this.isConfigured()) {
+      throw new Error('GraphHopper API कुंजी कॉन्फ़िगर नहीं है (Navigation service is not configured)।');
+    }
+
+    const {
+      startLatitude,
+      startLongitude,
+      destinationLatitude,
+      destinationLongitude,
+      destinationName = 'गंतव्य स्थल',
+      travelMode,
+    } = params;
+
+    const vehicle = travelMode === 'WALKING' ? 'foot' : 'car';
+    const url = `${this.baseUrl}/route?point=${startLatitude},${startLongitude}&point=${destinationLatitude},${destinationLongitude}&vehicle=${vehicle}&locale=hi&points_encoded=false&key=${this.apiKey}`;
+
+    const resp = await fetch(url);
+    if (!resp.ok) {
+      throw new Error(`GraphHopper Error: ${resp.status}`);
+    }
+    const data = await resp.json();
+    const path = data.paths?.[0];
+    if (!path) {
+      throw new Error('GraphHopper मार्ग नहीं मिला।');
+    }
+
+    const distanceMeters = Math.round(path.distance);
+    const durationSeconds = Math.round(path.time / 1000);
+    const geometry: [number, number][] = path.points.coordinates.map(
+      (c: [number, number]) => [c[1], c[0]]
+    );
+
+    const steps: RouteStep[] = (path.instructions || []).map((inst: any, idx: number) => ({
+      id: `gh-step-${idx}`,
+      instruction: inst.text,
+      maneuverType: 'turn',
+      distanceMeters: Math.round(inst.distance),
+      durationSeconds: Math.round(inst.time / 1000),
+      location: geometry[inst.interval?.[0] || 0] || [startLatitude, startLongitude],
+    }));
+
+    return {
+      id: `gh-${Date.now()}`,
+      start: [startLatitude, startLongitude],
+      destination: [destinationLatitude, destinationLongitude],
+      destinationName,
+      distanceMeters,
+      distanceDisplay: formatDistanceDisplay(distanceMeters),
+      durationSeconds,
+      durationDisplay: formatDurationDisplay(durationSeconds),
+      geometry,
+      steps,
+      travelMode,
+      provider: this.name,
+      calculatedAt: Date.now(),
+    };
+  }
+}
+
+// 3. Valhalla Provider (Open-source multi-modal routing engine)
+export class ValhallaProvider implements RoutingProvider {
+  name = 'Valhalla Routing Engine';
+  providerId = 'VALHALLA' as const;
+  private baseUrl: string;
+  private apiKey?: string;
+
+  constructor(apiKey?: string, baseUrl?: string) {
+    this.apiKey = apiKey || (typeof process !== 'undefined' ? process.env?.ROUTING_API_KEY : undefined);
+    this.baseUrl = baseUrl || (typeof process !== 'undefined' && process.env?.ROUTING_API_URL) || 'https://valhalla1.openstreetmap.de';
+  }
+
+  isConfigured(): boolean {
+    return !!this.baseUrl;
+  }
+
+  async calculateRoute(params: RouteRequestParams): Promise<RouteResult> {
+    const {
+      startLatitude,
+      startLongitude,
+      destinationLatitude,
+      destinationLongitude,
+      destinationName = 'गंतव्य स्थल',
+      travelMode,
+    } = params;
+
+    const costing = travelMode === 'WALKING' ? 'pedestrian' : 'auto';
+    const body = {
+      locations: [
+        { lat: startLatitude, lon: startLongitude },
+        { lat: destinationLatitude, lon: destinationLongitude },
+      ],
+      costing,
+      directions_options: { language: 'hi-IN' },
+    };
+
+    const url = `${this.baseUrl}/route${this.apiKey ? `?api_key=${this.apiKey}` : ''}`;
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!resp.ok) {
+      throw new Error(`Valhalla Error: ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const trip = data.trip;
+    if (!trip || !trip.legs || trip.legs.length === 0) {
+      throw new Error('Valhalla मार्ग नहीं मिला।');
+    }
+
+    const leg = trip.legs[0];
+    const distanceMeters = Math.round(leg.summary.length * 1000);
+    const durationSeconds = Math.round(leg.summary.time);
+
+    // Valhalla returns shape in precision 6 polyline, or leg maneuvers coordinates
+    const steps: RouteStep[] = (leg.maneuvers || []).map((m: any, idx: number) => ({
+      id: `val-step-${idx}`,
+      instruction: m.instruction,
+      maneuverType: m.type?.toString() || 'continue',
+      distanceMeters: Math.round(m.length * 1000),
+      durationSeconds: Math.round(m.time),
+      location: [startLatitude, startLongitude],
+    }));
+
+    // Fallback straight geometric polyline between coordinates if shape decoding unavailable
+    const geometry: [number, number][] = [
+      [startLatitude, startLongitude],
+      [destinationLatitude, destinationLongitude],
+    ];
+
+    return {
+      id: `val-${Date.now()}`,
+      start: [startLatitude, startLongitude],
+      destination: [destinationLatitude, destinationLongitude],
+      destinationName,
+      distanceMeters,
+      distanceDisplay: formatDistanceDisplay(distanceMeters),
+      durationSeconds,
+      durationDisplay: formatDurationDisplay(durationSeconds),
+      geometry,
+      steps,
+      travelMode,
+      provider: this.name,
+      calculatedAt: Date.now(),
+    };
+  }
+}
+
+// 4. Factory to instantiate the active routing provider
+export class RoutingProviderFactory {
+  static getProvider(): RoutingProvider {
+    const configuredType =
+      (typeof process !== 'undefined' && process.env?.ROUTING_PROVIDER?.toUpperCase()) || 'OSRM';
+
+    if (configuredType === 'GRAPHHOPPER') {
+      const gh = new GraphHopperProvider();
+      if (gh.isConfigured()) return gh;
+    }
+
+    if (configuredType === 'VALHALLA') {
+      const val = new ValhallaProvider();
+      if (val.isConfigured()) return val;
+    }
+
+    // Default to OSRM (public OpenStreetMap road graph)
+    return new OSRMProvider();
+  }
+}

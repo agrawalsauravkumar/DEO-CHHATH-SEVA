@@ -1,0 +1,6 @@
+{
+  "name": "DEO CHHATH SEVA",
+  "description": "रास्ता भी • सहायता भी • सेवा भी — देव, औरंगाबाद छठ पूजा श्रद्धालुओं के लिए निःशुल्क जनसेवा ऐप। NEXTGEN DEV BHOOMI FOUNDATION.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

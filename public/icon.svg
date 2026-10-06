@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- PWA & Favicon Root Icon -->
+  <defs>
+    <linearGradient id="pwaBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#0B2038" />
+      <stop offset="50%" stopColor="#0F2642" />
+      <stop offset="100%" stopColor="#061324" />
+    </linearGradient>
+    <radialGradient id="pwaSun" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#FFFBEB" />
+      <stop offset="25%" stopColor="#FDE047" />
+      <stop offset="65%" stopColor="#F97316" />
+      <stop offset="100%" stopColor="#EA580C" />
+    </radialGradient>
+    <linearGradient id="pwaWater" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stopColor="#0284C7" />
+      <stop offset="50%" stopColor="#38BDF8" />
+      <stop offset="100%" stopColor="#0369A1" />
+    </linearGradient>
+    <linearGradient id="pwaGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#FBBF24" />
+      <stop offset="35%" stopColor="#D97706" />
+      <stop offset="70%" stopColor="#FDE68A" />
+      <stop offset="100%" stopColor="#F59E0B" />
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#pwaBg)" stroke="url(#pwaGold)" stroke-width="8" />
+
+  <!-- Sun Rays -->
+  <g stroke="#F59E0B" stroke-width="4.5" opacity="0.8">
+    <line x1="256" y1="210" x2="256" y2="45" />
+    <line x1="256" y1="210" x2="350" y2="60" />
+    <line x1="256" y1="210" x2="162" y2="60" />
+    <line x1="256" y1="210" x2="425" y2="115" />
+    <line x1="256" y1="210" x2="87" y2="115" />
+    <line x1="256" y1="210" x2="465" y2="195" />
+    <line x1="256" y1="210" x2="47" y2="195" />
+  </g>
+
+  <!-- Radiant Sun -->
+  <circle cx="256" cy="210" r="92" fill="url(#pwaSun)" stroke="#C2410C" stroke-width="3" />
+
+  <!-- Temple Spire -->
+  <g transform="translate(146, 160)">
+    <path
+      d="M 40,0 C 35,28 24,58 15,92 L 65,92 C 56,58 45,28 40,0 Z"
+      fill="#9A3412"
+      stroke="#7C2D12"
+      stroke-width="2"
+    />
+    <ellipse cx="40" cy="0" rx="8" ry="4" fill="#FBBF24" />
+    <circle cx="40" cy="-6" r="3.5" fill="#F59E0B" />
+    <polygon points="40,-12 55,-8 40,-5" fill="#EA580C" />
+    <path d="M 20,74 Q 40,70 60,74" stroke="#FDBA74" stroke-width="2" fill="none" />
+    <path d="M 25,56 Q 40,53 55,56" stroke="#FDBA74" stroke-width="2" fill="none" />
+    <path d="M 30,38 Q 40,35 50,38" stroke="#FDBA74" stroke-width="2" fill="none" />
+  </g>
+
+  <!-- Sacred Waters -->
+  <path
+    d="M 0,310 C 80,296 160,320 256,306 C 352,292 432,318 512,304 L 512,512 L 0,512 Z"
+    fill="url(#pwaWater)"
+  />
+  <path
+    d="M 0,345 C 90,335 180,352 270,340 C 360,328 440,348 512,336"
+    stroke="#E0F2FE"
+    stroke-width="3.5"
+    fill="none"
+    opacity="0.8"
+  />
+
+  <!-- Traditional Chhath Soop & Diya -->
+  <g transform="translate(200, 345)">
+    <path
+      d="M 14,40 C 26,26 86,26 98,40 C 104,50 90,64 56,64 C 22,64 8,50 14,40 Z"
+      fill="#FBBF24"
+      stroke="#D97706"
+      stroke-width="2.5"
+    />
+    <circle cx="56" cy="34" r="12" fill="#78350F" stroke="#451A03" stroke-width="1.5" />
+    <path d="M 50,26 Q 56,30 62,26 Q 60,35 52,35 Z" fill="#D97706" />
+    <path
+      d="M 56,8 C 62,15 63,20 60,24 C 56,26 53,23 53,20 C 53,16 54,12 56,8 Z"
+      fill="#FEF08A"
+      stroke="#EA580C"
+      stroke-width="1.8"
+    />
+    <circle cx="56" cy="20" r="3.5" fill="#FFFFFF" />
+  </g>
+
+  <!-- Sugarcane Stalks -->
+  <g stroke="#15803D" stroke-width="3.5" fill="none">
+    <path d="M 120,470 Q 145,340 165,260 Q 150,250 135,265" />
+    <path d="M 392,470 Q 367,340 347,260 Q 362,250 377,265" />
+  </g>
+  <path d="M 165,260 Q 180,230 170,210 Q 160,235 165,260" fill="#22C55E" />
+  <path d="M 347,260 Q 332,230 342,210 Q 352,235 347,260" fill="#22C55E" />
+
+  <!-- Bottom Brand Text -->
+  <rect x="0" y="456" width="512" height="56" fill="#0A1A2E" opacity="0.95" />
+  <text
+    x="256"
+    y="492"
+    fill="#FDE68A"
+    font-size="22"
+    font-weight="900"
+    letter-spacing="3"
+    text-anchor="middle"
+    font-family="'Mukta', sans-serif"
+  >
+    DEO CHHATH SEVA
+  </text>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- DEO CHHATH SEVA FAVICON -->
+  <rect width="64" height="64" rx="14" fill="#0F2642" stroke="#F59E0B" stroke-width="2" />
+  <!-- Radiant Sun -->
+  <circle cx="32" cy="24" r="14" fill="#F59E0B" />
+  <circle cx="32" cy="24" r="10" fill="#FDE047" />
+  <!-- Temple Shikhara -->
+  <polygon points="32,8 24,30 40,30" fill="#9A3412" />
+  <!-- Golden Kalash -->
+  <circle cx="32" cy="7" r="1.5" fill="#FDE047" />
+  <!-- Holy River Waters -->
+  <path d="M 0,38 C 16,34 32,42 48,36 C 54,34 60,36 64,37 L 64,64 L 0,64 Z" fill="#0284C7" />
+  <!-- Traditional Diya -->
+  <path d="M 28,46 Q 32,50 36,46 Q 35,52 29,52 Z" fill="#FBBF24" />
+  <circle cx="32" cy="44" r="2" fill="#EA580C" />
+  <circle cx="32" cy="44" r="1" fill="#FFFFFF" />
+</svg>
