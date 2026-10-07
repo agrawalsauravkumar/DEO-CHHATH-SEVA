@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { AdminService } from '../services/AdminService';
+import { DeoChhathSevaLogo } from '../components/DeoChhathSevaLogo';
 import {
   Lock,
   Mail,
@@ -61,7 +62,7 @@ export const AdminLoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A1A2E] via-[#0F2642] to-[#16365C] text-stone-100 flex flex-col justify-between font-['Mukta',sans-serif] p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#041E2F] via-[#073B5A] to-[#0B5E8E] text-stone-100 flex flex-col justify-between font-['Mukta',sans-serif] p-4 sm:p-6">
       {/* Top Header */}
       <div className="max-w-md w-full mx-auto flex items-center justify-between">
         <button
@@ -82,9 +83,7 @@ export const AdminLoginScreen: React.FC = () => {
         <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl text-stone-900 border-2 border-amber-500/40 space-y-5">
           {/* Brand & Organization Title */}
           <div className="text-center space-y-1.5">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#0F2642] to-[#16365C] text-amber-400 border border-amber-400/50 flex items-center justify-center mx-auto shadow-md text-3xl">
-              🔐
-            </div>
+            <DeoChhathSevaLogo size={68} className="mx-auto drop-shadow-md" />
             <h1 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight">
               DEO CHHATH SEVA
             </h1>
@@ -92,7 +91,7 @@ export const AdminLoginScreen: React.FC = () => {
               Admin Portal • व्यवस्थापक पोर्टल
             </p>
             <p className="text-[11px] text-stone-500 font-bold">
-              NEXTGEN DEV BHOOMI FOUNDATION — “रास्ता भी • सहायता भी • सेवा भी”
+              NEXTGEN DEVBHOOMI FOUNDATION — “रास्ता भी • सहायता भी • सेवा भी”
             </p>
           </div>
 
@@ -195,7 +194,7 @@ export const AdminLoginScreen: React.FC = () => {
 
       {/* Footer attribution */}
       <footer className="text-center text-xs text-stone-400 select-none py-2">
-        <p className="font-bold">NEXTGEN DEV BHOOMI FOUNDATION • अधिकृत प्रशासक पोर्टल</p>
+        <p className="font-bold">NEXTGEN DEVBHOOMI FOUNDATION • अधिकृत प्रशासक पोर्टल</p>
         <p className="text-[11px] text-stone-500">देव सूर्य मंदिर एवं सूर्य कुंड मेला परिसर, औरंगाबाद (बिहार)</p>
       </footer>
     </div>

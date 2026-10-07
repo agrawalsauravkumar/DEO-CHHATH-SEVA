@@ -125,7 +125,8 @@ export const EmergencyScreen: React.FC = () => {
     if (!deviceLocation) {
       const success = await requestDeviceLocation();
       if (!success) {
-        alert('आपकी location उपलब्ध नहीं है। कृपया GPS ऑन करें।');
+        setLocationSharedNotice('आपकी location उपलब्ध नहीं है। कृपया GPS ऑन करें।');
+        setTimeout(() => setLocationSharedNotice(null), 4000);
         return;
       }
     }
@@ -143,7 +144,7 @@ export const EmergencyScreen: React.FC = () => {
       `सटीकता (Accuracy): ${acc}\n` +
       `समय: ${timeStr}\n` +
       `नक्शा लिंक: ${mapsLink}\n` +
-      `(NextGen Devbhoomi Foundation - देव छठ सेवा)`;
+      `(NEXTGEN DEVBHOOMI FOUNDATION - देव छठ सेवा)`;
 
     if (navigator.share) {
       try {
@@ -168,7 +169,8 @@ export const EmergencyScreen: React.FC = () => {
       setLocationSharedNotice('स्थान की जानकारी कॉपी कर ली गई है। आप इसे WhatsApp/SMS पर भेज सकते हैं।');
       setTimeout(() => setLocationSharedNotice(null), 4000);
     } catch {
-      alert(text);
+      setLocationSharedNotice('स्थान विवरण: ' + text.slice(0, 80) + '...');
+      setTimeout(() => setLocationSharedNotice(null), 4000);
     }
   };
 

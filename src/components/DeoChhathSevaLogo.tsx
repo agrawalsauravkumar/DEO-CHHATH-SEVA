@@ -4,30 +4,46 @@
  */
 
 import React from 'react';
-import { CHHATH_THEME } from '../theme/chhathTheme';
 
 interface Props {
   size?: number;
   className?: string;
   showText?: boolean;
+  asImg?: boolean;
 }
 
 /**
- * DEO CHHATH SEVA OFFICIAL LOGO
- * NEXTGEN DEV BHOOMI FOUNDATION
+ * DEO CHHATH SEVA OFFICIAL APP LOGO COMPONENT
+ * NEXTGEN DEVBHOOMI FOUNDATION
  * "रास्ता भी • सहायता भी • सेवा भी"
  *
- * Represents:
- * - Sunrise & Golden Rays (भगवान भास्कर)
- * - Surya Kund Holy Waters & Ghats (पवित्र घाट व अर्घ्य)
- * - Deo Sun Temple ancient Shikhara (देव सूर्य मंदिर)
- * - Traditional Chhath Soop, Diya & Twin Sugarcane (सूप, दीप व ईख)
- * - Navigation, Public Service & Seva
+ * Sacred Chhath Puja Emblem:
+ * ☀️ Radiant Morning Sun (भगवान भास्कर)
+ * 🌊 Surya Kund Holy River Waves & Ghat Steps (पवित्र घाट व अर्घ्य)
+ * 🛕 Ancient Deo Sun Temple Shikhara (देव सूर्य मंदिर)
+ * 🧺 Bamboo Arghya Soop & Glowing Diya (सूप, नैवेद्य व अखण्ड दीप)
+ * 🌾 Twin Sacred Sugarcane Stalks (पवित्र ईख / गन्ना)
  */
 export const DeoChhathSevaLogo: React.FC<Props> = ({
   size = 48,
   className = '',
+  asImg = false,
 }) => {
+  if (asImg) {
+    return (
+      <img
+        src="/branding/deo-chhath-seva-logo.svg"
+        alt="DEO CHHATH SEVA - NEXTGEN DEVBHOOMI FOUNDATION"
+        width={size}
+        height={size}
+        className={`shrink-0 drop-shadow-sm select-none object-contain ${className}`}
+        onError={(e) => {
+          (e.currentTarget as HTMLImageElement).src = '/branding/deo-chhath-seva-logo.png';
+        }}
+      />
+    );
+  }
+
   return (
     <svg
       width={size}
@@ -36,163 +52,198 @@ export const DeoChhathSevaLogo: React.FC<Props> = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={`shrink-0 drop-shadow-sm select-none ${className}`}
-      aria-label="DEO CHHATH SEVA - NEXTGEN DEV BHOOMI FOUNDATION"
+      aria-label="DEO CHHATH SEVA - NEXTGEN DEVBHOOMI FOUNDATION"
     >
       <defs>
-        {/* Deep River Blue to Royal Navy Gradient */}
-        <linearGradient id="logoBgRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#0B2038" />
-          <stop offset="50%" stopColor="#0F2642" />
-          <stop offset="100%" stopColor="#061324" />
+        {/* River Blue Gradient */}
+        <linearGradient id="compLogoBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#0B5E8E" />
+          <stop offset="50%" stopColor="#073B5A" />
+          <stop offset="100%" stopColor="#041E2F" />
         </linearGradient>
 
-        {/* Sun & Sunrise Rays Gradient */}
-        <radialGradient id="logoSunSunrise" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#FFFBEB" />
-          <stop offset="25%" stopColor="#FDE047" />
-          <stop offset="65%" stopColor="#F97316" />
-          <stop offset="100%" stopColor="#EA580C" />
+        {/* Sun & Sunrise Glow */}
+        <radialGradient id="compLogoSunGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#FFF8E1" />
+          <stop offset="25%" stopColor="#FFD54F" />
+          <stop offset="65%" stopColor="#FF8C42" />
+          <stop offset="100%" stopColor="#E65100" />
         </radialGradient>
 
-        {/* Holy River Ganga / Surya Kund Water Wave Gradient */}
-        <linearGradient id="logoRiverWater" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#0284C7" />
-          <stop offset="50%" stopColor="#38BDF8" />
-          <stop offset="100%" stopColor="#0369A1" />
+        {/* Holy River Waters Gradient */}
+        <linearGradient id="compLogoWaterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#0B5E8E" />
+          <stop offset="50%" stopColor="#29B6F6" />
+          <stop offset="100%" stopColor="#0288D1" />
         </linearGradient>
 
-        {/* Golden Ring Border Gradient */}
-        <linearGradient id="logoGoldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FBBF24" />
-          <stop offset="25%" stopColor="#D97706" />
-          <stop offset="50%" stopColor="#FDE68A" />
-          <stop offset="75%" stopColor="#B45309" />
-          <stop offset="100%" stopColor="#F59E0B" />
+        {/* Marigold Gold Border Gradient */}
+        <linearGradient id="compLogoGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFE082" />
+          <stop offset="25%" stopColor="#FFD54F" />
+          <stop offset="50%" stopColor="#FFB300" />
+          <stop offset="75%" stopColor="#FFA000" />
+          <stop offset="100%" stopColor="#FF8F00" />
         </linearGradient>
 
-        {/* Upper Text Path for Curved Typography */}
-        <path id="logoUpperArc" d="M 64,256 A 192,192 0 1,1 448,256" />
-        {/* Lower Text Path */}
-        <path id="logoLowerArc" d="M 448,256 A 192,192 0 0,1 64,256" />
+        {/* Upper Arc for Organization Title */}
+        <path id="compTopTextArc" d="M 68,256 A 188,188 0 1,1 444,256" />
       </defs>
 
-      {/* 1. Outer Golden Trim */}
-      <circle cx="256" cy="256" r="250" fill="#F59E0B" stroke="#B45309" strokeWidth="2" />
-      <circle cx="256" cy="256" r="246" fill="#FEF3C7" />
-      <circle cx="256" cy="256" r="242" fill="url(#logoBgRingGrad)" stroke="#D97706" strokeWidth="3.5" />
+      {/* 1. Outer Ornate Marigold Gold Border Rings */}
+      <circle cx="256" cy="256" r="252" fill="url(#compLogoGoldGrad)" />
+      <circle cx="256" cy="256" r="246" fill="#041E2F" />
+      <circle cx="256" cy="256" r="242" fill="url(#compLogoBgGrad)" stroke="#FFD54F" strokeWidth="2" />
+      <circle cx="256" cy="256" r="236" fill="none" stroke="#FFE082" strokeWidth="1.5" strokeDasharray="6 4" />
 
-      {/* Inner Gold Bezel Ring */}
-      <circle cx="256" cy="256" r="190" fill="#FFFBEB" stroke="#D97706" strokeWidth="4" />
-      <circle cx="256" cy="256" r="186" fill="none" stroke="#FDE68A" strokeWidth="1.5" strokeDasharray="4 3" />
-
-      {/* 2. Typography Along Circular Ring */}
-      {/* Top: NEXTGEN DEV BHOOMI FOUNDATION */}
-      <text fill="#FFFFFF" fontSize="23" fontWeight="900" letterSpacing="3.0" fontFamily="'Mukta', sans-serif">
-        <textPath href="#logoUpperArc" startOffset="50%" textAnchor="middle">
-          NEXTGEN DEV BHOOMI FOUNDATION
+      {/* 2. Organization Name in Top Ring */}
+      <text fill="#FFFFFF" fontSize="20" fontWeight="900" letterSpacing="2.8" fontFamily="'Mukta', sans-serif">
+        <textPath href="#compTopTextArc" startOffset="50%" textAnchor="middle">
+          NEXTGEN DEVBHOOMI FOUNDATION
         </textPath>
       </text>
 
-      {/* Bottom: DEO CHHATH SEVA • देव छठ सेवा */}
-      <text fill="#FDE68A" fontSize="19" fontWeight="800" letterSpacing="3.8" fontFamily="'Mukta', sans-serif">
-        <textPath href="#logoLowerArc" startOffset="50%" textAnchor="middle">
-          DEO CHHATH SEVA • देव छठ सेवा
-        </textPath>
-      </text>
-
-      {/* 3. Inner Artwork Clip Container */}
-      <g clipPath="url(#logoInnerCircle)">
-        <clipPath id="logoInnerCircle">
-          <circle cx="256" cy="256" r="184" />
+      {/* 3. Inner Sacred Artwork Window */}
+      <g>
+        <circle cx="256" cy="256" r="182" fill="#FFF8E1" stroke="#FFD54F" strokeWidth="4" />
+        <clipPath id="compInnerPortalClip">
+          <circle cx="256" cy="256" r="180" />
         </clipPath>
 
-        {/* Sky Background with Warm Morning Aura */}
-        <rect x="70" y="70" width="372" height="372" fill="#FEF3C7" />
+        <g clipPath="url(#compInnerPortalClip)">
+          {/* Warm Sunrise Sky */}
+          <rect x="76" y="76" width="360" height="360" fill="#FFF8E1" />
 
-        {/* Sunrise Sun Rays */}
-        <g stroke="#F59E0B" strokeWidth="3.5" opacity="0.85">
-          <line x1="256" y1="210" x2="256" y2="85" />
-          <line x1="256" y1="210" x2="330" y2="98" />
-          <line x1="256" y1="210" x2="182" y2="98" />
-          <line x1="256" y1="210" x2="385" y2="140" />
-          <line x1="256" y1="210" x2="127" y2="140" />
-          <line x1="256" y1="210" x2="410" y2="200" />
-          <line x1="256" y1="210" x2="102" y2="200" />
-          <line x1="256" y1="210" x2="295" y2="90" strokeWidth="2" />
-          <line x1="256" y1="210" x2="217" y2="90" strokeWidth="2" />
-        </g>
+          {/* Morning Aura Sunburst */}
+          <circle cx="256" cy="205" r="160" fill="#FFE082" opacity="0.4" />
+          <circle cx="256" cy="205" r="120" fill="#FFCC80" opacity="0.5" />
 
-        {/* Rising Sun Sphere */}
-        <circle cx="256" cy="210" r="68" fill="url(#logoSunSunrise)" stroke="#C2410C" strokeWidth="2.5" />
+          {/* Radiating Golden Rays */}
+          <g stroke="#FFB300" strokeWidth="2.5" opacity="0.85">
+            <line x1="256" y1="205" x2="256" y2="82" />
+            <line x1="256" y1="205" x2="335" y2="95" />
+            <line x1="256" y1="205" x2="177" y2="95" />
+            <line x1="256" y1="205" x2="390" y2="135" />
+            <line x1="256" y1="205" x2="122" y2="135" />
+            <line x1="256" y1="205" x2="415" y2="190" />
+            <line x1="256" y1="205" x2="97" y2="190" />
+            <line x1="256" y1="205" x2="298" y2="88" strokeWidth="1.8" />
+            <line x1="256" y1="205" x2="214" y2="88" strokeWidth="1.8" />
+          </g>
 
-        {/* Deo Sun Temple Spire */}
-        <g transform="translate(148, 175)">
+          {/* Radiant Surya Dev Morning Sun (भगवान भास्कर) */}
+          <circle cx="256" cy="205" r="64" fill="url(#compLogoSunGlow)" stroke="#E65100" strokeWidth="2.5" />
+          <circle cx="256" cy="205" r="54" fill="#FFF8E1" opacity="0.25" />
+
+          {/* Ancient Deo Sun Temple Shikhara Silhouette (देव सूर्य मंदिर) */}
+          <g transform="translate(148, 172)">
+            <path
+              d="M 38,0 C 33,26 22,54 13,84 L 63,84 C 54,54 43,26 38,0 Z"
+              fill="#8D6E63"
+              stroke="#5D4037"
+              strokeWidth="1.8"
+            />
+            {/* Amalaka & Kalash */}
+            <ellipse cx="38" cy="0" rx="7" ry="3.5" fill="#FFD54F" />
+            <circle cx="38" cy="-5" r="3" fill="#FFA000" />
+            <line x1="38" y1="-10" x2="38" y2="-4" stroke="#8D6E63" strokeWidth="1.8" />
+            <polygon points="38,-10 52,-7 38,-4" fill="#FF8C42" />
+            {/* Temple Carvings */}
+            <path d="M 18,68 Q 38,64 58,68" stroke="#D7CCC8" strokeWidth="1.5" fill="none" />
+            <path d="M 23,52 Q 38,48 53,52" stroke="#D7CCC8" strokeWidth="1.5" fill="none" />
+            <path d="M 28,36 Q 38,33 48,36" stroke="#D7CCC8" strokeWidth="1.5" fill="none" />
+          </g>
+
+          {/* Sacred Holy Surya Kund Water Waves */}
           <path
-            d="M 38,0 C 33,25 22,50 14,80 L 62,80 C 54,50 43,25 38,0 Z"
-            fill="#9A3412"
-            stroke="#7C2D12"
-            strokeWidth="1.5"
+            d="M 76,285 C 130,272 195,296 256,285 C 317,274 382,298 436,285 L 436,436 L 76,436 Z"
+            fill="url(#compLogoWaterGrad)"
           />
-          <ellipse cx="38" cy="0" rx="7" ry="3.5" fill="#FBBF24" />
-          <circle cx="38" cy="-5" r="3" fill="#F59E0B" />
-          <line x1="38" y1="-10" x2="38" y2="-4" stroke="#9A3412" strokeWidth="1.8" />
-          <polygon points="38,-10 52,-7 38,-4" fill="#EA580C" />
-          <path d="M 19,65 Q 38,61 57,65" stroke="#FDBA74" strokeWidth="1.5" fill="none" />
-          <path d="M 23,50 Q 38,47 53,50" stroke="#FDBA74" strokeWidth="1.5" fill="none" />
-          <path d="M 28,35 Q 38,33 48,35" stroke="#FDBA74" strokeWidth="1.5" fill="none" />
-        </g>
-
-        {/* Sacred Holy Waters */}
-        <path
-          d="M 70,290 C 130,280 190,300 256,290 C 322,280 382,300 442,290 L 442,442 L 70,442 Z"
-          fill="url(#logoRiverWater)"
-          opacity="0.95"
-        />
-        <path
-          d="M 70,320 C 120,312 180,326 240,316 C 300,306 370,325 442,315"
-          stroke="#E0F2FE"
-          strokeWidth="3"
-          fill="none"
-          opacity="0.75"
-        />
-
-        {/* Holy Ghat Stairs */}
-        <path d="M 70,370 L 170,370 L 170,385 L 270,385 L 270,400 L 442,400 L 442,442 L 70,442 Z" fill="#0C4A6E" />
-
-        {/* Traditional Chhath Soop & Diya Offering */}
-        <g transform="translate(206, 320)">
           <path
-            d="M 12,35 C 22,22 78,22 88,35 C 92,44 80,56 50,56 C 20,56 8,44 12,35 Z"
-            fill="#FBBF24"
-            stroke="#D97706"
-            strokeWidth="2"
+            d="M 76,315 C 130,305 190,322 256,312 C 322,302 382,320 436,310"
+            stroke="#E1F5FE"
+            strokeWidth="3"
+            fill="none"
+            opacity="0.8"
           />
-          <circle cx="50" cy="30" r="11" fill="#78350F" stroke="#451A03" strokeWidth="1.2" />
-          <ellipse cx="36" cy="34" rx="7" ry="5" fill="#F59E0B" />
-          <ellipse cx="64" cy="34" rx="7" ry="5" fill="#EAB308" />
-
-          {/* Diya */}
-          <path d="M 44,24 Q 50,28 56,24 Q 54,32 46,32 Z" fill="#D97706" />
           <path
-            d="M 50,8 C 55,14 56,18 53,22 C 50,24 47,21 47,18 C 47,15 48,11 50,8 Z"
-            fill="#FEF08A"
-            stroke="#EA580C"
-            strokeWidth="1.5"
+            d="M 90,345 C 150,336 210,350 270,342 C 330,334 390,348 436,340"
+            stroke="#B3E5FC"
+            strokeWidth="2.5"
+            fill="none"
+            opacity="0.6"
           />
-          <circle cx="50" cy="18" r="3" fill="#FFFFFF" />
+
+          {/* Sacred Ghat Steps */}
+          <path
+            d="M 76,370 L 160,370 L 160,384 L 250,384 L 250,398 L 436,398 L 436,436 L 76,436 Z"
+            fill="#0B5E8E"
+            opacity="0.8"
+          />
+
+          {/* Twin Sacred Sugarcane Stalks */}
+          <g stroke="#2E7D32" strokeWidth="3.5" fill="none">
+            <path d="M 125,415 Q 148,310 166,245 Q 152,235 138,250" />
+            <path d="M 387,415 Q 364,310 346,245 Q 360,235 374,250" />
+          </g>
+          <path d="M 166,245 Q 182,218 172,198 Q 160,224 166,245" fill="#4CAF50" />
+          <path d="M 346,245 Q 330,218 340,198 Q 352,224 346,245" fill="#4CAF50" />
+
+          {/* Chhath Arghya Offering: Bamboo Soop & Diya */}
+          <g transform="translate(206, 318)">
+            <path
+              d="M 12,36 C 22,22 78,22 88,36 C 92,46 80,58 50,58 C 20,58 8,46 12,36 Z"
+              fill="#FFD54F"
+              stroke="#FFA000"
+              strokeWidth="2.5"
+            />
+            <circle cx="50" cy="30" r="11" fill="#8D6E63" stroke="#5D4037" strokeWidth="1.5" />
+            <ellipse cx="36" cy="35" rx="7" ry="5" fill="#FF8C42" />
+            <ellipse cx="64" cy="35" rx="7" ry="5" fill="#FFCA28" />
+
+            <path d="M 44,24 Q 50,28 56,24 Q 54,32 46,32 Z" fill="#FF8C42" stroke="#E65100" strokeWidth="1" />
+            <path
+              d="M 50,8 C 55,14 56,18 53,22 C 50,24 47,21 47,18 C 47,15 48,11 50,8 Z"
+              fill="#FFF9C4"
+              stroke="#FF8C42"
+              strokeWidth="1.8"
+            />
+            <circle cx="50" cy="18" r="3" fill="#FFFFFF" />
+          </g>
         </g>
 
-        {/* Twin Sugarcane Stalks */}
-        <g stroke="#15803D" strokeWidth="3" fill="none">
-          <path d="M 130,420 Q 150,300 170,240 Q 155,230 140,245" />
-          <path d="M 382,420 Q 362,300 342,240 Q 357,230 372,245" />
-        </g>
-        <path d="M 170,240 Q 185,215 175,195 Q 165,220 170,240" fill="#22C55E" />
-        <path d="M 342,240 Q 327,215 337,195 Q 347,220 342,240" fill="#22C55E" />
+        {/* Inner Golden Border Bezel */}
+        <circle cx="256" cy="256" r="182" fill="none" stroke="url(#compLogoGoldGrad)" strokeWidth="4.5" />
       </g>
 
-      {/* 4. Inner Golden Ring Bezel */}
-      <circle cx="256" cy="256" r="184" fill="none" stroke="url(#logoGoldBorder)" strokeWidth="4.5" />
+      {/* 4. Lower Banner: DEO CHHATH SEVA & TAGLINE */}
+      <g>
+        <rect x="80" y="415" width="352" height="66" rx="18" fill="#041E2F" stroke="#FFD54F" strokeWidth="2.5" />
+        <text
+          x="256"
+          y="442"
+          fill="#FFD54F"
+          fontSize="20"
+          fontWeight="900"
+          letterSpacing="2.5"
+          textAnchor="middle"
+          fontFamily="'Mukta', sans-serif"
+        >
+          DEO CHHATH SEVA
+        </text>
+        <text
+          x="256"
+          y="464"
+          fill="#FFF8E1"
+          fontSize="12.5"
+          fontWeight="700"
+          letterSpacing="1.2"
+          textAnchor="middle"
+          fontFamily="'Mukta', sans-serif"
+        >
+          रास्ता भी • सहायता भी • सेवा भी
+        </text>
+      </g>
     </svg>
   );
 };

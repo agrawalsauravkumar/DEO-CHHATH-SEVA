@@ -5,7 +5,7 @@
 
 /**
  * DEO CHHATH SEVA — DESIGN TOKENS & CHHATH PUJA THEME
- * NEXTGEN DEV BHOOMI FOUNDATION
+ * NEXTGEN DEVBHOOMI FOUNDATION
  * "रास्ता भी • सहायता भी • सेवा भी"
  *
  * Primary Visual Inspiration:
@@ -23,23 +23,35 @@ export const CHHATH_THEME = {
   branding: {
     appName: 'DEO CHHATH SEVA',
     tagline: 'रास्ता भी • सहायता भी • सेवा भी',
-    organization: 'NEXTGEN DEV BHOOMI FOUNDATION',
-    subTitleHi: 'देव छठ सेवा • NextGen Dev Bhoomi Foundation',
+    organization: 'NEXTGEN DEVBHOOMI FOUNDATION',
+    subTitleHi: 'देव छठ सेवा • NEXTGEN DEVBHOOMI FOUNDATION',
     initiativeTitleHi: 'सार्वजनिक सेवा पहल (A Public-Service Initiative)',
+  },
+
+  // Part 10 Official Color Tokens
+  tokens: {
+    riverBlue: '#0B5E8E',
+    sunriseSaffron: '#FF8C42',
+    marigoldGold: '#FFD54F',
+    leafGreen: '#2E7D32',
+    earthBrown: '#8D6E63',
+    cream: '#FFF8E1',
+    white: '#FFFFFF',
+    emergencyRed: '#E53935',
   },
 
   colors: {
     // Primary - Deep River Blue & Navy
     primary: {
-      DEFAULT: '#0F2642',
-      light: '#16365C',
-      dark: '#0A1A2E',
+      DEFAULT: '#0B5E8E',
+      light: '#073B5A',
+      dark: '#041E2F',
       contrast: '#FFFFFF',
     },
 
     // Secondary - Sunrise Orange / Saffron
     secondary: {
-      DEFAULT: '#EA580C',
+      DEFAULT: '#FF8C42',
       light: '#F97316',
       dark: '#C2410C',
       contrast: '#FFFFFF',
@@ -47,11 +59,11 @@ export const CHHATH_THEME = {
 
     // Accent - Golden / Marigold
     accent: {
-      DEFAULT: '#F59E0B',
+      DEFAULT: '#FFD54F',
       light: '#FBBF24',
       dark: '#D97706',
       gold: '#EAB308',
-      amber50: '#FFFBEB',
+      amber50: '#FFF8E1',
       amber100: '#FEF3C7',
       amber200: '#FDE68A',
       amber500: '#F59E0B',
@@ -63,9 +75,9 @@ export const CHHATH_THEME = {
     },
 
     // Surfaces & Backgrounds (Ivory / Warm Stone)
-    background: '#FAF8F5', // Warm Ivory Chhath Paper Tone
+    background: '#FFF8E1', // Warm Ivory / Cream Chhath Paper Tone
     surface: '#FFFFFF',
-    surfaceSubtle: '#F5F2EB',
+    surfaceSubtle: '#FAF8F5',
 
     // Text hierarchy
     text: {
@@ -85,7 +97,7 @@ export const CHHATH_THEME = {
 
     // Functional State Colors
     success: {
-      DEFAULT: '#16A34A',
+      DEFAULT: '#2E7D32',
       light: '#DCFCE7',
       dark: '#14532D',
       contrast: '#FFFFFF',
@@ -97,7 +109,7 @@ export const CHHATH_THEME = {
     },
     // RED is reserved exclusively for Emergency / SOS / Critical warnings
     emergency: {
-      DEFAULT: '#DC2626',
+      DEFAULT: '#E53935',
       light: '#FEE2E2',
       dark: '#991B1B',
       contrast: '#FFFFFF',

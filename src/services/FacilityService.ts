@@ -494,13 +494,37 @@ class FacilityServiceManager {
     }
   }
 
-  // 7. Sync facilities with server (ready for future admin dashboard)
+  // 7. Sync facilities with server (connected to PostGIS backend)
   public async syncFacilities(): Promise<void> {
     try {
-      // In future: fetch from /api/facilities
+      if (typeof window !== 'undefined' && navigator.onLine) {
+        const res = await fetch('/api/facilities');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.facilities) && data.facilities.length > 0) {
+            const mapped: Facility[] = data.facilities.map((f: any) => ({
+              id: f.id,
+              name: f.name,
+              nameEn: f.nameEn,
+              category: f.category as FacilityCategory,
+              latitude: f.latitude,
+              longitude: f.longitude,
+              address: f.address || '',
+              description: f.description || '',
+              phone: f.phone,
+              verified: Boolean(f.isVerified),
+              active: Boolean(f.isActive),
+              accessibility: true,
+              lastUpdated: 'सर्वर से अपडेटेड',
+              source: 'ADMIN_VERIFIED',
+            }));
+            this.facilities = mapped;
+          }
+        }
+      }
       localStorage.setItem(STORAGE_OFFLINE_FACILITIES_KEY, JSON.stringify(this.facilities));
     } catch {
-      // Ignore
+      // Graceful fallback to local cache
     }
   }
 

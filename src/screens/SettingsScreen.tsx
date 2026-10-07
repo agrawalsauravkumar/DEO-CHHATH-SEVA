@@ -210,8 +210,8 @@ export const SettingsScreen: React.FC = () => {
         {/* App Version Info & Hidden Developer Test Mode */}
         <div className="text-center text-xs text-stone-500 pt-3 space-y-3">
           <div className="space-y-1">
-            <p className="font-bold text-stone-700">DEO CHHATH SEVA • v1.0.0 (Mela 2026)</p>
-            <p>NextGen Dev Bhoomi Foundation</p>
+            <p className="font-bold text-stone-700">DEO CHHATH SEVA • v1.4.0 (Mela 2026)</p>
+            <p className="font-bold text-amber-900">NEXTGEN DEVBHOOMI FOUNDATION</p>
             <p className="text-[11px] text-stone-400">“रास्ता भी • सहायता भी • सेवा भी”</p>
           </div>
 

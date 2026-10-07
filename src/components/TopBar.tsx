@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowLeft, PhoneCall, Accessibility, Bell, DownloadCloud } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { ScreenId } from '../types';
-import { NextGenFoundationLogo } from './NextGenFoundationLogo';
+import { DeoChhathSevaLogo } from './DeoChhathSevaLogo';
 
 interface Props {
   title?: string;
@@ -56,7 +56,7 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
   const displayTitle = title || SCREEN_TITLES[currentScreen] || 'देव छठ सेवा';
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0F2642] text-white border-b-2 border-amber-500/50 shadow-md px-3 sm:px-4 py-2 font-['Mukta',sans-serif]">
+    <header className="sticky top-0 z-40 bg-[#0B5E8E] text-white border-b-2 border-[#FFD54F]/70 shadow-md px-3 sm:px-4 py-2 font-['Mukta',sans-serif]">
       <div className="max-w-lg mx-auto flex items-center justify-between min-h-[46px]">
         {/* Left Slot: Back or Official NGO Seal Logo */}
         <div className="flex items-center gap-2.5">
@@ -72,9 +72,9 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
             <button
               onClick={() => navigate('about')}
               className="flex items-center gap-1.5 text-left active:scale-95 transition-transform"
-              title="NextGen Devbhoomi Foundation"
+              title="DEO CHHATH SEVA - NEXTGEN DEVBHOOMI FOUNDATION"
             >
-              <NextGenFoundationLogo size={38} className="drop-shadow-md" />
+              <DeoChhathSevaLogo size={38} className="drop-shadow-md" />
             </button>
           )}
 
@@ -87,11 +87,11 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
               {displayTitle}
             </h1>
             {isHome ? (
-              <span className="text-[10px] font-black text-amber-300 tracking-wider truncate uppercase">
-                NEXTGEN DEV BHOOMI FOUNDATION
+              <span className="text-[10px] font-black text-[#FFD54F] tracking-wider truncate uppercase">
+                NEXTGEN DEVBHOOMI FOUNDATION
               </span>
             ) : subtitle ? (
-              <span className="text-[11px] text-amber-200/80 truncate">{subtitle}</span>
+              <span className="text-[11px] text-[#FFF8E1]/90 truncate">{subtitle}</span>
             ) : null}
           </div>
         </div>
@@ -103,9 +103,9 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
               onClick={() => navigate('offline-map')}
               title="ऑफलाइन मैप सक्रिय"
               aria-label="ऑफलाइन मैप सक्रिय"
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center text-emerald-400 hover:text-emerald-300 active:scale-95"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[#2E7D32] hover:text-emerald-300 active:scale-95"
             >
-              <DownloadCloud className="w-5 h-5 text-emerald-400" />
+              <DownloadCloud className="w-5 h-5 text-emerald-300" />
             </button>
           )}
 
@@ -113,11 +113,11 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
             onClick={() => navigate('announcements')}
             title="सूचनाएं"
             aria-label="सूचनाएं"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-amber-300 hover:text-amber-100 active:scale-95 relative"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[#FFD54F] hover:text-amber-100 active:scale-95 relative"
           >
             <Bell className="w-5 h-5" />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-red-500 animate-ping" />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-red-500" />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#E53935] animate-ping" />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#E53935]" />
           </button>
 
           <button
@@ -126,8 +126,8 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
             aria-label="वरिष्ठ नागरिक मोड"
             className={`min-h-[40px] px-2.5 flex items-center gap-1 rounded-xl text-xs font-bold transition-all active:scale-95 border ${
               seniorMode
-                ? 'bg-amber-500 text-stone-950 border-amber-400 shadow-sm'
-                : 'bg-white/10 text-amber-200 hover:bg-white/20 border-white/10'
+                ? 'bg-[#FFD54F] text-stone-950 border-amber-300 shadow-sm'
+                : 'bg-white/10 text-[#FFD54F] hover:bg-white/20 border-white/10'
             }`}
           >
             <Accessibility className="w-4 h-4" />
@@ -137,7 +137,7 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
           <button
             onClick={() => navigate('emergency')}
             aria-label="आपातकालीन SOS सहायता"
-            className="min-h-[40px] px-3 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-black rounded-xl text-xs flex items-center gap-1 shadow-md transition-colors border border-red-500"
+            className="min-h-[40px] px-3 bg-[#E53935] hover:bg-[#C62828] active:scale-95 text-white font-black rounded-xl text-xs flex items-center gap-1 shadow-md transition-colors border border-[#E53935]"
           >
             <PhoneCall className="w-3.5 h-3.5 fill-white" />
             <span>SOS</span>

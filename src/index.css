@@ -1,1 +1,49 @@
 @import "tailwindcss";
+@import "./theme/chhathTheme.css";
+
+@theme {
+  --color-chhath-river-blue: #0B5E8E;
+  --color-chhath-sunrise: #FF8C42;
+  --color-chhath-gold: #FFD54F;
+  --color-chhath-green: #2E7D32;
+  --color-chhath-earth: #8D6E63;
+  --color-chhath-cream: #FFF8E1;
+  --color-chhath-red: #E53935;
+}
+
+:root {
+  --chhath-blue: #0B5E8E;
+  --chhath-saffron: #FF8C42;
+  --chhath-gold: #FFD54F;
+  --chhath-green: #2E7D32;
+  --chhath-earth: #8D6E63;
+  --chhath-cream: #FFF8E1;
+  --chhath-white: #FFFFFF;
+  --chhath-red: #E53935;
+  --chhath-river-blue: #0B5E8E;
+  --chhath-sunrise: #FF8C42;
+  --chhath-emergency: #E53935;
+}
+
+/* Chhath Atmospheric Animations */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 24s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

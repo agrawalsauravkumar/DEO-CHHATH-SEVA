@@ -9,7 +9,7 @@ import { CheckCircle2, ShieldCheck, Wifi, WifiOff, AlertOctagon } from 'lucide-r
 
 /**
  * REUSABLE BRANDING FOOTER (Step 20 Requirement 6 & 27)
- * EXACT SPELLING: NEXTGEN DEV BHOOMI FOUNDATION
+ * EXACT SPELLING: NEXTGEN DEVBHOOMI FOUNDATION
  */
 export const BrandFooter: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
@@ -30,8 +30,8 @@ export const BrandFooter: React.FC<{ className?: string }> = ({ className = '' }
         A public-service initiative by
       </p>
 
-      <p className="text-xs font-black tracking-wide text-[#0F2642]">
-        NEXTGEN DEV BHOOMI FOUNDATION
+      <p className="text-xs font-black tracking-wide text-[#0B5E8E]">
+        NEXTGEN DEVBHOOMI FOUNDATION
       </p>
 
       <p className="text-[10px] text-stone-400 pt-0.5">
@@ -172,7 +172,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   const getVariantStyles = () => {
     switch (variant) {
       case 'primary':
-        return 'bg-gradient-to-br from-[#0F2642] to-[#16365C] text-white border-[#0F2642] shadow-sm';
+        return 'bg-gradient-to-br from-[#0B5E8E] to-[#073B5A] text-white border-[#0B5E8E] shadow-sm';
       case 'secondary':
         return 'bg-gradient-to-br from-amber-50 to-orange-50 text-stone-900 border-amber-200 hover:border-amber-400 shadow-2xs';
       case 'emergency':

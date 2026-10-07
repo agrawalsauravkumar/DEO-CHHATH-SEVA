@@ -504,7 +504,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       refreshOfflinePackage();
     } else {
       setOfflineDownloadProgress(0);
-      alert(result.error || 'डाउनलोड पूरा नहीं हो पाया।');
+      console.warn('Offline download failed:', result.error || 'डाउनलोड पूरा नहीं हो पाया।');
     }
   };
 

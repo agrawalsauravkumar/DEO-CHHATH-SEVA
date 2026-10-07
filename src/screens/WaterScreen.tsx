@@ -134,14 +134,14 @@ export const WaterScreen: React.FC = () => {
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Foundation Amrit Jal Seva Header Banner */}
-        <div className="bg-gradient-to-br from-[#0F2642] via-[#0284C7] to-[#0369A1] text-white rounded-3xl p-5 border-2 border-cyan-400/40 shadow-xl space-y-3">
+        <div className="bg-gradient-to-br from-[#0B5E8E] via-[#0284C7] to-[#0369A1] text-white rounded-3xl p-5 border-2 border-cyan-400/40 shadow-xl space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-white/20 border border-white/30 text-white flex items-center justify-center font-bold text-2xl shrink-0">
               💧
             </div>
             <div>
               <span className="text-[10px] font-bold text-cyan-200 uppercase tracking-wider block">
-                NextGen Devbhoomi Foundation
+                NEXTGEN DEVBHOOMI FOUNDATION
               </span>
               <h2 className="text-lg font-black text-white leading-tight">
                 अमृत जल सेवा केंद्र
@@ -184,7 +184,7 @@ export const WaterScreen: React.FC = () => {
               onClick={() => setFilterType('ALL')}
               className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors ${
                 filterType === 'ALL'
-                  ? 'bg-[#0F2642] text-white shadow-xs'
+                  ? 'bg-[#0B5E8E] text-white shadow-xs'
                   : 'bg-stone-200 text-stone-700'
               }`}
             >
@@ -194,7 +194,7 @@ export const WaterScreen: React.FC = () => {
               onClick={() => setFilterType('SEVA_CAMP')}
               className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors ${
                 filterType === 'SEVA_CAMP'
-                  ? 'bg-[#0F2642] text-white shadow-xs'
+                  ? 'bg-[#0B5E8E] text-white shadow-xs'
                   : 'bg-stone-200 text-stone-700'
               }`}
             >
@@ -204,7 +204,7 @@ export const WaterScreen: React.FC = () => {
               onClick={() => setFilterType('WATER_TANKER')}
               className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors ${
                 filterType === 'WATER_TANKER'
-                  ? 'bg-[#0F2642] text-white shadow-xs'
+                  ? 'bg-[#0B5E8E] text-white shadow-xs'
                   : 'bg-stone-200 text-stone-700'
               }`}
             >

@@ -1,0 +1,50 @@
+{
+  "id": "/",
+  "name": "DEO CHHATH SEVA",
+  "short_name": "DEO CHHATH SEVA",
+  "description": "रास्ता भी • सहायता भी • सेवा भी — NEXTGEN DEVBHOOMI FOUNDATION",
+  "theme_color": "#0B5E8E",
+  "background_color": "#FFF8E1",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/branding/deo-chhath-seva-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/deo-chhath-seva-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/deo-chhath-seva-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/branding/deo-chhath-seva-favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/deo-chhath-seva-favicon.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -31,7 +31,7 @@ export const AboutScreen: React.FC = () => {
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-5">
         {/* Brand Hero Card with Official Logo (Step 20 Requirement 26) */}
-        <div className="bg-gradient-to-br from-[#0A1A2E] via-[#0F2642] to-[#16365C] text-white rounded-3xl p-6 text-center shadow-xl space-y-4 border-2 border-amber-500/40 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-6 text-center shadow-xl space-y-4 border-2 border-[#FFD54F]/70 relative overflow-hidden">
           <div className="relative mx-auto w-fit">
             <div className="w-36 h-36 rounded-full bg-amber-500/25 blur-xl absolute -inset-2 animate-pulse" />
             <div className="relative p-1 rounded-full bg-gradient-to-b from-amber-400 via-amber-500 to-orange-600 shadow-xl inline-block">
@@ -44,7 +44,7 @@ export const AboutScreen: React.FC = () => {
               DEO CHHATH SEVA
             </h1>
             <p className="text-xs uppercase tracking-widest text-amber-300 font-black">
-              NEXTGEN DEV BHOOMI FOUNDATION
+              NEXTGEN DEVBHOOMI FOUNDATION
             </p>
             <p className="text-sm font-bold text-amber-100/90 pt-0.5">
               “एक सार्वजनिक सेवा पहल” • Service Initiative
@@ -68,7 +68,7 @@ export const AboutScreen: React.FC = () => {
             “देव आने वाले श्रद्धालुओं को सरल Navigation, आवश्यक सुविधाओं की जानकारी और सहायता उपलब्ध कराने के उद्देश्य से यह निःशुल्क सेवा पहल विकसित की गई है।”
           </blockquote>
           <p className="text-xs text-stone-600 font-black text-right">
-            — NEXTGEN DEV BHOOMI FOUNDATION
+            — NEXTGEN DEVBHOOMI FOUNDATION
           </p>
         </div>
 
@@ -157,7 +157,7 @@ export const AboutScreen: React.FC = () => {
 
         {/* Contact and Foundation Info */}
         <div className="bg-stone-100 rounded-3xl p-4 border border-stone-200 space-y-2 text-xs text-stone-700">
-          <h4 className="font-black text-stone-900">NEXTGEN DEV BHOOMI FOUNDATION संपर्क:</h4>
+          <h4 className="font-black text-stone-900">NEXTGEN DEVBHOOMI FOUNDATION संपर्क:</h4>
           <p className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-amber-800 shrink-0" />
             <span>NextGen सेवा शिविर, सूर्य मंदिर पूर्वी तोरण द्वार, देव (औरंगाबाद), बिहार</span>
@@ -180,7 +180,7 @@ export const AboutScreen: React.FC = () => {
         <div className="max-w-lg mx-auto">
           <button
             onClick={() => navigate('home')}
-            className="w-full min-h-[48px] bg-[#0F2642] hover:bg-[#16365C] active:scale-98 text-white font-black text-sm rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all"
+            className="w-full min-h-[48px] bg-[#0B5E8E] hover:bg-[#084569] active:scale-98 text-white font-black text-sm rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all border border-[#FFD54F]/30"
           >
             <span>होम स्क्रीन पर वापस जाएं</span>
             <ArrowRight className="w-4 h-4" />

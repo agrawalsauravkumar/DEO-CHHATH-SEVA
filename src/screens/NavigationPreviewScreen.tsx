@@ -278,7 +278,7 @@ export const NavigationPreviewScreen: React.FC = () => {
             {/* Start Navigation Action */}
             <button
               onClick={handleStartNav}
-              className="w-full min-h-[52px] bg-amber-600 hover:bg-amber-700 active:scale-98 text-white font-black text-base rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all"
+              className="w-full min-h-[52px] bg-gradient-to-r from-[#FF8C42] to-[#EA580C] hover:from-[#EA580C] hover:to-[#C2410C] active:scale-98 text-white font-black text-base rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all border border-amber-300/40"
             >
               <Navigation className="w-5 h-5 fill-white" />
               <span>नेविगेशन प्रारंभ करें (Start Navigation)</span>

@@ -396,7 +396,7 @@ const SEED_AUDIT_LOGS: DbAuditLog[] = [
 
 const FESTIVAL_CONFIG: DbFestivalConfig = {
   festivalName: 'कार्तिक छठ महापर्व 2026 (देव, औरंगाबाद)',
-  organization: 'NEXTGEN DEV BHOOMI FOUNDATION',
+  organization: 'NEXTGEN DEVBHOOMI FOUNDATION',
   tagline: 'रास्ता भी • सहायता भी • सेवा भी',
   year: 2026,
   dates: {

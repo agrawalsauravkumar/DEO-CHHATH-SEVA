@@ -50,7 +50,7 @@ async function startServer() {
     // Development: Create Vite server in middleware mode
     const { createServer } = await import('vite');
     const vite = await createServer({
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, hmr: false },
       appType: 'spa',
     });
     app.use(vite.middlewares);

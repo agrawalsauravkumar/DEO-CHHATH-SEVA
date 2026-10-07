@@ -128,14 +128,14 @@ export const ShuttleScreen: React.FC = () => {
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Hero Header Banner */}
-        <div className="bg-gradient-to-br from-[#0F2642] via-[#16365C] to-[#0A1A2E] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-3">
+        <div className="bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center font-bold text-2xl shrink-0">
               🛺
             </div>
             <div>
               <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider block">
-                NextGen Devbhoomi Seva
+                NEXTGEN DEVBHOOMI FOUNDATION सेवा
               </span>
               <h2 className="text-lg font-black text-white leading-tight">
                 निःशुल्क ई-रिक्शा शटल सेवा
@@ -222,7 +222,7 @@ export const ShuttleScreen: React.FC = () => {
                   onClick={() => setFilterType('ALL')}
                   className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
                     filterType === 'ALL'
-                      ? 'bg-[#0F2642] text-white shadow-xs'
+                      ? 'bg-[#0B5E8E] text-white shadow-xs'
                       : 'bg-stone-200 text-stone-700'
                   }`}
                 >
@@ -232,7 +232,7 @@ export const ShuttleScreen: React.FC = () => {
                   onClick={() => setFilterType('PICKUP')}
                   className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
                     filterType === 'PICKUP'
-                      ? 'bg-[#0F2642] text-white shadow-xs'
+                      ? 'bg-[#0B5E8E] text-white shadow-xs'
                       : 'bg-stone-200 text-stone-700'
                   }`}
                 >
@@ -242,7 +242,7 @@ export const ShuttleScreen: React.FC = () => {
                   onClick={() => setFilterType('DROP')}
                   className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
                     filterType === 'DROP'
-                      ? 'bg-[#0F2642] text-white shadow-xs'
+                      ? 'bg-[#0B5E8E] text-white shadow-xs'
                       : 'bg-stone-200 text-stone-700'
                   }`}
                 >

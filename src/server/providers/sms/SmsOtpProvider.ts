@@ -62,7 +62,7 @@ export class SmsOtpProvider implements OtpProvider {
         template_id: this.templateId,
         numbers: mobileNumber,
         otp: code,
-        message: `DEO CHHATH SEVA: आपका सत्यापन कोड ${code} है। 5 मिनट में समाप्त होगा। NEXTGEN DEV BHOOMI FOUNDATION`,
+        message: `DEO CHHATH SEVA: आपका सत्यापन कोड ${code} है। 5 मिनट में समाप्त होगा। NEXTGEN DEVBHOOMI FOUNDATION`,
       };
 
       const response = await fetch(this.apiUrl!, {

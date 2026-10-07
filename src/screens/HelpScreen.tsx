@@ -155,7 +155,8 @@ export const HelpScreen: React.FC = () => {
     if (!deviceLocation) {
       const ok = await requestDeviceLocation();
       if (!ok) {
-        alert('आपकी location उपलब्ध नहीं है। कृपया GPS सक्षम करें।');
+        setFormError('आपकी location उपलब्ध नहीं है। कृपया GPS सक्षम करें।');
+        setTimeout(() => setFormError(null), 4000);
         return;
       }
     }
@@ -173,7 +174,7 @@ export const HelpScreen: React.FC = () => {
       `Accuracy: ${acc}\n` +
       `समय: ${timeStr}\n` +
       `नक्शा: ${mapsLink}\n` +
-      `(NextGen Devbhoomi Foundation)`;
+      `(NEXTGEN DEVBHOOMI FOUNDATION)`;
 
     if (navigator.share) {
       try {
@@ -197,7 +198,8 @@ export const HelpScreen: React.FC = () => {
       setCopiedNotice('स्थान की जानकारी कॉपी कर ली गई है।');
       setTimeout(() => setCopiedNotice(null), 3000);
     } catch {
-      alert(txt);
+      setCopiedNotice('स्थान विवरण: ' + txt.slice(0, 80) + '...');
+      setTimeout(() => setCopiedNotice(null), 4000);
     }
   };
 
@@ -588,7 +590,7 @@ export const HelpScreen: React.FC = () => {
                   </button>
                   <button
                     onClick={() => navigate('volunteer')}
-                    className="min-h-[44px] p-2 bg-[#0F2642] hover:bg-[#16365C] text-white font-bold text-xs rounded-xl text-center flex items-center justify-center transition-colors active:scale-95"
+                    className="min-h-[44px] p-2 bg-[#0B5E8E] hover:bg-[#073B5A] text-white font-bold text-xs rounded-xl text-center flex items-center justify-center transition-colors active:scale-95"
                   >
                     <span>Volunteer Mode</span>
                   </button>
@@ -608,7 +610,7 @@ export const HelpScreen: React.FC = () => {
           >
             <div className="border-b border-stone-100 pb-2">
               <span className="text-xs font-black uppercase tracking-wider text-amber-700 block">
-                NextGen Devbhoomi Seva
+                NEXTGEN DEVBHOOMI FOUNDATION सेवा
               </span>
               <h3 className="text-lg font-black text-stone-900">
                 सहायता अनुरोध भेजें
@@ -838,7 +840,7 @@ export const HelpScreen: React.FC = () => {
                 onClick={() => setSelectedPointCategory('ALL')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap ${
                   selectedPointCategory === 'ALL'
-                    ? 'bg-[#0F2642] text-white shadow-xs'
+                    ? 'bg-[#0B5E8E] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >
@@ -848,7 +850,7 @@ export const HelpScreen: React.FC = () => {
                 onClick={() => setSelectedPointCategory('POLICE')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap ${
                   selectedPointCategory === 'POLICE'
-                    ? 'bg-[#0F2642] text-white shadow-xs'
+                    ? 'bg-[#0B5E8E] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >
@@ -858,7 +860,7 @@ export const HelpScreen: React.FC = () => {
                 onClick={() => setSelectedPointCategory('WOMEN_HELP')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap ${
                   selectedPointCategory === 'WOMEN_HELP'
-                    ? 'bg-[#0F2642] text-white shadow-xs'
+                    ? 'bg-[#0B5E8E] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >
@@ -868,7 +870,7 @@ export const HelpScreen: React.FC = () => {
                 onClick={() => setSelectedPointCategory('SENIOR_HELP')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap ${
                   selectedPointCategory === 'SENIOR_HELP'
-                    ? 'bg-[#0F2642] text-white shadow-xs'
+                    ? 'bg-[#0B5E8E] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >

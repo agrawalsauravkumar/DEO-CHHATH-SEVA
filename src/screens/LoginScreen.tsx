@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
+import { DeoChhathSevaLogo } from '../components/DeoChhathSevaLogo';
 import { AuthService } from '../services/AuthService';
 import { OtpChallenge } from '../types';
 import {
@@ -133,13 +134,11 @@ export const LoginScreen: React.FC = () => {
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Brand & Organization Title Card */}
-        <div className="bg-gradient-to-br from-[#0F2642] via-[#16365C] to-[#0A1A2E] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-2 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center font-bold text-3xl mx-auto shadow-inner">
-            {step === 'PHONE' ? '📱' : '🔑'}
-          </div>
+        <div className="bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-2 text-center">
+          <DeoChhathSevaLogo size={68} className="mx-auto drop-shadow-lg" />
           <h2 className="text-xl font-black tracking-tight text-white">DEO CHHATH SEVA</h2>
           <p className="text-xs font-black text-amber-300">
-            NEXTGEN DEV BHOOMI FOUNDATION — “रास्ता भी • सहायता भी • सेवा भी”
+            NEXTGEN DEVBHOOMI FOUNDATION — “रास्ता भी • सहायता भी • सेवा भी”
           </p>
           <p className="text-[12px] text-stone-300 pt-1">
             छठ महापर्व में सुरक्षित सेवा, स्वयंसेवक पहचान एवं परिवार समन्वय हेतु लॉगिन करें।

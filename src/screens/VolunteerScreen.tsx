@@ -75,14 +75,14 @@ export const VolunteerScreen: React.FC = () => {
         )}
 
         {/* Hero Header */}
-        <div className="bg-gradient-to-br from-[#0F2642] via-[#16365C] to-[#0A1A2E] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-3">
+        <div className="bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center font-bold text-2xl shrink-0">
               🙋
             </div>
             <div>
               <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider block">
-                NextGen Devbhoomi Seva
+                NEXTGEN DEVBHOOMI FOUNDATION सेवा
               </span>
               <h2 className="text-lg font-black text-white leading-tight">
                 स्वयंसेवक सेवा पोर्टल
@@ -128,9 +128,11 @@ export const VolunteerScreen: React.FC = () => {
                 if (isVerified) {
                   navigate('volunteer-mode');
                 } else if (isPending) {
-                  alert('आपका volunteer registration अभी verification के लिए लंबित है। Admin verification के बाद Volunteer Mode सक्रिय होगा।');
+                  setAdminNotice('आपका volunteer registration अभी verification के लिए लंबित है। Admin verification के बाद Volunteer Mode सक्रिय होगा।');
+                  setTimeout(() => setAdminNotice(null), 4000);
                 } else {
-                  alert('Volunteer Mode का उपयोग करने के लिए पहले पंजीकरण करें।');
+                  setAdminNotice('Volunteer Mode का उपयोग करने के लिए पहले पंजीकरण करें।');
+                  setTimeout(() => setAdminNotice(null), 4000);
                 }
               }}
               className={`w-full min-h-[68px] p-4 rounded-3xl shadow-sm text-left flex items-center justify-between transition-all ${
@@ -289,7 +291,7 @@ export const VolunteerScreen: React.FC = () => {
             {profile && (
               <button
                 onClick={handleAdminVerifyToggle}
-                className="min-h-[38px] px-3 py-1.5 bg-[#0F2642] hover:bg-[#16365C] text-white font-bold rounded-xl text-[11px] shadow-xs"
+                className="min-h-[38px] px-3 py-1.5 bg-[#0B5E8E] hover:bg-[#073B5A] text-white font-bold rounded-xl text-[11px] shadow-xs"
               >
                 {isVerified ? 'Admin: Unverify करें' : 'Admin: Verify करें (Test)'}
               </button>

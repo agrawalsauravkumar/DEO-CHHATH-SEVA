@@ -188,7 +188,7 @@ export const MoreScreen: React.FC = () => {
         {
           id: 'about',
           label: 'हमारे बारे में',
-          desc: 'NextGen Dev Bhoomi Foundation सेवा संकल्प',
+          desc: 'NEXTGEN DEVBHOOMI FOUNDATION सेवा संकल्प',
           icon: 'ℹ️',
         },
         {
@@ -268,7 +268,7 @@ export const MoreScreen: React.FC = () => {
 
         <div className="text-center pt-2 pb-4 text-xs text-stone-500 space-y-1">
           <p className="font-semibold text-stone-700">
-            एक सेवा पहल — NextGen Devbhoomi Foundation
+            एक सेवा पहल — NEXTGEN DEVBHOOMI FOUNDATION
           </p>
           <p className="text-[11px] text-stone-500">“रास्ता भी • सहायता भी • सेवा भी”</p>
         </div>

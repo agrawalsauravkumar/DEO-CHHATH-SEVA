@@ -1,3 +1,4 @@
+import './leafletSafePatch';
 import L from 'leaflet';
 import { POICategory, POIItem } from './POIService';
 

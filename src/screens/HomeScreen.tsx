@@ -5,6 +5,9 @@ import { DeoChhathSevaLogo } from '../components/DeoChhathSevaLogo';
 import { ChhathSunriseBackdrop } from '../components/ChhathSunriseBackdrop';
 import { BrandFooter, OnlineOfflineBadge } from '../components/ChhathThemeComponents';
 import { DeoSuryaMandirHero } from '../components/DeoSuryaMandirHero';
+import { ChhathGhatDirectory } from '../components/ChhathGhatDirectory';
+import { ChhathSafetySection } from '../components/ChhathSafetySection';
+import { ChhathVratiModeSection } from '../components/ChhathVratiModeSection';
 import { InstallAppBanner } from '../components/InstallAppBanner';
 import { AnnouncementService } from '../services/AnnouncementService';
 import { VoiceService } from '../services/VoiceService';
@@ -74,26 +77,34 @@ export const HomeScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-stone-100/60 pb-20 flex flex-col font-['Mukta',sans-serif]">
       {/* ============================================================ */}
-      {/* TOP SECTION                                                  */}
+      {/* TOP SECTION - CHHATH PUJA VISUAL IDENTITY                    */}
       {/* ============================================================ */}
-      <header className="bg-white border-b border-stone-200/80 px-4 pt-4 pb-3 shadow-xs">
-        <div className="max-w-lg mx-auto space-y-2.5">
+      <header className="relative bg-gradient-to-b from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white border-b-2 border-[#FFD54F]/70 px-4 pt-4 pb-3 shadow-md overflow-hidden">
+        {/* Subtle Sunrise Backdrop in Header */}
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <ChhathSunriseBackdrop height={140} />
+        </div>
+
+        <div className="relative z-10 max-w-lg mx-auto space-y-2.5">
           {/* Main Title Row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <button
                 onClick={() => navigate('about')}
-                title="NEXTGEN DEV BHOOMI FOUNDATION"
+                title="DEO CHHATH SEVA - NEXTGEN DEVBHOOMI FOUNDATION"
                 className="shrink-0 active:scale-95 transition-transform"
               >
-                <DeoChhathSevaLogo size={46} className="drop-shadow-sm" />
+                <DeoChhathSevaLogo size={48} className="drop-shadow-md" />
               </button>
               <div>
-                <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#0F2642] leading-none">
+                <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white leading-none">
                   DEO CHHATH SEVA
                 </h1>
-                <span className="text-[10px] sm:text-[11px] font-black text-amber-800 tracking-wide block mt-0.5">
-                  NEXTGEN DEV BHOOMI FOUNDATION
+                <span className="text-[10.5px] sm:text-[11px] font-black text-[#FFD54F] tracking-wide block mt-0.5">
+                  NEXTGEN DEVBHOOMI FOUNDATION
+                </span>
+                <span className="text-[9.5px] font-semibold text-[#FFF8E1]/80 block">
+                  रास्ता भी • सहायता भी • सेवा भी
                 </span>
               </div>
             </div>
@@ -104,8 +115,8 @@ export const HomeScreen: React.FC = () => {
                 onClick={() => navigate('offline-map')}
                 className={`min-h-[36px] px-2 py-1 rounded-xl text-xs font-bold flex items-center gap-1 transition-all active:scale-95 border ${
                   offlineMapDownloaded
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                    : 'bg-stone-50 text-stone-700 border-stone-300 hover:bg-stone-100'
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50'
+                    : 'bg-white/10 text-[#FFF8E1] border-white/20 hover:bg-white/20'
                 }`}
                 title="ऑफलाइन मैप स्थिति"
               >
@@ -121,8 +132,8 @@ export const HomeScreen: React.FC = () => {
                 onClick={() => navigate(isAuthenticated ? 'profile' : 'login')}
                 className={`min-h-[36px] px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 border shadow-xs ${
                   isAuthenticated
-                    ? 'bg-amber-100 text-amber-950 border-amber-300 hover:bg-amber-200'
-                    : 'bg-[#0F2642] text-amber-300 border-[#16365C] hover:bg-[#16365C]'
+                    ? 'bg-[#FFD54F] text-stone-950 border-amber-300 hover:bg-amber-300'
+                    : 'bg-[#FF8C42] text-white border-orange-400 hover:bg-[#F97316]'
                 }`}
                 title={isAuthenticated ? 'मेरी प्रोफ़ाइल' : 'लॉगिन करें'}
               >
@@ -139,7 +150,7 @@ export const HomeScreen: React.FC = () => {
             <OnlineOfflineBadge isOnline={isOnline} />
 
             {deviceLocation && (
-              <span className="text-blue-700 font-bold flex items-center gap-1">
+              <span className="text-[#FFD54F] font-bold flex items-center gap-1">
                 <span>📍</span>
                 <span>GPS उपलब्ध</span>
               </span>
@@ -284,13 +295,18 @@ export const HomeScreen: React.FC = () => {
         <DeoSuryaMandirHero />
 
         {/* ============================================================ */}
+        {/* 1. CHHATH VRATI / DEVOTEE FRIENDLY MODE (Requirement 20)      */}
+        {/* ============================================================ */}
+        <ChhathVratiModeSection />
+
+        {/* ============================================================ */}
         {/* MAIN ACTIONS (Most prominent elements on the screen)        */}
         {/* ============================================================ */}
         <section aria-label="मुख्य सेवाएं" className="space-y-2.5">
           {/* 1. 🧭 मुझे रास्ता दिखाएँ (Primary Highlight Action) */}
           <button
             onClick={() => navigate('search')}
-            className="w-full min-h-[76px] p-4 bg-gradient-to-r from-[#0F2642] via-[#16365C] to-[#0A1A2E] hover:from-[#16365C] hover:to-[#0F2642] text-white rounded-3xl shadow-lg flex items-center justify-between active:scale-98 transition-all group border-2 border-amber-500/50"
+            className="w-full min-h-[76px] p-4 bg-gradient-to-r from-[#0B5E8E] via-[#073B5A] to-[#041E2F] hover:from-[#073B5A] hover:to-[#0B5E8E] text-white rounded-3xl shadow-lg flex items-center justify-between active:scale-98 transition-all group border-2 border-[#FFD54F]/70"
           >
             <div className="flex items-center gap-3.5">
               <div className="w-13 h-13 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 backdrop-blur-xs flex items-center justify-center shrink-0 text-3xl shadow-sm group-hover:scale-105 transition-transform">
@@ -309,6 +325,11 @@ export const HomeScreen: React.FC = () => {
               <ArrowRight className="w-5 h-5 stroke-[2.5]" />
             </div>
           </button>
+
+          {/* ============================================================ */}
+          {/* 2. CHHATH GHAT DIRECTORY (Requirement 16)                    */}
+          {/* ============================================================ */}
+          <ChhathGhatDirectory />
 
           {/* Optional Home shortcut: 🚗 मेरी गाड़ी (Only shown if user has saved a parking location) */}
           {savedParking && (
@@ -336,14 +357,35 @@ export const HomeScreen: React.FC = () => {
             </button>
           )}
 
+        {/* ============================================================ */}
+        {/* CHHATH SEVA SECTION (Part 18: 🙏 छठ सेवा)                   */}
+        {/* ============================================================ */}
+        <section aria-label="छठ सेवा" className="space-y-2.5">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🙏</span>
+              <div>
+                <h3 className="text-base sm:text-lg font-black text-stone-900 leading-tight">
+                  छठ सेवा (Essential Services)
+                </h3>
+                <p className="text-[11px] text-stone-500 font-bold">
+                  श्रद्धालुओं हेतु 8 प्रमुख नि:शुल्क सेवा केंद्र
+                </p>
+              </div>
+            </div>
+            <span className="text-[10px] font-black bg-amber-100 text-amber-950 border border-amber-300 px-2 py-0.5 rounded-full shrink-0">
+              निःशुल्क सेवा
+            </span>
+          </div>
+
           {/* 2-Column Grid for Key Actions */}
           <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
             {/* 🅿️ Parking */}
             <button
               onClick={() => navigate('parking')}
-              className="min-h-[76px] p-3.5 bg-white border border-stone-200/90 hover:border-amber-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
+              className="min-h-[76px] p-3.5 bg-white border-2 border-blue-200 hover:border-blue-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
                 🅿️
               </div>
               <div className="min-w-0">
@@ -359,9 +401,9 @@ export const HomeScreen: React.FC = () => {
             {/* 🛺 Shuttle */}
             <button
               onClick={() => navigate('shuttle')}
-              className="min-h-[76px] p-3.5 bg-white border border-stone-200/90 hover:border-amber-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
+              className="min-h-[76px] p-3.5 bg-white border-2 border-emerald-200 hover:border-emerald-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 text-orange-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
                 🛺
               </div>
               <div className="min-w-0">
@@ -377,9 +419,9 @@ export const HomeScreen: React.FC = () => {
             {/* 🚑 Medical */}
             <button
               onClick={() => navigate('medical')}
-              className="min-h-[76px] p-3.5 bg-white border border-stone-200/90 hover:border-amber-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
+              className="min-h-[76px] p-3.5 bg-white border-2 border-rose-200 hover:border-rose-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-rose-50 border border-rose-100 text-rose-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
                 🚑
               </div>
               <div className="min-w-0">
@@ -395,9 +437,9 @@ export const HomeScreen: React.FC = () => {
             {/* 🆘 सहायता */}
             <button
               onClick={() => navigate('help')}
-              className="min-h-[76px] p-3.5 bg-white border border-stone-200/90 hover:border-amber-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
+              className="min-h-[76px] p-3.5 bg-white border-2 border-amber-300 hover:border-amber-500 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-red-50 border border-red-100 text-red-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
                 🆘
               </div>
               <div className="min-w-0">
@@ -413,9 +455,9 @@ export const HomeScreen: React.FC = () => {
             {/* 🚻 Toilet */}
             <button
               onClick={() => navigate('toilet')}
-              className="min-h-[76px] p-3.5 bg-white border border-stone-200/90 hover:border-amber-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
+              className="min-h-[76px] p-3.5 bg-white border-2 border-sky-200 hover:border-sky-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
                 🚻
               </div>
               <div className="min-w-0">
@@ -431,9 +473,9 @@ export const HomeScreen: React.FC = () => {
             {/* 💧 Water */}
             <button
               onClick={() => navigate('water')}
-              className="min-h-[76px] p-3.5 bg-white border border-stone-200/90 hover:border-amber-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
+              className="min-h-[76px] p-3.5 bg-white border-2 border-cyan-200 hover:border-cyan-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-cyan-50 border border-cyan-100 text-cyan-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
                 💧
               </div>
               <div className="min-w-0">
@@ -451,9 +493,9 @@ export const HomeScreen: React.FC = () => {
           <div className="grid grid-cols-2 gap-2.5">
             <button
               onClick={() => navigate('family')}
-              className="min-h-[76px] p-3.5 bg-white border border-stone-200/90 hover:border-purple-300 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
+              className="min-h-[76px] p-3.5 bg-white border-2 border-emerald-200 hover:border-emerald-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 text-purple-700 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
                 👨‍👩‍👧
               </div>
               <div className="min-w-0">
@@ -468,9 +510,9 @@ export const HomeScreen: React.FC = () => {
 
             <button
               onClick={() => navigate('lost-found')}
-              className="min-h-[76px] p-3.5 bg-white border border-stone-200/90 hover:border-amber-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
+              className="min-h-[76px] p-3.5 bg-white border-2 border-amber-200 hover:border-amber-400 rounded-2xl shadow-xs text-left flex items-center gap-3 active:scale-98 transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 text-amber-800 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
                 🔎
               </div>
               <div className="min-w-0">
@@ -483,6 +525,7 @@ export const HomeScreen: React.FC = () => {
               </div>
             </button>
           </div>
+        </section>
 
           {/* 👴 वरिष्ठ नागरिक मोड (Subtle Shortcut per Requirement 27 in Step 15) */}
           <button
@@ -543,6 +586,11 @@ export const HomeScreen: React.FC = () => {
             </button>
           </div>
         </section>
+
+        {/* ============================================================ */}
+        {/* CHHATH SAFETY & CARE SECTION (Requirement 19)                */}
+        {/* ============================================================ */}
+        <ChhathSafetySection />
 
         {/* ============================================================ */}
         {/* OFFICIAL INFORMATION (📢 महत्वपूर्ण सूचना - Step 16)         */}

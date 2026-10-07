@@ -3,17 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>DEO CHHATH SEVA | NEXTGEN DEV BHOOMI FOUNDATION</title>
-    <meta name="description" content="DEO CHHATH SEVA — Chhath visitors ke liye navigation, parking, medical, help aur essential services." />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/branding/deo-chhath-seva-icon.svg" />
-    <meta name="theme-color" content="#0F2642" />
+    <script>
+      // Gracefully prevent benign WebSocket disconnection errors in iframe/preview environment
+      window.addEventListener('unhandledrejection', function(event) {
+        var reason = event.reason;
+        var msg = reason && (reason.message || String(reason));
+        if (msg && (msg.indexOf('WebSocket') !== -1 || msg.indexOf('vite:ws') !== -1)) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      });
+      window.addEventListener('error', function(event) {
+        var msg = event.message || '';
+        if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('vite:ws') !== -1) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      });
+    </script>
+    <title>DEO CHHATH SEVA | NEXTGEN DEVBHOOMI FOUNDATION</title>
+    <meta name="description" content="रास्ता भी • सहायता भी • सेवा भी — देव, औरंगाबाद छठ पूजा श्रद्धालुओं के लिए निःशुल्क जनसेवा ऐप। NEXTGEN DEVBHOOMI FOUNDATION." />
+    <link rel="icon" type="image/svg+xml" href="/branding/deo-chhath-seva-favicon.svg" />
+    <link rel="alternate icon" type="image/png" href="/branding/deo-chhath-seva-favicon.png" />
+    <link rel="apple-touch-icon" href="/branding/deo-chhath-seva-icon-192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0B5E8E" />
     <meta property="og:title" content="DEO CHHATH SEVA" />
-    <meta property="og:description" content="रास्ता भी • सहायता भी • सेवा भी — NEXTGEN DEV BHOOMI FOUNDATION" />
+    <meta property="og:description" content="रास्ता भी • सहायता भी • सेवा भी — NEXTGEN DEVBHOOMI FOUNDATION" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/branding/deo-chhath-seva-logo.svg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="DEO CHHATH SEVA | NEXTGEN DEV BHOOMI FOUNDATION" />
+    <meta name="twitter:title" content="DEO CHHATH SEVA | NEXTGEN DEVBHOOMI FOUNDATION" />
     <meta name="twitter:description" content="रास्ता भी • सहायता भी • सेवा भी" />
     <meta name="twitter:image" content="/branding/deo-chhath-seva-logo.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

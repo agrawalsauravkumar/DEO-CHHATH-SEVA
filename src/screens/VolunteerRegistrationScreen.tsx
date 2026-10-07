@@ -116,7 +116,7 @@ export const VolunteerRegistrationScreen: React.FC = () => {
             </div>
             <div className="space-y-1">
               <span className="text-xs font-black uppercase tracking-wider text-amber-700 block">
-                NextGen Devbhoomi Foundation
+                NEXTGEN DEVBHOOMI FOUNDATION
               </span>
               <h3 className="text-xl font-black text-stone-900">
                 पंजीकरण सफलतापूर्वक दर्ज हुआ!
@@ -134,7 +134,7 @@ export const VolunteerRegistrationScreen: React.FC = () => {
 
             <button
               onClick={() => navigate('volunteer')}
-              className="w-full min-h-[48px] bg-[#0F2642] hover:bg-[#16365C] text-white font-black text-sm rounded-xl shadow-md transition-all active:scale-95"
+              className="w-full min-h-[48px] bg-[#0B5E8E] hover:bg-[#073B5A] text-white font-black text-sm rounded-xl shadow-md transition-all active:scale-95"
             >
               <span>स्वयंसेवक पोर्टल पर वापस जाएं</span>
             </button>
@@ -262,7 +262,7 @@ export const VolunteerRegistrationScreen: React.FC = () => {
                       onClick={() => toggleLanguage(lang)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                         isChecked
-                          ? 'bg-[#0F2642] text-white border-[#0F2642]'
+                          ? 'bg-[#0B5E8E] text-white border-[#0B5E8E]'
                           : 'bg-stone-100 text-stone-700 border-stone-200'
                       }`}
                     >

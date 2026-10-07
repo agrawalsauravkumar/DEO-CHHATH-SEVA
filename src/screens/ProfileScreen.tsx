@@ -117,7 +117,7 @@ export const ProfileScreen: React.FC = () => {
         )}
 
         {/* User Card Header */}
-        <div className="bg-gradient-to-br from-[#0F2642] via-[#16365C] to-[#0A1A2E] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-4">
+        <div className="bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-4">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-amber-400 text-stone-950 font-black text-2xl flex items-center justify-center shrink-0 shadow-md">
               {currentUser.fullName ? currentUser.fullName.charAt(0) : 'U'}

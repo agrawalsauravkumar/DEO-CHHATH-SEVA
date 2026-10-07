@@ -532,7 +532,7 @@ export const LostFoundScreen: React.FC = () => {
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full min-h-[50px] bg-[#0F2642] hover:bg-[#16365C] active:scale-98 text-white font-black text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full min-h-[50px] bg-[#0B5E8E] hover:bg-[#073B5A] active:scale-98 text-white font-black text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
               >
                 <span>सुरक्षित रिपोर्ट दर्ज करें</span>
                 <ChevronRight className="w-4 h-4" />

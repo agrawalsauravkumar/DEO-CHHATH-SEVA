@@ -33,7 +33,7 @@ apiRouter.get('/health', (req, res) => {
   return res.json({
     status: 'HEALTHY',
     service: 'DEO CHHATH SEVA Backend',
-    organization: 'NEXTGEN DEV BHOOMI FOUNDATION',
+    organization: 'NEXTGEN DEVBHOOMI FOUNDATION',
     tagline: 'रास्ता भी • सहायता भी • सेवा भी',
     version: '1.4.0',
     database: dbStatus,
@@ -66,3 +66,12 @@ apiRouter.use('/sync', syncRouter);
 apiRouter.use('/admin', adminRouter);
 apiRouter.use('/audit', auditRouter);
 apiRouter.use('/', rolesRouter); // mounts /roles and /permissions
+
+// 404 handler for undefined API endpoints (prevents falling through to HTML index)
+apiRouter.use((req, res) => {
+  res.status(404).json({
+    error: 'API endpoint not found',
+    path: req.originalUrl,
+    timestamp: new Date().toISOString(),
+  });
+});

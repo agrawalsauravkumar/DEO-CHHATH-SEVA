@@ -228,7 +228,7 @@ export const VolunteerModeScreen: React.FC = () => {
               onClick={handleToggleLocationSharing}
               className={`min-h-[34px] px-3 rounded-lg text-xs font-bold transition-colors ${
                 volunteer?.locationSharingEnabled
-                  ? 'bg-[#0F2642] text-white'
+                  ? 'bg-[#0B5E8E] text-white'
                   : 'bg-stone-200 text-stone-600'
               }`}
             >

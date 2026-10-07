@@ -122,7 +122,7 @@ export const ToiletScreen: React.FC = () => {
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Header Summary Banner */}
-        <div className="bg-gradient-to-br from-[#0F2642] via-[#16365C] to-[#0A1A2E] text-white rounded-3xl p-5 border-2 border-emerald-500/40 shadow-xl space-y-3">
+        <div className="bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-emerald-500/40 shadow-xl space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center font-bold text-2xl shrink-0">
               🚻
@@ -166,7 +166,7 @@ export const ToiletScreen: React.FC = () => {
               onClick={() => setFilterGender('ALL')}
               className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors ${
                 filterGender === 'ALL'
-                  ? 'bg-[#0F2642] text-white shadow-xs'
+                  ? 'bg-[#0B5E8E] text-white shadow-xs'
                   : 'bg-stone-200 text-stone-700'
               }`}
             >
@@ -176,7 +176,7 @@ export const ToiletScreen: React.FC = () => {
               onClick={() => setFilterGender('FEMALE')}
               className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors ${
                 filterGender === 'FEMALE'
-                  ? 'bg-[#0F2642] text-white shadow-xs'
+                  ? 'bg-[#0B5E8E] text-white shadow-xs'
                   : 'bg-stone-200 text-stone-700'
               }`}
             >
@@ -186,7 +186,7 @@ export const ToiletScreen: React.FC = () => {
               onClick={() => setFilterGender('ACCESSIBLE')}
               className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors ${
                 filterGender === 'ACCESSIBLE'
-                  ? 'bg-[#0F2642] text-white shadow-xs'
+                  ? 'bg-[#0B5E8E] text-white shadow-xs'
                   : 'bg-stone-200 text-stone-700'
               }`}
             >

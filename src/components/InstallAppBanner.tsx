@@ -49,7 +49,7 @@ export const InstallAppBanner: React.FC = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="bg-gradient-to-r from-[#0F2642] to-[#16365C] text-white p-3 rounded-2xl shadow-lg border-2 border-amber-400/60 flex items-center justify-between gap-3 font-['Mukta',sans-serif] animate-fade-in my-2">
+    <div className="bg-gradient-to-r from-[#0B5E8E] to-[#073B5A] text-white p-3 rounded-2xl shadow-lg border-2 border-amber-400/60 flex items-center justify-between gap-3 font-['Mukta',sans-serif] animate-fade-in my-2">
       <div className="flex items-center gap-2.5 min-w-0">
         <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-xl shrink-0">
           📱

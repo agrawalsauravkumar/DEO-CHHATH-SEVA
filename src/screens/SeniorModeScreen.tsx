@@ -266,7 +266,7 @@ export const SeniorModeScreen: React.FC = () => {
               handleSpeak('रास्ता और गंतव्य खोज स्क्रीन खोली जा रही है।');
               navigate('search');
             }}
-            className="w-full min-h-[82px] p-4 bg-gradient-to-r from-[#0F2642] to-[#16365C] active:scale-98 text-white rounded-3xl shadow-md border-2 border-amber-400 flex items-center justify-between text-left transition-all"
+            className="w-full min-h-[82px] p-4 bg-gradient-to-r from-[#041E2F] via-[#0B5E8E] to-[#041E2F] active:scale-98 text-white rounded-3xl shadow-md border-2 border-amber-400 flex items-center justify-between text-left transition-all"
           >
             <div className="flex items-center gap-3.5">
               <div className="w-13 h-13 rounded-2xl bg-amber-400 text-stone-950 flex items-center justify-center font-black text-3xl shrink-0 shadow-xs">

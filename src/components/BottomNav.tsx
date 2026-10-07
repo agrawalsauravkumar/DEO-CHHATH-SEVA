@@ -20,7 +20,7 @@ export const BottomNav: React.FC = () => {
   return (
     <nav
       aria-label="मुख्य नेविगेशन"
-      className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t-2 border-stone-200 shadow-xl pb-safe select-none font-['Mukta',sans-serif]"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-[#041E2F] via-[#0B5E8E] to-[#041E2F] border-t-2 border-[#FFD54F]/70 shadow-2xl pb-safe select-none font-['Mukta',sans-serif]"
     >
       <div className="max-w-md mx-auto grid grid-cols-4 items-center h-16 px-1">
         {navItems.map((item) => {
@@ -36,21 +36,21 @@ export const BottomNav: React.FC = () => {
             <button
               key={item.id}
               onClick={() => navigate(item.id)}
-              className={`min-h-[50px] w-full flex flex-col items-center justify-center transition-all active:scale-95 relative ${
+              className={`min-h-[50px] w-full flex flex-col items-center justify-center transition-all active:scale-95 relative py-1 rounded-xl ${
                 isActive
-                  ? 'text-[#0F2642] font-black'
-                  : 'text-stone-500 hover:text-stone-800 font-semibold'
+                  ? 'text-[#FFD54F] font-black'
+                  : 'text-[#FFF8E1]/80 hover:text-white font-medium'
               }`}
             >
               {isActive && (
-                <span className="absolute top-1 w-8 h-1 bg-amber-500 rounded-full" />
+                <span className="absolute top-1 w-9 h-1 bg-gradient-to-r from-[#FF8C42] to-[#FFD54F] rounded-full shadow-sm" />
               )}
-              <span className={`text-xl transition-transform ${isActive ? 'scale-115 text-[#0F2642]' : ''}`}>
+              <span className={`text-xl transition-transform ${isActive ? 'scale-115 drop-shadow' : 'opacity-90'}`}>
                 {item.icon}
               </span>
               <span
-                className={`leading-none mt-1 tracking-tight ${
-                  isActive ? 'text-[#0F2642] font-black text-xs' : 'text-stone-600 text-[11px]'
+                className={`leading-none mt-1 tracking-wide ${
+                  isActive ? 'text-[#FFD54F] font-black text-xs' : 'text-[#FFF8E1]/85 text-[11px]'
                 }`}
               >
                 {item.label}

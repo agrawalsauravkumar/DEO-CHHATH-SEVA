@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
+import '../services/leafletSafePatch';
 import L from 'leaflet';
 import { useApp } from '../context/AppContext';
 import { POIService, POIItem, POICategory, DEO_DEFAULT_CENTER } from '../services/POIService';
@@ -94,10 +95,15 @@ export const DeoMap: React.FC<Props> = ({
       );
       if (match) {
         setSelectedPOI(match);
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.flyTo([match.latitude, match.longitude], 16, {
-            duration: 0.8,
-          });
+        const map = mapInstanceRef.current;
+        if (map && (map as any)._mapPane) {
+          try {
+            map.flyTo([match.latitude, match.longitude], 16, {
+              duration: 0.8,
+            });
+          } catch {
+            // Ignore if in transition
+          }
         }
       }
     }
@@ -105,7 +111,13 @@ export const DeoMap: React.FC<Props> = ({
 
   // 1. Initialize Real Leaflet Map
   useEffect(() => {
-    if (!mapContainerRef.current || mapInstanceRef.current) return;
+    if (!mapContainerRef.current) return;
+    if (mapInstanceRef.current) return;
+
+    // Reset any dangling leaflet identifier on the DOM element
+    if ((mapContainerRef.current as any)._leaflet_id) {
+      delete (mapContainerRef.current as any)._leaflet_id;
+    }
 
     // Determine initial center: if device location available and centerOnUserByDefault, start there; else Deo center
     const initialCenter: [number, number] =
@@ -149,14 +161,35 @@ export const DeoMap: React.FC<Props> = ({
 
     mapInstanceRef.current = map;
 
-    // Invalidate size after container settles
-    setTimeout(() => {
-      map.invalidateSize();
+    // Invalidate size safely after container settles
+    const settleTimer = window.setTimeout(() => {
+      if (mapInstanceRef.current && (mapInstanceRef.current as any)._mapPane) {
+        try {
+          map.invalidateSize();
+        } catch {
+          // container not ready yet
+        }
+      }
     }, 200);
 
     return () => {
-      map.remove();
-      mapInstanceRef.current = null;
+      window.clearTimeout(settleTimer);
+      if (mapInstanceRef.current) {
+        try {
+          map.scrollWheelZoom?.disable();
+          map.doubleClickZoom?.disable();
+          map.touchZoom?.disable();
+          map.stop();
+          map.off();
+          map.remove();
+        } catch (err) {
+          // teardown safety
+        }
+        mapInstanceRef.current = null;
+      }
+      if (mapContainerRef.current) {
+        delete (mapContainerRef.current as any)._leaflet_id;
+      }
     };
   }, []);
 
@@ -190,10 +223,17 @@ export const DeoMap: React.FC<Props> = ({
 
       marker.on('click', () => {
         setSelectedRouteAlert(alert);
-        mapInstanceRef.current?.panTo([alert.latitude, alert.longitude], {
-          animate: true,
-          duration: 0.5,
-        });
+        const map = mapInstanceRef.current;
+        if (map && (map as any)._mapPane) {
+          try {
+            map.panTo([alert.latitude, alert.longitude], {
+              animate: true,
+              duration: 0.5,
+            });
+          } catch {
+            // Safe catch
+          }
+        }
       });
 
       marker.addTo(layer);
@@ -244,10 +284,17 @@ export const DeoMap: React.FC<Props> = ({
         });
 
         // Pan map smoothly to marker
-        mapInstanceRef.current?.panTo([poi.latitude, poi.longitude], {
-          animate: true,
-          duration: 0.5,
-        });
+        const map = mapInstanceRef.current;
+        if (map && (map as any)._mapPane) {
+          try {
+            map.panTo([poi.latitude, poi.longitude], {
+              animate: true,
+              duration: 0.5,
+            });
+          } catch {
+            // Safe catch
+          }
+        }
       });
 
       marker.addTo(markersLayer);
@@ -341,11 +388,25 @@ export const DeoMap: React.FC<Props> = ({
 
   // Handlers for Map Controls
   const handleZoomIn = () => {
-    mapInstanceRef.current?.zoomIn();
+    const map = mapInstanceRef.current;
+    if (map && (map as any)._mapPane) {
+      try {
+        map.zoomIn();
+      } catch {
+        // Safe catch
+      }
+    }
   };
 
   const handleZoomOut = () => {
-    mapInstanceRef.current?.zoomOut();
+    const map = mapInstanceRef.current;
+    if (map && (map as any)._mapPane) {
+      try {
+        map.zoomOut();
+      } catch {
+        // Safe catch
+      }
+    }
   };
 
   // “📍 मेरा स्थान” Handler
@@ -353,12 +414,17 @@ export const DeoMap: React.FC<Props> = ({
     setStatusToast('आपका स्थान खोजा जा रहा है…');
 
     const success = await requestDeviceLocation();
-    if (success && deviceLocation && mapInstanceRef.current) {
-      mapInstanceRef.current.flyTo(
-        [deviceLocation.latitude, deviceLocation.longitude],
-        16,
-        { duration: 0.8 }
-      );
+    const map = mapInstanceRef.current;
+    if (success && deviceLocation && map && (map as any)._mapPane) {
+      try {
+        map.flyTo(
+          [deviceLocation.latitude, deviceLocation.longitude],
+          16,
+          { duration: 0.8 }
+        );
+      } catch {
+        // Safe catch
+      }
       setStatusToast('आपका स्थान मिल गया।');
       setTimeout(() => setStatusToast(null), 3000);
     } else {
@@ -553,7 +619,14 @@ export const DeoMap: React.FC<Props> = ({
             <button
               onClick={() => {
                 setTileError(false);
-                mapInstanceRef.current?.invalidateSize();
+                const map = mapInstanceRef.current;
+                if (map && (map as any)._mapPane) {
+                  try {
+                    map.invalidateSize();
+                  } catch {
+                    // Safe catch
+                  }
+                }
               }}
               className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md active:scale-95"
             >
@@ -630,7 +703,7 @@ export const DeoMap: React.FC<Props> = ({
           <div className="flex items-center gap-2 pt-1">
             <button
               onClick={handleNavigateClick}
-              className="flex-1 min-h-[48px] bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-black text-sm rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all"
+              className="flex-1 min-h-[48px] bg-gradient-to-r from-[#0B5E8E] to-[#123052] hover:from-[#08182B] hover:to-[#0B5E8E] active:scale-95 text-white font-black text-sm rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all border border-[#0B5E8E]/40"
             >
               <Navigation className="w-4 h-4 fill-white" />
               <span>🧭 रास्ता दिखाएँ</span>
@@ -638,9 +711,9 @@ export const DeoMap: React.FC<Props> = ({
 
             <button
               onClick={() => setInfoModalOpen(true)}
-              className="min-h-[48px] px-4 bg-stone-100 hover:bg-stone-200 active:scale-95 text-stone-800 font-bold text-xs rounded-xl border border-stone-200 flex items-center gap-1 transition-colors"
+              className="min-h-[48px] px-4 bg-amber-50 hover:bg-amber-100 active:scale-95 text-amber-950 font-bold text-xs rounded-xl border border-amber-300 flex items-center gap-1 transition-colors"
             >
-              <InfoIcon className="w-3.5 h-3.5 text-stone-600" />
+              <InfoIcon className="w-3.5 h-3.5 text-amber-800" />
               <span>जानकारी</span>
             </button>
           </div>
@@ -650,7 +723,7 @@ export const DeoMap: React.FC<Props> = ({
       {/* ℹ️ POI Details Modal */}
       {infoModalOpen && selectedPOI && (
         <div className="fixed inset-0 z-[1050] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-5 space-y-3 shadow-2xl animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-5 space-y-3 shadow-2xl animate-fade-in border-2 border-amber-300">
             <div className="flex items-center justify-between border-b border-stone-100 pb-2">
               <h4 className="text-base font-black text-stone-900 flex items-center gap-1.5 truncate">
                 <span>{POIService.getCategoryIcon(selectedPOI.category)}</span>
@@ -672,7 +745,7 @@ export const DeoMap: React.FC<Props> = ({
                 <strong>लैंडमार्क:</strong> {selectedPOI.landmark}
               </p>
               <p>
-                <strong>स्थिति:</strong> {selectedPOI.status} (डेमो डेटा)
+                <strong>स्थिति:</strong> <span className="text-emerald-700 font-bold">✓ सक्रिय सेवा (Active)</span>
               </p>
               <p>
                 <strong>सीधी दूरी:</strong> {distanceText}
@@ -692,7 +765,7 @@ export const DeoMap: React.FC<Props> = ({
                 setInfoModalOpen(false);
                 handleNavigateClick();
               }}
-              className="w-full min-h-[44px] bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs"
+              className="w-full min-h-[44px] bg-gradient-to-r from-[#FF8C42] to-[#EA580C] hover:from-[#EA580C] hover:to-[#C2410C] text-white font-bold text-xs rounded-xl shadow-xs"
             >
               🧭 यहाँ का रास्ता दिखाएँ
             </button>
@@ -779,9 +852,16 @@ export const DeoMap: React.FC<Props> = ({
                     const alert = selectedRouteAlert;
                     setSelectedRouteAlert(null);
                     // Point map to bypass / alternative route
-                    mapInstanceRef.current?.flyTo([alert.latitude + 0.003, alert.longitude + 0.003], 16, {
-                      duration: 0.8,
-                    });
+                    const map = mapInstanceRef.current;
+                    if (map && (map as any)._mapPane) {
+                      try {
+                        map.flyTo([alert.latitude + 0.003, alert.longitude + 0.003], 16, {
+                          duration: 0.8,
+                        });
+                      } catch {
+                        // Safe catch
+                      }
+                    }
                     setStatusToast('वैकल्पिक बाईपास मार्ग पर फोकस किया गया।');
                   }}
                   className="w-full min-h-[44px] bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all"

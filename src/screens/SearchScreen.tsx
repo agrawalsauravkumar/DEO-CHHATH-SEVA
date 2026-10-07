@@ -160,7 +160,7 @@ export const SearchScreen: React.FC = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="जैसे सूर्य मंदिर, छठ घाट, Parking…"
-              className="w-full min-h-[52px] pl-11 pr-11 bg-white border-2 border-stone-300 rounded-2xl text-stone-900 text-base font-semibold focus:outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200 shadow-xs"
+              className="w-full min-h-[52px] pl-11 pr-11 bg-white border-2 border-stone-300 rounded-2xl text-stone-900 text-base font-semibold focus:outline-none focus:border-[#0B5E8E] focus:ring-2 focus:ring-[#0B5E8E]/20 shadow-xs"
               autoFocus
             />
             {query && (

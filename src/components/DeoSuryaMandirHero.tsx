@@ -26,7 +26,7 @@ export const DeoSuryaMandirHero: React.FC = () => {
 
   return (
     <>
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0F2642] via-[#16365C] to-[#0A1A2E] text-white p-5 border-2 border-amber-500/40 shadow-xl">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white p-5 border-2 border-[#FFD54F]/70 shadow-xl">
         {/* Decorative Golden Aura Glow & Sunburst */}
         <div className="absolute -top-16 -right-16 w-56 h-56 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-orange-600/15 rounded-full blur-2xl pointer-events-none" />
@@ -193,7 +193,7 @@ export const DeoSuryaMandirHero: React.FC = () => {
                   setShowHistoryModal(false);
                   handleNavigateToTemple();
                 }}
-                className="w-full min-h-[46px] bg-[#0F2642] hover:bg-[#16365C] text-white font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5"
+                className="w-full min-h-[46px] bg-[#0B5E8E] hover:bg-[#073B5A] text-white font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5"
               >
                 <Navigation className="w-4 h-4 fill-white" />
                 <span>मंदिर हेतु रास्ता प्रारंभ करें</span>

@@ -83,15 +83,31 @@ class SyncServiceManager {
   // 2. Sync Official Announcements
   public async syncAnnouncements(): Promise<SyncStatusResult> {
     try {
-      const announcements = AnnouncementService.getAllAnnouncements();
+      let announcements = AnnouncementService.getAllAnnouncements();
+      let source: 'SERVER' | 'LOCAL_FALLBACK' = 'LOCAL_FALLBACK';
+
+      if (typeof window !== 'undefined' && navigator.onLine) {
+        try {
+          const resp = await fetch('/api/announcements');
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data.announcements && Array.isArray(data.announcements) && data.announcements.length > 0) {
+              source = 'SERVER';
+            }
+          }
+        } catch {
+          // Fallback to local
+        }
+      }
+
       localStorage.setItem(SYNC_STORAGE_KEYS.CACHED_ANNOUNCEMENTS, JSON.stringify(announcements));
       const now = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
       return {
         success: true,
         itemCount: announcements.length,
         syncedAt: now,
-        source: 'LOCAL_FALLBACK',
-        message: `${announcements.length} आधिकारिक सूचनाएं सिंक हुईं।`,
+        source,
+        message: `${announcements.length} आधिकारिक सूचनाएं ${source === 'SERVER' ? 'सर्वर से' : 'स्थानीय रूप से'} सिंक हुईं।`,
       };
     } catch (e: any) {
       return {
@@ -107,15 +123,31 @@ class SyncServiceManager {
   // 3. Sync Active Route Alerts
   public async syncRouteAlerts(): Promise<SyncStatusResult> {
     try {
-      const alerts = AnnouncementService.getActiveRouteAlerts();
+      let alerts = AnnouncementService.getActiveRouteAlerts();
+      let source: 'SERVER' | 'LOCAL_FALLBACK' = 'LOCAL_FALLBACK';
+
+      if (typeof window !== 'undefined' && navigator.onLine) {
+        try {
+          const resp = await fetch('/api/route-alerts');
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data.routeAlerts && Array.isArray(data.routeAlerts) && data.routeAlerts.length > 0) {
+              source = 'SERVER';
+            }
+          }
+        } catch {
+          // Fallback to local
+        }
+      }
+
       localStorage.setItem(SYNC_STORAGE_KEYS.CACHED_ROUTE_ALERTS, JSON.stringify(alerts));
       const now = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
       return {
         success: true,
         itemCount: alerts.length,
         syncedAt: now,
-        source: 'LOCAL_FALLBACK',
-        message: `${alerts.length} मार्ग प्रतिबंध अलर्ट सिंक हुए।`,
+        source,
+        message: `${alerts.length} मार्ग प्रतिबंध अलर्ट ${source === 'SERVER' ? 'सर्वर से' : 'स्थानीय रूप से'} सिंक हुए।`,
       };
     } catch {
       return {

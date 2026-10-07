@@ -9,7 +9,7 @@ import { repository } from '../db/repository';
 export const syncRouter = Router();
 
 // Full Sync Package (Used by Offline Map and Local Storage Sync)
-syncRouter.get('/bundle', async (req, res) => {
+syncRouter.get(['/bundle', '/package'], async (req, res) => {
   const facilities = await repository.getFacilities();
   const parkings = await repository.getParkings();
   const shuttleRoutes = await repository.getShuttleRoutes();

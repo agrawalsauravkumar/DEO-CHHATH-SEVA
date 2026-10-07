@@ -13,6 +13,7 @@ import { HelpService } from '../services/HelpService';
 import { LostFoundService } from '../services/LostFoundService';
 import { VolunteerService } from '../services/VolunteerService';
 import { DeoMap } from '../components/DeoMap';
+import { DeoChhathSevaLogo } from '../components/DeoChhathSevaLogo';
 import {
   AdminRole,
   AdminDashboardStats,
@@ -217,7 +218,7 @@ export const AdminDashboardScreen: React.FC = () => {
       isVerifiedOfficial: true,
       publishedTime: 'अभी प्रकाशित',
       lastUpdatedTime: 'अभी',
-      source: 'NextGen Dev Bhoomi Foundation नियंत्रण कक्ष',
+      source: 'NEXTGEN DEVBHOOMI FOUNDATION नियंत्रण कक्ष',
       badgeText: 'VERIFIED OFFICIAL',
       isActive: true,
     });
@@ -253,22 +254,20 @@ export const AdminDashboardScreen: React.FC = () => {
       <aside
         className={`${
           sidebarOpen ? 'w-64' : 'w-20'
-        } shrink-0 bg-[#0A1A2E] text-stone-300 flex flex-col justify-between border-r border-stone-800 transition-all duration-200 z-30 min-h-screen sticky top-0`}
+        } shrink-0 bg-[#041E2F] text-stone-300 flex flex-col justify-between border-r border-stone-800 transition-all duration-200 z-30 min-h-screen sticky top-0`}
       >
         <div className="flex flex-col h-full">
           {/* Brand Header */}
           <div className="p-4 border-b border-stone-800/80 flex items-center justify-between">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 text-stone-950 font-black text-xl flex items-center justify-center shrink-0 shadow-md">
-                ☀️
-              </div>
+              <DeoChhathSevaLogo size={36} className="shrink-0 drop-shadow-md" />
               {sidebarOpen && (
                 <div className="min-w-0">
                   <h2 className="text-sm font-black text-white tracking-wide truncate">
                     DEO CHHATH SEVA
                   </h2>
                   <p className="text-[10px] text-amber-400 font-black truncate">
-                    NEXTGEN DEV BHOOMI FOUNDATION
+                    NEXTGEN DEVBHOOMI FOUNDATION
                   </p>
                 </div>
               )}

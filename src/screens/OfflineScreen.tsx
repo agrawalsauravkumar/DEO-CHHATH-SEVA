@@ -26,20 +26,20 @@ export const OfflineScreen: React.FC = () => {
       <main className="flex-1 max-w-lg mx-auto w-full p-4 flex flex-col justify-between space-y-5">
         <div className="space-y-4 pt-2">
           {/* Main Offline Card */}
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-3xl p-6 text-center space-y-3 shadow-sm">
-            <div className="w-16 h-16 rounded-2xl bg-amber-100 text-amber-800 border border-amber-300 flex items-center justify-center mx-auto text-3xl shadow-2xs">
-              🟠
-            </div>
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-3xl p-6 text-center space-y-3 shadow-sm relative overflow-hidden">
+            {/* Subtle river/sunrise background */}
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-44 h-44 bg-amber-400/20 rounded-full blur-2xl pointer-events-none" />
+            <DeoChhathSevaLogo size={72} className="mx-auto drop-shadow-md relative z-10" />
 
-            <div className="space-y-1">
+            <div className="space-y-1 relative z-10">
               <h2 className="text-xl font-black text-amber-950">
-                आप Offline हैं
+                आप अभी offline हैं
               </h2>
               <p className="text-sm font-bold text-amber-800">
-                “कुछ सुविधाएँ सीमित हो सकती हैं।”
+                “आपके पास उपलब्ध offline सुविधाएँ अभी भी काम कर सकती हैं।”
               </p>
               <p className="text-xs text-stone-600 pt-1 leading-relaxed">
-                इंटरनेट कनेक्शन उपलब्ध नहीं होने पर भी पहले से डाउनलोड की गई जानकारी व आवश्यक संपर्क सुरक्षित रूप से कार्य करते रहेंगे।
+                इंटरनेट कनेक्शन उपलब्ध नहीं होने पर भी पहले से डाउनलोड की गई जानकारी, सुरक्षित घाट मार्ग व आपातकालीन नंबर कार्य कर रहे हैं।
               </p>
             </div>
           </div>
