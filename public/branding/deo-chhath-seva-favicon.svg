@@ -1,0 +1,51 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- DEO CHHATH SEVA - OFFICIAL BRANDING FAVICON -->
+  <defs>
+    <linearGradient id="favBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#0B5E8E" />
+      <stop offset="100%" stopColor="#041E2F" />
+    </linearGradient>
+    <radialGradient id="favSunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#FFF8E1" />
+      <stop offset="35%" stopColor="#FFD54F" />
+      <stop offset="80%" stopColor="#FF8C42" />
+      <stop offset="100%" stopColor="#E65100" />
+    </radialGradient>
+    <linearGradient id="favRiverGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stopColor="#0B5E8E" />
+      <stop offset="50%" stopColor="#29B6F6" />
+      <stop offset="100%" stopColor="#0288D1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Circular Base with Gold Rim -->
+  <circle cx="32" cy="32" r="30" fill="url(#favBgGrad)" stroke="#FFD54F" stroke-width="2.5" />
+
+  <!-- Radiating Sun Rays -->
+  <g stroke="#FFD54F" stroke-width="1.5" opacity="0.85">
+    <line x1="32" y1="24" x2="32" y2="7" />
+    <line x1="32" y1="24" x2="45" y2="9" />
+    <line x1="32" y1="24" x2="19" y2="9" />
+    <line x1="32" y1="24" x2="53" y2="17" />
+    <line x1="32" y1="24" x2="11" y2="17" />
+    <line x1="32" y1="24" x2="57" y2="28" />
+    <line x1="32" y1="24" x2="7" y2="28" />
+  </g>
+
+  <!-- Glowing Surya Dev Morning Sun -->
+  <circle cx="32" cy="25" r="13" fill="url(#favSunGlow)" stroke="#FF8C42" stroke-width="1.2" />
+
+  <!-- Temple Shikhara Silhouette -->
+  <path d="M 22,37 C 24,28 28,19 32,13 C 36,19 40,28 42,37 Z" fill="#8D6E63" opacity="0.95" />
+  <circle cx="32" cy="13" r="1.5" fill="#FFD54F" />
+
+  <!-- Holy Ghat Water Waves -->
+  <path d="M 4,37 Q 18,33 32,37 T 60,37 L 60,60 A 30,30 0 0,1 4,60 Z" fill="url(#favRiverGrad)" />
+  <path d="M 6,44 Q 20,40 34,44 T 58,44" stroke="#E1F5FE" stroke-width="1.2" fill="none" opacity="0.85" />
+  <path d="M 10,50 Q 24,46 38,50 T 54,50" stroke="#B3E5FC" stroke-width="1" fill="none" opacity="0.7" />
+
+  <!-- Traditional Golden Diya Flame at Center -->
+  <ellipse cx="32" cy="52" rx="7" ry="2.5" fill="#FF8C42" />
+  <path d="M 28,51 Q 32,45 32,43 Q 32,45 36,51 Z" fill="#FFD54F" />
+  <circle cx="32" cy="47" r="1.5" fill="#FFF8E1" />
+</svg>

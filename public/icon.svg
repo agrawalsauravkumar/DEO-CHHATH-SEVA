@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- DEO CHHATH SEVA - ROOT PWA ICON -->
+  <defs>
+    <!-- Deep River Blue to Royal Navy Gradient -->
+    <linearGradient id="pwaBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#0B5E8E" />
+      <stop offset="50%" stopColor="#073B5A" />
+      <stop offset="100%" stopColor="#041E2F" />
+    </linearGradient>
+
+    <!-- Sun & Sunrise Rays Gradient -->
+    <radialGradient id="pwaSunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#FFF8E1" />
+      <stop offset="20%" stopColor="#FFD54F" />
+      <stop offset="60%" stopColor="#FF8C42" />
+      <stop offset="100%" stopColor="#E65100" />
+    </radialGradient>
+
+    <!-- Holy River Ghat Waters Gradient -->
+    <linearGradient id="pwaWaterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stopColor="#0B5E8E" />
+      <stop offset="50%" stopColor="#29B6F6" />
+      <stop offset="100%" stopColor="#0288D1" />
+    </linearGradient>
+
+    <!-- Marigold Gold Border Gradient -->
+    <linearGradient id="pwaGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#FFE082" />
+      <stop offset="30%" stopColor="#FFD54F" />
+      <stop offset="70%" stopColor="#FFA000" />
+      <stop offset="100%" stopColor="#FF8F00" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base with Gold Trim for Android & iOS PWA -->
+  <rect width="512" height="512" rx="112" fill="url(#pwaBgGrad)" stroke="url(#pwaGoldGrad)" stroke-width="10" />
+
+  <!-- Radiating Sunrise Rays (भगवान भास्कर) -->
+  <g stroke="#FFD54F" stroke-width="4.5" opacity="0.85">
+    <line x1="256" y1="215" x2="256" y2="35" />
+    <line x1="256" y1="215" x2="365" y2="52" />
+    <line x1="256" y1="215" x2="147" y2="52" />
+    <line x1="256" y1="215" x2="445" y2="110" />
+    <line x1="256" y1="215" x2="67" y2="110" />
+    <line x1="256" y1="215" x2="480" y2="195" />
+    <line x1="256" y1="215" x2="32" y2="195" />
+  </g>
+
+  <!-- Radiant Morning Sun -->
+  <circle cx="256" cy="215" r="96" fill="url(#pwaSunGlow)" stroke="#E65100" stroke-width="3" />
+  <circle cx="256" cy="215" r="82" fill="#FFF8E1" opacity="0.25" />
+
+  <!-- Ancient Deo Sun Temple Shikhara Silhouette -->
+  <g transform="translate(138, 160)">
+    <path
+      d="M 42,0 C 36,30 25,62 14,98 L 70,98 C 59,62 48,30 42,0 Z"
+      fill="#8D6E63"
+      stroke="#5D4037"
+      stroke-width="2.2"
+    />
+    <ellipse cx="42" cy="0" rx="8" ry="4" fill="#FFD54F" />
+    <circle cx="42" cy="-6" r="3.5" fill="#FFA000" />
+    <polygon points="42,-13 58,-9 42,-5" fill="#FF8C42" />
+    <path d="M 20,80 Q 42,75 64,80" stroke="#D7CCC8" stroke-width="2" fill="none" />
+    <path d="M 26,60 Q 42,56 58,60" stroke="#D7CCC8" stroke-width="2" fill="none" />
+    <path d="M 32,40 Q 42,37 52,40" stroke="#D7CCC8" stroke-width="2" fill="none" />
+  </g>
+
+  <!-- Sacred Waters of Surya Kund / River Waves -->
+  <path
+    d="M 0,305 C 75,290 155,315 256,300 C 357,285 437,312 512,298 L 512,512 L 0,512 Z"
+    fill="url(#pwaWaterGrad)"
+  />
+  <path
+    d="M 0,340 C 85,328 175,348 265,335 C 355,322 435,344 512,330"
+    stroke="#E1F5FE"
+    stroke-width="4"
+    fill="none"
+    opacity="0.8"
+  />
+  <path
+    d="M 0,380 C 95,370 190,388 285,376 C 380,364 455,384 512,372"
+    stroke="#B3E5FC"
+    stroke-width="3"
+    fill="none"
+    opacity="0.6"
+  />
+
+  <!-- Sacred Ghat Steps -->
+  <path d="M 0,420 L 140,420 L 140,436 L 260,436 L 260,452 L 512,452 L 512,512 L 0,512 Z" fill="#0B5E8E" opacity="0.85" />
+
+  <!-- Twin Sacred Sugarcane Stalks -->
+  <g stroke="#2E7D32" stroke-width="4" fill="none">
+    <path d="M 105,475 Q 135,320 158,230 Q 140,218 122,235" />
+    <path d="M 407,475 Q 377,320 354,230 Q 372,218 390,235" />
+  </g>
+  <path d="M 158,230 Q 176,198 164,175 Q 150,205 158,230" fill="#4CAF50" />
+  <path d="M 354,230 Q 336,198 348,175 Q 362,205 354,230" fill="#4CAF50" />
+
+  <!-- Traditional Chhath Arghya Soop & Glowing Diya -->
+  <g transform="translate(196, 332)">
+    <path
+      d="M 15,44 C 28,28 92,28 105,44 C 112,56 96,72 60,72 C 24,72 8,56 15,44 Z"
+      fill="#FFD54F"
+      stroke="#FFA000"
+      stroke-width="3"
+    />
+    <circle cx="60" cy="36" r="14" fill="#8D6E63" stroke="#5D4037" stroke-width="2" />
+    <ellipse cx="44" cy="42" rx="9" ry="6" fill="#FF8C42" />
+    <ellipse cx="76" cy="42" rx="9" ry="6" fill="#FFCA28" />
+
+    <path d="M 52,28 Q 60,34 68,28 Q 66,38 54,38 Z" fill="#FF8C42" stroke="#E65100" stroke-width="1.2" />
+    <path
+      d="M 60,8 C 67,16 68,22 64,26 C 60,29 57,25 57,22 C 57,17 58,13 60,8 Z"
+      fill="#FFF9C4"
+      stroke="#FF8C42"
+      stroke-width="2"
+    />
+    <circle cx="60" cy="22" r="3.5" fill="#FFFFFF" />
+  </g>
+</svg>
