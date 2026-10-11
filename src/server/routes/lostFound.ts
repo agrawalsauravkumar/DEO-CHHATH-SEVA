@@ -6,7 +6,7 @@
 import { Router } from 'express';
 import { AuthenticatedRequest, requireAuth, requireRole } from '../middleware/auth';
 import { repository } from '../db/repository';
-import { DbLostFoundStatus } from '../db/types';
+import { DbLostFoundStatus, DbLostFoundType } from '../db/types';
 
 export const lostFoundRouter = Router();
 
@@ -19,6 +19,13 @@ function isLostFoundStatus(value: unknown): value is DbLostFoundStatus {
     value === 'RESOLVED' ||
     value === 'CLOSED' ||
     value === 'CANCELLED';
+}
+
+function isLostFoundType(value: unknown): value is DbLostFoundType {
+  return value === 'LOST_PERSON' ||
+    value === 'FOUND_PERSON' ||
+    value === 'LOST_ITEM' ||
+    value === 'FOUND_ITEM';
 }
 
 // 1. Get All Reports (Optional filter by type)
@@ -44,12 +51,61 @@ lostFoundRouter.get('/', async (req, res) => {
 
 // 2. Submit New Report
 lostFoundRouter.post('/', async (req, res) => {
-  const { type, category, title, description, locationName, latitude, longitude, contactName, contactPhone, identifyingFeatures } = req.body;
-  if (!type || !title || !description || !contactName) {
-    return res.status(400).json({ error: 'Type, title, description and contactName required' });
+  const body = req.body as Record<string, unknown> | null;
+  if (!body || typeof body !== 'object') {
+    return res.status(400).json({ error: 'Valid report details required' });
+  }
+  const {
+    type,
+    category,
+    title,
+    description,
+    locationName,
+    latitude,
+    longitude,
+    contactName,
+    contactPhone,
+    identifyingFeatures,
+  } = body;
+  const hasValidCoordinates =
+    (latitude === undefined && longitude === undefined) ||
+    (typeof latitude === 'number' &&
+      Number.isFinite(latitude) &&
+      latitude >= -90 &&
+      latitude <= 90 &&
+      typeof longitude === 'number' &&
+      Number.isFinite(longitude) &&
+      longitude >= -180 &&
+      longitude <= 180);
+  if (
+    !isLostFoundType(type) ||
+    typeof title !== 'string' ||
+    !title.trim() ||
+    title.length > 200 ||
+    typeof description !== 'string' ||
+    !description.trim() ||
+    description.length > 2000 ||
+    typeof locationName !== 'string' ||
+    !locationName.trim() ||
+    locationName.length > 200 ||
+    typeof contactName !== 'string' ||
+    !contactName.trim() ||
+    contactName.length > 120 ||
+    (category !== undefined && (typeof category !== 'string' || category.length > 100)) ||
+    (contactPhone !== undefined &&
+      (typeof contactPhone !== 'string' || !/^\+?[\d\s()-]{7,20}$/.test(contactPhone))) ||
+    (identifyingFeatures !== undefined &&
+      (typeof identifyingFeatures !== 'string' || identifyingFeatures.length > 1000)) ||
+    !hasValidCoordinates
+  ) {
+    return res.status(400).json({ error: 'Valid report details and contact name required' });
   }
 
   const reportId = `LF-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+  const reportCoordinates =
+    typeof latitude === 'number' && typeof longitude === 'number'
+      ? { latitude, longitude }
+      : {};
   const newReport = await repository.createLostFoundReport({
     id: `rep_${Date.now()}`,
     reportId,
@@ -58,8 +114,7 @@ lostFoundRouter.post('/', async (req, res) => {
     title,
     description,
     locationName: locationName || 'देव मेला क्षेत्र',
-    latitude,
-    longitude,
+    ...reportCoordinates,
     contactName,
     contactPhone: contactPhone || '',
     identifyingFeatures,
@@ -71,7 +126,7 @@ lostFoundRouter.post('/', async (req, res) => {
 
   return res.status(201).json({
     success: true,
-    message: 'रिपोर्ट सफलतापूर्वक दर्ज की गई। नियंत्रण कक्ष द्वारा सत्यापन जारी है।',
+    message: 'रिपोर्ट सर्वर प्रक्रिया ने प्राप्त की है। स्थायी संग्रहण, सत्यापन या सहायता भेजे जाने की पुष्टि नहीं है।',
     report: newReport,
   });
 });

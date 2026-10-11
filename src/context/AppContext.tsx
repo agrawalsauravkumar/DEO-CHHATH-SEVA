@@ -132,8 +132,8 @@ const SCREEN_IDS: readonly ScreenId[] = [
   'admin-dashboard',
 ];
 
-const isScreenId = (screen: string | null): screen is ScreenId =>
-  SCREEN_IDS.some((screenId) => screenId === screen);
+const isScreenId = (screen: unknown): screen is ScreenId =>
+  typeof screen === 'string' && SCREEN_IDS.some((screenId) => screenId === screen);
 
 const getInitialScreen = (): ScreenId => {
   const savedScreen = sessionStorage.getItem(STORAGE_KEY_SCREEN);
@@ -144,9 +144,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [history, setHistory] = useState<ScreenId[]>(() => [getInitialScreen()]);
   const currentScreen = history[history.length - 1] || 'home';
 
-  const [language, setLanguageState] = useState<LanguageCode>(() => {
-    return (localStorage.getItem(STORAGE_KEY_LANG) as LanguageCode) || 'hi';
-  });
+  const [language, setLanguageState] = useState<LanguageCode>('hi');
 
   const [seniorMode, setSeniorModeState] = useState<boolean>(() => {
     return localStorage.getItem(STORAGE_KEY_SENIOR) === 'true';
@@ -541,14 +539,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
 
   const navigate = (screen: ScreenId) => {
-    setHistory((prev) => {
-      if (prev[prev.length - 1] === screen) return prev;
-      return [...prev, screen];
-    });
+    if (history[history.length - 1] === screen) return;
+    const currentHistoryState =
+      window.history.state && typeof window.history.state === 'object'
+        ? window.history.state
+        : {};
+    window.history.pushState(
+      { ...currentHistoryState, __deoChhathScreen: screen, __deoChhathRoot: false },
+      '',
+      window.location.href
+    );
+    setHistory((prev) => [...prev, screen]);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const goBack = () => {
+    const currentHistoryState = window.history.state as
+      | { __deoChhathScreen?: unknown; __deoChhathRoot?: unknown }
+      | null;
+    if (isScreenId(currentHistoryState?.__deoChhathScreen) && !currentHistoryState?.__deoChhathRoot) {
+      window.history.back();
+      return;
+    }
     setHistory((prev) => {
       if (prev.length <= 1) return ['home'];
       const next = [...prev];
@@ -557,6 +569,40 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    const existingState =
+      window.history.state && typeof window.history.state === 'object'
+        ? window.history.state
+        : {};
+    if (
+      !isScreenId(existingState.__deoChhathScreen) ||
+      existingState.__deoChhathScreen !== currentScreen
+    ) {
+      window.history.replaceState(
+        { ...existingState, __deoChhathScreen: currentScreen, __deoChhathRoot: true },
+        '',
+        window.location.href
+      );
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      const state = event.state as { __deoChhathScreen?: unknown } | null;
+      const previousScreen = isScreenId(state?.__deoChhathScreen)
+        ? state.__deoChhathScreen
+        : 'home';
+      setHistory((previousHistory) => {
+        const previousIndex = previousHistory.lastIndexOf(previousScreen);
+        return previousIndex >= 0
+          ? previousHistory.slice(0, previousIndex + 1)
+          : [previousScreen];
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const setLanguage = (lang: LanguageCode) => {
     setLanguageState(lang);

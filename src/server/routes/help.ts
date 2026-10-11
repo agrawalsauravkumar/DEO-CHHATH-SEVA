@@ -78,7 +78,7 @@ helpRouter.post('/request', async (req, res) => {
 
   return res.status(201).json({
     success: true,
-    message: 'आपकी सहायता प्रार्थना मेला नियंत्रण कक्ष को प्रेषित कर दी गई है।',
+    message: 'सर्वर प्रक्रिया ने अनुरोध प्राप्त किया है। स्थायी संग्रहण या सहायता भेजे जाने की पुष्टि नहीं है।',
     request: newReq,
   });
 });

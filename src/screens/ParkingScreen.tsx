@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
+import { DataFreshnessNotice } from '../components/DataFreshnessNotice';
 import { DeoMap } from '../components/DeoMap';
 import { ParkingService, DEO_PARKING_LOCATIONS } from '../services/ParkingService';
 import { LocationService } from '../services/LocationService';
@@ -161,6 +162,7 @@ export const ParkingScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="Parking" showBack />
+      <DataFreshnessNotice />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Saved Parking Notice Banner (if vehicle already parked) */}

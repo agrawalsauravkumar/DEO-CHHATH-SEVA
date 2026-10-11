@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
+import { DataFreshnessNotice } from '../components/DataFreshnessNotice';
 import { DeoMap } from '../components/DeoMap';
 import { FacilityService } from '../services/FacilityService';
 import { LocationService } from '../services/LocationService';
@@ -105,8 +106,8 @@ export const ToiletScreen: React.FC = () => {
       landmark: facility.address,
       latitude: facility.latitude,
       longitude: facility.longitude,
-      status: 'सक्रिय',
-      isDemo: facility.source === 'DEMO_DATA',
+      status: facility.verified ? 'सक्रिय' : undefined,
+      isDemo: !facility.verified,
       x: 50,
       y: 50,
       isWheelchairAccessible: facility.accessibility,
@@ -119,6 +120,7 @@ export const ToiletScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="🚻 पास के शौचालय" showBack />
+      <DataFreshnessNotice />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Header Summary Banner */}
@@ -242,7 +244,7 @@ export const ToiletScreen: React.FC = () => {
 
                   <div className="text-right shrink-0">
                     <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 inline-block">
-                      ✓ अधिकृत परिसर
+                      {toilet.verified ? 'अधिकृत परिसर' : 'सूची सत्यापित नहीं'}
                     </span>
                   </div>
                 </div>
@@ -270,7 +272,7 @@ export const ToiletScreen: React.FC = () => {
                   <div className="text-right">
                     <span className="text-[10px] text-stone-400 block font-bold uppercase">दिव्यांग रैंप</span>
                     <span className="font-bold text-emerald-700">
-                      {toilet.accessibility ? '✓ उपलब्ध' : 'सामान्य'}
+                      {toilet.accessibility ? 'सूची में दर्शाया गया' : 'विवरण उपलब्ध नहीं'}
                     </span>
                   </div>
                 </div>

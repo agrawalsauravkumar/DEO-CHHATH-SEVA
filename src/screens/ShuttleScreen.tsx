@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
+import { DataFreshnessNotice } from '../components/DataFreshnessNotice';
 import { DeoMap } from '../components/DeoMap';
 import { FacilityService } from '../services/FacilityService';
 import { LocationService } from '../services/LocationService';
@@ -111,8 +112,8 @@ export const ShuttleScreen: React.FC = () => {
       landmark: point.address,
       latitude: point.latitude,
       longitude: point.longitude,
-      status: 'सक्रिय',
-      isDemo: point.source === 'DEMO_DATA',
+      status: point.verified ? 'सक्रिय' : undefined,
+      isDemo: !point.verified,
       x: 50,
       y: 50,
       isWheelchairAccessible: point.accessibility,
@@ -125,6 +126,7 @@ export const ShuttleScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="निःशुल्क शटल व ई-रिक्शा" showBack />
+      <DataFreshnessNotice />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Hero Header Banner */}
@@ -281,7 +283,7 @@ export const ShuttleScreen: React.FC = () => {
                         </span>
                       ) : (
                         <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 inline-block">
-                          DEMO DATA
+                          स्थिति सत्यापित नहीं
                         </span>
                       )}
                     </div>
@@ -321,7 +323,7 @@ export const ShuttleScreen: React.FC = () => {
 
                   {/* Verified Timing Advisory per specification rule */}
                   <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-2 text-[11px] text-amber-900 font-medium">
-                    <span>Shuttle की verified live जानकारी अभी उपलब्ध नहीं है। सेवा निरंतर संचालित है।</span>
+                    <span>शटल का लाइव समय या संचालन स्थिति सत्यापित नहीं है; निकलने से पहले स्थानीय रूप से पुष्टि करें।</span>
                   </div>
 
                   {/* “📍 रास्ता दिखाएँ” Action Button */}

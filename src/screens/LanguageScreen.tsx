@@ -61,29 +61,36 @@ export const LanguageScreen: React.FC = () => {
             अपनी पसंदीदा भाषा चुनें
           </h2>
           <p className="text-xs text-stone-600">
-            आप इसे बाद में भी सेटिंग्स से कभी भी बदल सकते हैं
+            अभी पूरी ऐप हिन्दी में उपलब्ध है। अन्य भाषाएँ तैयार होने पर यहाँ चालू होंगी।
           </p>
         </div>
 
         <div className="space-y-3">
           {languages.map((item) => {
             const isSelected = language === item.code;
+            const isAvailable = item.code === 'hi';
             return (
               <button
                 key={item.code}
-                onClick={() => setLanguage(item.code)}
-                className={`w-full p-4 rounded-2xl border-2 text-left transition-all active:scale-98 flex items-center justify-between min-h-[68px] ${
+                onClick={() => {
+                  if (isAvailable) setLanguage(item.code);
+                }}
+                disabled={!isAvailable}
+                aria-label={isAvailable ? item.title : `${item.title}, जल्द उपलब्ध`}
+                className={`w-full p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between min-h-[68px] ${
                   isSelected
                     ? 'border-[#0B5E8E] bg-white shadow-md ring-2 ring-[#0B5E8E]/20'
-                    : 'border-stone-200 bg-white hover:border-[#FFD54F] hover:bg-[#FFF8E1]/30 shadow-2xs'
-                }`}
+                      : isAvailable
+                        ? 'border-stone-200 bg-white hover:border-[#FFD54F] hover:bg-[#FFF8E1]/30 shadow-2xs active:scale-98'
+                        : 'border-stone-200 bg-stone-100 text-stone-500 shadow-2xs cursor-not-allowed'
+                  }`}
               >
                 <div className="space-y-0.5 min-w-0 pr-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xl font-black text-stone-900">{item.title}</span>
                     <span className="text-xs text-stone-500 font-semibold">({item.sub})</span>
                     <span className="text-xs text-[#0B5E8E] font-bold">
-                      · {item.badge}
+                      · {isAvailable ? item.badge : 'जल्द उपलब्ध'}
                     </span>
                   </div>
                   <p className="text-xs text-stone-600">{item.desc}</p>

@@ -358,27 +358,6 @@ const SEED_ANNOUNCEMENTS: DbAnnouncement[] = [
   },
 ];
 
-const SEED_LOST_FOUND: DbLostFoundReport[] = [
-  {
-    id: 'rep_1',
-    reportId: 'LF-2026-104921',
-    type: 'LOST_PERSON',
-    category: 'वृद्ध नागरिक',
-    title: 'रामेश्वर प्रसाद (उम्र 72 वर्ष)',
-    description: 'पीला कुर्ता, सफेद धोती पहने हुए। देव सूर्य मंदिर पूर्वी द्वार के पास बिछड़े।',
-    locationName: 'देव सूर्य मंदिर पूर्वी द्वार पड़ाव',
-    latitude: 24.6548,
-    longitude: 84.4362,
-    contactName: 'सुरेश कुमार (पुत्र)',
-    contactPhone: '+91 98351 11223',
-    identifyingFeatures: 'हाथ में लकड़ी की छड़ी, चश्मा पहने हैं',
-    status: 'UNDER_REVIEW',
-    isFlaggedMisuse: false,
-    createdAt: '2026-10-06T06:30:00Z',
-    updatedAt: '2026-10-06T07:15:00Z',
-  },
-];
-
 const SEED_AUDIT_LOGS: DbAuditLog[] = [
   {
     id: 'aud-001',
@@ -422,7 +401,7 @@ class DataRepository {
   private shuttleRoutes: DbShuttleRoute[] = [...SEED_SHUTTLE_ROUTES];
   private volunteers: DbVolunteer[] = [...SEED_VOLUNTEERS];
   private announcements: DbAnnouncement[] = [...SEED_ANNOUNCEMENTS];
-  private lostFoundReports: DbLostFoundReport[] = [...SEED_LOST_FOUND];
+  private lostFoundReports: DbLostFoundReport[] = [];
   private helpRequests: DbHelpRequest[] = [];
   private familyGroups: DbFamilyGroup[] = [];
   private familyMembers: DbFamilyMember[] = [];
@@ -597,9 +576,13 @@ class DataRepository {
   // ================= LOST & FOUND =================
   public async getLostFoundReports(type?: string): Promise<DbLostFoundReport[]> {
     if (type) {
-      return this.lostFoundReports.filter((r) => r.type === type && !r.isFlaggedMisuse);
+      return this.lostFoundReports.filter(
+        (r) => r.type === type && !r.isFlaggedMisuse && !['rep_1', 'rep_2', 'rep_3'].includes(r.id)
+      );
     }
-    return this.lostFoundReports.filter((r) => !r.isFlaggedMisuse);
+    return this.lostFoundReports.filter(
+      (r) => !r.isFlaggedMisuse && !['rep_1', 'rep_2', 'rep_3'].includes(r.id)
+    );
   }
 
   public async createLostFoundReport(report: DbLostFoundReport): Promise<DbLostFoundReport> {

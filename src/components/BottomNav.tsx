@@ -13,7 +13,12 @@ export const BottomNav: React.FC = () => {
   ];
 
   // Hidden on splash or full-screen navigation HUD
-  if (currentScreen === 'splash' || currentScreen === 'navigation') {
+  if (
+    currentScreen === 'splash' ||
+    currentScreen === 'language' ||
+    currentScreen === 'location-permission' ||
+    currentScreen === 'navigation'
+  ) {
     return null;
   }
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
-import { OFFICIAL_EMERGENCY_CONTACTS } from '../services/HelpService';
 import { startEmergencySiren, stopEmergencySiren } from '../utils/audioBuzzer';
 import {
   PhoneCall,
@@ -86,22 +85,6 @@ export const EmergencyScreen: React.FC = () => {
       desc: 'एल्डरलाइन राष्ट्रीय बुजुर्ग हेल्पलाइन',
       color: 'from-teal-600 to-emerald-700',
     },
-    {
-      id: 'divyang',
-      icon: '🧑‍🦽',
-      title: 'दिव्यांग सहायता',
-      number: '06186-222115',
-      desc: 'NextGen व्हीलचेयर एवं सारथी सेवा',
-      color: 'from-cyan-600 to-blue-700',
-    },
-    {
-      id: 'other',
-      icon: '🆘',
-      title: 'अन्य सहायता',
-      number: '06186-222120',
-      desc: 'मेला केंद्रीय नियंत्रण कक्ष (थाना मोड़)',
-      color: 'from-stone-700 to-stone-900',
-    },
   ];
 
   // Initiate call confirmation
@@ -124,15 +107,17 @@ export const EmergencyScreen: React.FC = () => {
   const handleShareLocation = async () => {
     if (!deviceLocation) {
       const success = await requestDeviceLocation();
-      if (!success) {
-        setLocationSharedNotice('आपकी location उपलब्ध नहीं है। कृपया GPS ऑन करें।');
-        setTimeout(() => setLocationSharedNotice(null), 4000);
-        return;
-      }
+      setLocationSharedNotice(
+        success
+          ? 'वास्तविक GPS स्थान मिलने के बाद साझा करने के लिए फिर से टैप करें।'
+          : 'आपकी location उपलब्ध नहीं है। कृपया GPS ऑन करके दोबारा प्रयास करें।'
+      );
+      setTimeout(() => setLocationSharedNotice(null), 4000);
+      return;
     }
 
-    const lat = deviceLocation?.latitude.toFixed(5) || '24.65420';
-    const lng = deviceLocation?.longitude.toFixed(5) || '84.43710';
+    const lat = deviceLocation.latitude.toFixed(5);
+    const lng = deviceLocation.longitude.toFixed(5);
     const acc = deviceLocation?.accuracy ? `लगभग ${Math.round(deviceLocation.accuracy)} मीटर` : 'उपलब्ध नहीं';
     const timeStr = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
     const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
@@ -255,10 +240,10 @@ export const EmergencyScreen: React.FC = () => {
           <div className="space-y-1.5 text-xs font-mono text-stone-300 bg-stone-950 p-3 rounded-2xl border border-stone-800">
             <p className="text-amber-300 font-sans font-bold text-xs mb-1">DEO CHHATH SEVA</p>
             <p>
-              Latitude: <span className="text-white font-bold">{deviceLocation ? deviceLocation.latitude.toFixed(5) : '24.65420'}° N</span>
+              Latitude: <span className="text-white font-bold">{deviceLocation ? `${deviceLocation.latitude.toFixed(5)}° N` : 'GPS उपलब्ध नहीं'}</span>
             </p>
             <p>
-              Longitude: <span className="text-white font-bold">{deviceLocation ? deviceLocation.longitude.toFixed(5) : '84.43710'}° E</span>
+              Longitude: <span className="text-white font-bold">{deviceLocation ? `${deviceLocation.longitude.toFixed(5)}° E` : 'GPS उपलब्ध नहीं'}</span>
             </p>
             <p>
               Accuracy: <span className="text-white">{deviceLocation?.accuracy ? `±${Math.round(deviceLocation.accuracy)}m` : 'उपलब्ध नहीं'}</span>

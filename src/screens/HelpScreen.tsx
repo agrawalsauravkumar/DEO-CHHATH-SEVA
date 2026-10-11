@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
-import { HelpService, DEO_HELP_POINTS } from '../services/HelpService';
+import { DataFreshnessNotice } from '../components/DataFreshnessNotice';
+import { HelpService } from '../services/HelpService';
 import { LocationService } from '../services/LocationService';
-import { HelpPoint, HelpRequest, LocationItem } from '../types';
+import { HelpPoint, LocationItem } from '../types';
 import {
   LifeBuoy,
   PhoneCall,
@@ -44,6 +45,7 @@ export const HelpScreen: React.FC = () => {
   const [userPhone, setUserPhone] = useState<string>('');
   const [locationAgreed, setLocationAgreed] = useState<boolean>(true);
   const [formError, setFormError] = useState<string | null>(null);
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState<boolean>(false);
 
   // Call Confirmation Modal State
   const [callModalContact, setCallModalContact] = useState<{ title: string; number: string } | null>(null);
@@ -51,19 +53,13 @@ export const HelpScreen: React.FC = () => {
   // Location Share Modal State
   const [showLocationModal, setShowLocationModal] = useState<boolean>(false);
   const [copiedNotice, setCopiedNotice] = useState<string | null>(null);
-  const [cancelConfirmId, setCancelConfirmId] = useState<string | null>(null);
-
-  // Local Active Help Requests
-  const [userRequests, setUserRequests] = useState<HelpRequest[]>(() => {
-    return HelpService.getHelpRequests();
-  });
 
   // Nearby Help Points
   const helpPoints = useMemo(() => {
     if (deviceLocation) {
       return HelpService.getNearbyHelpPoints(deviceLocation.latitude, deviceLocation.longitude);
     }
-    return DEO_HELP_POINTS.map((hp) => ({
+    return HelpService.getHelpPoints().map((hp) => ({
       ...hp,
       distanceMeters: 0,
       distanceDisplay: 'GPS उपलब्ध नहीं',
@@ -79,8 +75,9 @@ export const HelpScreen: React.FC = () => {
   }, [deviceLocation]);
 
   // Handle Form Submit
-  const handleSendHelpRequest = (e: React.FormEvent) => {
+  const handleSendHelpRequest = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingRequest) return;
     if (!isOnline) {
       setFormError('Internet connection उपलब्ध नहीं है। Internet connection वापस आने पर सहायता अनुरोध भेजें।');
       return;
@@ -94,29 +91,63 @@ export const HelpScreen: React.FC = () => {
       return;
     }
 
-    const lat = deviceLocation?.latitude || 24.6542;
-    const lng = deviceLocation?.longitude || 84.4371;
+    setIsSubmittingRequest(true);
+    try {
+      const response = await fetch('/api/help/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: issueType,
+          description: issueDesc.trim(),
+          userName: userName.trim() || undefined,
+          userPhone: userPhone.trim() || undefined,
+          latitude: deviceLocation?.latitude,
+          longitude: deviceLocation?.longitude,
+        }),
+      });
+      const result: unknown = await response.json();
+      if (!response.ok) {
+        const message =
+          typeof result === 'object' &&
+          result !== null &&
+          'error' in result &&
+          typeof result.error === 'string'
+            ? result.error
+            : 'सहायता अनुरोध सर्वर पर भेजा नहीं जा सका। कृपया दोबारा प्रयास करें।';
+        throw new Error(message);
+      }
+      const requestNumber =
+        typeof result === 'object' &&
+        result !== null &&
+        'success' in result &&
+        result.success === true &&
+        'request' in result &&
+        typeof result.request === 'object' &&
+        result.request !== null &&
+        'requestNumber' in result.request &&
+        typeof result.request.requestNumber === 'string'
+          ? result.request.requestNumber
+          : null;
+      if (!requestNumber) {
+        throw new Error('सर्वर से अनुरोध की पुष्टि नहीं मिली। कृपया दोबारा प्रयास करें।');
+      }
 
-    const newReq = HelpService.createHelpRequest({
-      type: issueType,
-      description: issueDesc.trim(),
-      latitude: lat,
-      longitude: lng,
-      userName: userName.trim() || undefined,
-      userPhone: userPhone.trim() || undefined,
-    });
-
-    setUserRequests(HelpService.getHelpRequests());
-    setIssueDesc('');
-    setFormError(null);
-    setActiveSection('MAIN');
-    setCopiedNotice('🟡 सहायता अनुरोध सफलतापूर्वक दर्ज कर लिया गया है।');
-    setTimeout(() => setCopiedNotice(null), 4000);
-  };
-
-  const handleCancelRequest = (id: string) => {
-    HelpService.cancelHelpRequest(id);
-    setUserRequests(HelpService.getHelpRequests());
+      setIssueDesc('');
+      setFormError(null);
+      setActiveSection('MAIN');
+      setCopiedNotice(
+        `सर्वर प्रक्रिया ने अनुरोध ${requestNumber} प्राप्त किया है; स्थायी संग्रहण या सहायता भेजे जाने की पुष्टि नहीं। तत्काल खतरे में 112/108 पर कॉल करें।`
+      );
+      setTimeout(() => setCopiedNotice(null), 4000);
+    } catch (error) {
+      setFormError(
+        error instanceof Error
+          ? error.message
+          : 'सहायता अनुरोध भेजते समय त्रुटि हुई। कृपया दोबारा प्रयास करें।'
+      );
+    } finally {
+      setIsSubmittingRequest(false);
+    }
   };
 
   // Navigate to Help Point
@@ -139,7 +170,7 @@ export const HelpScreen: React.FC = () => {
       landmark: point.address,
       latitude: point.latitude,
       longitude: point.longitude,
-      status: 'सक्रिय',
+      status: point.verified ? 'सक्रिय' : undefined,
       isDemo: point.source === 'DEMO_DATA',
       x: 50,
       y: 50,
@@ -154,16 +185,17 @@ export const HelpScreen: React.FC = () => {
   const handleShareCurrentLocation = async () => {
     if (!deviceLocation) {
       const ok = await requestDeviceLocation();
-      if (!ok) {
-        setFormError('आपकी location उपलब्ध नहीं है। कृपया GPS सक्षम करें।');
-        setTimeout(() => setFormError(null), 4000);
-        return;
-      }
+      setFormError(
+        ok
+          ? 'GPS स्थान मिल गया है; साझा करने के लिए फिर से टैप करें।'
+          : 'आपकी वास्तविक GPS location उपलब्ध नहीं है। कृपया GPS सक्षम करके दोबारा प्रयास करें।'
+      );
+      setTimeout(() => setFormError(null), 4000);
+      return;
     }
-
-    const lat = deviceLocation?.latitude.toFixed(5) || '24.65420';
-    const lng = deviceLocation?.longitude.toFixed(5) || '84.43710';
-    const acc = deviceLocation?.accuracy ? `±${Math.round(deviceLocation.accuracy)}m` : 'उपलब्ध नहीं';
+    const lat = deviceLocation.latitude.toFixed(5);
+    const lng = deviceLocation.longitude.toFixed(5);
+    const acc = deviceLocation.accuracy ? `±${Math.round(deviceLocation.accuracy)}m` : 'उपलब्ध नहीं';
     const timeStr = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
     const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
 
@@ -206,6 +238,7 @@ export const HelpScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="🆘 सहायता" showBack />
+      <DataFreshnessNotice />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Notice Toast */}
@@ -213,88 +246,6 @@ export const HelpScreen: React.FC = () => {
           <div className="bg-emerald-50 border border-emerald-300 text-emerald-950 px-4 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 shadow-xs animate-fade-in">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{copiedNotice}</span>
-          </div>
-        )}
-
-        {/* User Active Help Requests Status Card */}
-        {userRequests.length > 0 && (
-          <div className="space-y-2">
-            <span className="text-xs font-black uppercase tracking-wider text-amber-900 block px-1">
-              आपके सहायता अनुरोध ({userRequests.length})
-            </span>
-            {userRequests.map((req) => {
-              // Status Badge mapping per Requirement 14
-              let statusBadge = (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-300">
-                  🟡 Request Received ({req.status})
-                </span>
-              );
-
-              if (req.status === 'स्वयंसेवक assigned') {
-                statusBadge = (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-black bg-blue-100 text-blue-900 border border-blue-300">
-                    🔵 Volunteer Assigned
-                  </span>
-                );
-              } else if (req.status === 'सहायता जारी') {
-                statusBadge = (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-black bg-orange-100 text-orange-900 border border-orange-300">
-                    🟠 Help In Progress
-                  </span>
-                );
-              } else if (req.status === 'समाधान किया गया') {
-                statusBadge = (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-900 border border-emerald-300">
-                    🟢 Resolved
-                  </span>
-                );
-              } else if (req.status === 'ESCALATED') {
-                statusBadge = (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-100 text-rose-900 border border-rose-300">
-                    🚨 Admin Escalated
-                  </span>
-                );
-              }
-
-              return (
-                <div
-                  key={req.id}
-                  className="bg-white border-2 border-amber-300 rounded-3xl p-4 space-y-2.5 shadow-xs animate-fade-in"
-                >
-                  <div className="flex items-start justify-between gap-2 border-b border-stone-100 pb-2">
-                    <div>
-                      {statusBadge}
-                      <h4 className="text-sm font-black text-stone-900 mt-1">{req.type}</h4>
-                    </div>
-                    <span className="text-[11px] font-bold text-stone-400 font-mono">
-                      {req.createdAt}
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-stone-700 bg-stone-50 p-2.5 rounded-xl border border-stone-200">
-                    {req.description}
-                  </p>
-
-                  {req.volunteerName && (
-                    <div className="text-xs font-bold text-blue-800 bg-blue-50 px-2.5 py-1 rounded-lg">
-                      सत्यापित स्वयंसेवक: <strong>{req.volunteerName}</strong> आपकी सहायता हेतु संलग्न हैं।
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="text-[11px] text-stone-500 font-mono">ID: {req.id}</span>
-                    {req.status !== 'समाधान किया गया' && (
-                      <button
-                        onClick={() => setCancelConfirmId(req.id)}
-                        className="text-xs font-bold text-rose-700 hover:text-rose-900 px-3 py-1 rounded-lg bg-rose-50 border border-rose-200 active:scale-95"
-                      >
-                        अनुरोध रद्द करें
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
           </div>
         )}
 
@@ -670,7 +621,7 @@ export const HelpScreen: React.FC = () => {
               <p className="font-mono text-stone-900 font-bold">
                 {deviceLocation
                   ? `${deviceLocation.latitude.toFixed(5)}° N, ${deviceLocation.longitude.toFixed(5)}° E (±${Math.round(deviceLocation.accuracy)}m)`
-                  : 'स्थान अनुमति से स्वतः जोड़ा जाएगा'}
+                  : 'GPS उपलब्ध नहीं; अनुरोध में स्थान शामिल नहीं होगा'}
               </p>
             </div>
 
@@ -707,10 +658,10 @@ export const HelpScreen: React.FC = () => {
                   onChange={(e) => setLocationAgreed(e.target.checked)}
                   className="mt-0.5 rounded text-amber-600 focus:ring-amber-500"
                 />
-                <span>“आपकी location सहायता देने के उद्देश्य से साझा की जाएगी।”</span>
+                <span>“GPS उपलब्ध होने पर ही location अनुरोध के साथ साझा होगी।”</span>
               </label>
               <p className="text-[11px] text-stone-600 leading-tight pl-5">
-                यह डेटा पूर्णतः निजी है और सार्वजनिक रूप से कभी प्रदर्शित नहीं किया जाता।
+                अनुरोध सर्वर पर दर्ज होगा; यह पुष्टि नहीं है कि कोई स्वयंसेवक या अधिकारी सहायता भेज चुका है।
               </p>
             </div>
 
@@ -725,15 +676,15 @@ export const HelpScreen: React.FC = () => {
               </button>
               <button
                 type="submit"
-                disabled={!isOnline}
+                disabled={!isOnline || isSubmittingRequest}
                 className={`min-h-[46px] rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-1.5 transition-all active:scale-95 ${
-                  isOnline
+                  isOnline && !isSubmittingRequest
                     ? 'bg-amber-600 hover:bg-amber-700 text-white'
                     : 'bg-stone-300 text-stone-500 cursor-not-allowed'
                 }`}
               >
                 <Send className="w-4 h-4" />
-                <span>सहायता अनुरोध भेजें</span>
+                <span>{isSubmittingRequest ? 'भेजा जा रहा है…' : 'सहायता अनुरोध भेजें'}</span>
               </button>
             </div>
           </form>
@@ -747,15 +698,19 @@ export const HelpScreen: React.FC = () => {
             <div className="flex items-center justify-between px-1">
               <div>
                 <h3 className="text-base font-black text-stone-900">
-                  पास के verified volunteers
+                  सत्यापित स्वयंसेवक
                 </h3>
                 <p className="text-xs text-stone-500">
-                  NextGen सेवा दल के निष्ठावान स्वयंसेवक आपकी सेवा में उपस्थित हैं।
+                  इस ऐप में कोई लाइव सत्यापित स्वयंसेवक सूची उपलब्ध नहीं है।
                 </p>
               </div>
             </div>
 
-            <div className="space-y-2.5">
+            {verifiedVolunteers.length === 0 ? (
+              <div className="bg-white border border-amber-200 rounded-2xl p-4 text-xs text-stone-700">
+                कोई सत्यापित स्वयंसेवक उपलब्ध नहीं दिखाया जा रहा है। तत्काल सहायता के लिए 112 या 108 पर कॉल करें।
+              </div>
+            ) : <div className="space-y-2.5">
               {verifiedVolunteers.map((vol) => (
                 <div
                   key={vol.id}
@@ -825,7 +780,7 @@ export const HelpScreen: React.FC = () => {
                   )}
                 </div>
               ))}
-            </div>
+            </div>}
           </div>
         )}
 
@@ -905,7 +860,7 @@ export const HelpScreen: React.FC = () => {
                       </div>
 
                       <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
-                        ✓ अधिकृत
+                        स्थिर सूची • अपुष्ट
                       </span>
                     </div>
 
@@ -920,7 +875,7 @@ export const HelpScreen: React.FC = () => {
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] text-stone-400 block font-bold uppercase">स्थिति</span>
-                        <span className="font-bold text-emerald-700">24x7 सक्रिय</span>
+                        <span className="font-bold text-amber-800">वर्तमान स्थिति अज्ञात</span>
                       </div>
                     </div>
 
@@ -933,7 +888,7 @@ export const HelpScreen: React.FC = () => {
                         <span>📍 रास्ता दिखाएँ</span>
                       </button>
 
-                      {hp.phone ? (
+                      {hp.verified && hp.phone ? (
                         <button
                           onClick={() => setCallModalContact({ title: hp.name, number: hp.phone! })}
                           className="min-h-[44px] bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-xs"
@@ -943,7 +898,7 @@ export const HelpScreen: React.FC = () => {
                         </button>
                       ) : (
                         <div className="min-h-[44px] bg-stone-100 text-stone-500 font-bold text-[11px] rounded-xl flex items-center justify-center px-1 text-center border border-stone-200">
-                          <span>फोन नंबर उपलब्ध नहीं है।</span>
+                          <span>फोन नंबर सत्यापित नहीं है। आपातकाल में 112/108 कॉल करें।</span>
                         </div>
                       )}
                     </div>
@@ -977,8 +932,8 @@ export const HelpScreen: React.FC = () => {
 
             <div className="bg-stone-50 p-3 rounded-2xl border border-stone-200 font-mono text-xs text-stone-700 space-y-1">
               <p className="font-bold font-sans text-stone-900 text-sm">DEO CHHATH SEVA</p>
-              <p>Lat: {deviceLocation ? deviceLocation.latitude.toFixed(5) : '24.65420'}° N</p>
-              <p>Long: {deviceLocation ? deviceLocation.longitude.toFixed(5) : '84.43710'}° E</p>
+              <p>Lat: {deviceLocation ? `${deviceLocation.latitude.toFixed(5)}° N` : 'GPS उपलब्ध नहीं'}</p>
+              <p>Long: {deviceLocation ? `${deviceLocation.longitude.toFixed(5)}° E` : 'GPS उपलब्ध नहीं'}</p>
               <p>Accuracy: {deviceLocation?.accuracy ? `±${Math.round(deviceLocation.accuracy)}m` : 'उपलब्ध नहीं'}</p>
             </div>
 
@@ -1042,45 +997,6 @@ export const HelpScreen: React.FC = () => {
         </div>
       )}
 
-      {/* Cancel Request Confirmation Modal per Requirement 15 */}
-      {cancelConfirmId && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl animate-fade-in text-center">
-            <div className="w-12 h-12 bg-rose-100 text-rose-700 rounded-full flex items-center justify-center mx-auto text-xl font-black">
-              ⚠️
-            </div>
-
-            <div className="space-y-1">
-              <h4 className="text-base font-black text-stone-900">
-                क्या आप सहायता अनुरोध रद्द करना चाहते हैं?
-              </h4>
-              <p className="text-xs text-stone-500">
-                रद्द करने पर स्वयंसेवक को सूचित कर दिया जाएगा और अनुरोध बंद हो जाएगा।
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 pt-2">
-              <button
-                onClick={() => setCancelConfirmId(null)}
-                className="min-h-[46px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl"
-              >
-                नहीं
-              </button>
-              <button
-                onClick={() => {
-                  handleCancelRequest(cancelConfirmId);
-                  setCancelConfirmId(null);
-                  setCopiedNotice('सहायता अनुरोध रद्द कर दिया गया है।');
-                  setTimeout(() => setCopiedNotice(null), 3000);
-                }}
-                className="min-h-[46px] bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-black text-xs rounded-xl shadow-md"
-              >
-                हाँ, रद्द करें
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

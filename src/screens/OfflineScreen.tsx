@@ -68,7 +68,7 @@ export const OfflineScreen: React.FC = () => {
               </div>
               <div className="flex items-center gap-2.5 p-2 rounded-xl bg-rose-50 border border-rose-200 font-bold text-rose-900">
                 <span className="text-base">🆘</span>
-                <span>स्थानीय आपातकालीन संपर्क कॉन्फ़िगर नहीं है।</span>
+                <span>112/108 जैसी राष्ट्रीय हेल्पलाइन उपलब्ध हैं; इस ऐप में कोई स्थानीय प्रशासनिक नंबर सत्यापित नहीं है।</span>
               </div>
             </div>
           </div>

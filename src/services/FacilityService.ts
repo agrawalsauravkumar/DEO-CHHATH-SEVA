@@ -398,8 +398,12 @@ export const DEO_SHUTTLE_ROUTES: ShuttleRoute[] = [
 ];
 
 class FacilityServiceManager {
-  private facilities: Facility[] = DEO_FACILITIES_DATABASE;
-  private shuttleRoutes: ShuttleRoute[] = DEO_SHUTTLE_ROUTES;
+  private facilities: Facility[] = this.markUnverified(DEO_FACILITIES_DATABASE);
+  private shuttleRoutes: ShuttleRoute[] = DEO_SHUTTLE_ROUTES.map((route) => ({
+    ...route,
+    verified: false,
+    lastUpdated: 'वर्तमान पुष्टि उपलब्ध नहीं',
+  }));
 
   constructor() {
     this.initOfflineCache();
@@ -409,13 +413,21 @@ class FacilityServiceManager {
     try {
       const cached = localStorage.getItem(STORAGE_OFFLINE_FACILITIES_KEY);
       if (cached) {
-        this.facilities = JSON.parse(cached);
+        this.facilities = this.markUnverified(JSON.parse(cached) as Facility[]);
       } else {
         localStorage.setItem(STORAGE_OFFLINE_FACILITIES_KEY, JSON.stringify(this.facilities));
       }
     } catch {
       // Ignore localStorage error
     }
+  }
+
+  private markUnverified(facilities: Facility[]): Facility[] {
+    return facilities.map((facility) => ({
+      ...facility,
+      verified: false,
+      lastUpdated: 'स्थिर डेटा; पुष्टि की तारीख उपलब्ध नहीं',
+    }));
   }
 
   // 1. Get all facilities
@@ -512,10 +524,10 @@ class FacilityServiceManager {
               address: f.address || '',
               description: f.description || '',
               phone: f.phone,
-              verified: Boolean(f.isVerified),
+              verified: false,
               active: Boolean(f.isActive),
               accessibility: true,
-              lastUpdated: 'सर्वर से अपडेटेड',
+              lastUpdated: 'सर्वर डेटा; वर्तमान पुष्टि उपलब्ध नहीं',
               source: 'ADMIN_VERIFIED',
             }));
             this.facilities = mapped;
@@ -530,7 +542,11 @@ class FacilityServiceManager {
 
   // 8. Shuttle routes and points
   public getShuttleRoutes(): ShuttleRoute[] {
-    return this.shuttleRoutes;
+    return this.shuttleRoutes.map((route) => ({
+      ...route,
+      verified: false,
+      lastUpdated: 'वर्तमान पुष्टि उपलब्ध नहीं',
+    }));
   }
 
   public getShuttlePoints(): ShuttlePoint[] {

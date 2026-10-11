@@ -7,42 +7,121 @@ import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { BottomNav } from './components/BottomNav';
 
-// Screens
-import { SplashScreen } from './screens/SplashScreen';
-import { LanguageScreen } from './screens/LanguageScreen';
-import { LocationScreen } from './screens/LocationScreen';
-import { OfflineMapScreen } from './screens/OfflineMapScreen';
-import { HomeScreen } from './screens/HomeScreen';
-import { SearchScreen } from './screens/SearchScreen';
-import { MapScreen } from './screens/MapScreen';
-import { NavigationPreviewScreen } from './screens/NavigationPreviewScreen';
-import { NavigationScreen } from './screens/NavigationScreen';
-import { ParkingScreen } from './screens/ParkingScreen';
-import { MyParkingScreen } from './screens/MyParkingScreen';
-import { ShuttleScreen } from './screens/ShuttleScreen';
-import { MedicalScreen } from './screens/MedicalScreen';
-import { ToiletScreen } from './screens/ToiletScreen';
-import { WaterScreen } from './screens/WaterScreen';
-import { HelpScreen } from './screens/HelpScreen';
-import { EmergencyScreen } from './screens/EmergencyScreen';
-import { FamilyScreen } from './screens/FamilyScreen';
-import { LostFoundScreen } from './screens/LostFoundScreen';
-import { VolunteerScreen } from './screens/VolunteerScreen';
-import { VolunteerRegistrationScreen } from './screens/VolunteerRegistrationScreen';
-import { VolunteerModeScreen } from './screens/VolunteerModeScreen';
-import { VolunteerRequestScreen } from './screens/VolunteerRequestScreen';
-import { SeniorModeScreen } from './screens/SeniorModeScreen';
-import { AnnouncementsScreen } from './screens/AnnouncementsScreen';
-import { AboutScreen } from './screens/AboutScreen';
-import { SettingsScreen } from './screens/SettingsScreen';
-import { MoreScreen } from './screens/MoreScreen';
-import { AdminLoginScreen } from './screens/AdminLoginScreen';
-import { AdminDashboardScreen } from './screens/AdminDashboardScreen';
-import { LoginScreen } from './screens/LoginScreen';
-import { ProfileScreen } from './screens/ProfileScreen';
-import { SessionExpiredScreen } from './screens/SessionExpiredScreen';
-import { OfflineScreen } from './screens/OfflineScreen';
-import { ErrorScreen } from './screens/ErrorScreen';
+const SplashScreen = React.lazy(() =>
+  import('./screens/SplashScreen').then(({ SplashScreen }) => ({ default: SplashScreen }))
+);
+const LanguageScreen = React.lazy(() =>
+  import('./screens/LanguageScreen').then(({ LanguageScreen }) => ({ default: LanguageScreen }))
+);
+const LocationScreen = React.lazy(() =>
+  import('./screens/LocationScreen').then(({ LocationScreen }) => ({ default: LocationScreen }))
+);
+const OfflineMapScreen = React.lazy(() =>
+  import('./screens/OfflineMapScreen').then(({ OfflineMapScreen }) => ({ default: OfflineMapScreen }))
+);
+const HomeScreen = React.lazy(() =>
+  import('./screens/HomeScreen').then(({ HomeScreen }) => ({ default: HomeScreen }))
+);
+const SearchScreen = React.lazy(() =>
+  import('./screens/SearchScreen').then(({ SearchScreen }) => ({ default: SearchScreen }))
+);
+const MapScreen = React.lazy(() =>
+  import('./screens/MapScreen').then(({ MapScreen }) => ({ default: MapScreen }))
+);
+const NavigationPreviewScreen = React.lazy(() =>
+  import('./screens/NavigationPreviewScreen').then(({ NavigationPreviewScreen }) => ({ default: NavigationPreviewScreen }))
+);
+const NavigationScreen = React.lazy(() =>
+  import('./screens/NavigationScreen').then(({ NavigationScreen }) => ({ default: NavigationScreen }))
+);
+const ParkingScreen = React.lazy(() =>
+  import('./screens/ParkingScreen').then(({ ParkingScreen }) => ({ default: ParkingScreen }))
+);
+const MyParkingScreen = React.lazy(() =>
+  import('./screens/MyParkingScreen').then(({ MyParkingScreen }) => ({ default: MyParkingScreen }))
+);
+const ShuttleScreen = React.lazy(() =>
+  import('./screens/ShuttleScreen').then(({ ShuttleScreen }) => ({ default: ShuttleScreen }))
+);
+const MedicalScreen = React.lazy(() =>
+  import('./screens/MedicalScreen').then(({ MedicalScreen }) => ({ default: MedicalScreen }))
+);
+const ToiletScreen = React.lazy(() =>
+  import('./screens/ToiletScreen').then(({ ToiletScreen }) => ({ default: ToiletScreen }))
+);
+const WaterScreen = React.lazy(() =>
+  import('./screens/WaterScreen').then(({ WaterScreen }) => ({ default: WaterScreen }))
+);
+const HelpScreen = React.lazy(() =>
+  import('./screens/HelpScreen').then(({ HelpScreen }) => ({ default: HelpScreen }))
+);
+const EmergencyScreen = React.lazy(() =>
+  import('./screens/EmergencyScreen').then(({ EmergencyScreen }) => ({ default: EmergencyScreen }))
+);
+const FamilyScreen = React.lazy(() =>
+  import('./screens/FamilyScreen').then(({ FamilyScreen }) => ({ default: FamilyScreen }))
+);
+const LostFoundScreen = React.lazy(() =>
+  import('./screens/LostFoundScreen').then(({ LostFoundScreen }) => ({ default: LostFoundScreen }))
+);
+const VolunteerScreen = React.lazy(() =>
+  import('./screens/VolunteerScreen').then(({ VolunteerScreen }) => ({ default: VolunteerScreen }))
+);
+const VolunteerRegistrationScreen = React.lazy(() =>
+  import('./screens/VolunteerRegistrationScreen').then(({ VolunteerRegistrationScreen }) => ({ default: VolunteerRegistrationScreen }))
+);
+const VolunteerModeScreen = React.lazy(() =>
+  import('./screens/VolunteerModeScreen').then(({ VolunteerModeScreen }) => ({ default: VolunteerModeScreen }))
+);
+const VolunteerRequestScreen = React.lazy(() =>
+  import('./screens/VolunteerRequestScreen').then(({ VolunteerRequestScreen }) => ({ default: VolunteerRequestScreen }))
+);
+const SeniorModeScreen = React.lazy(() =>
+  import('./screens/SeniorModeScreen').then(({ SeniorModeScreen }) => ({ default: SeniorModeScreen }))
+);
+const AnnouncementsScreen = React.lazy(() =>
+  import('./screens/AnnouncementsScreen').then(({ AnnouncementsScreen }) => ({ default: AnnouncementsScreen }))
+);
+const AboutScreen = React.lazy(() =>
+  import('./screens/AboutScreen').then(({ AboutScreen }) => ({ default: AboutScreen }))
+);
+const SettingsScreen = React.lazy(() =>
+  import('./screens/SettingsScreen').then(({ SettingsScreen }) => ({ default: SettingsScreen }))
+);
+const MoreScreen = React.lazy(() =>
+  import('./screens/MoreScreen').then(({ MoreScreen }) => ({ default: MoreScreen }))
+);
+const AdminLoginScreen = React.lazy(() =>
+  import('./screens/AdminLoginScreen').then(({ AdminLoginScreen }) => ({ default: AdminLoginScreen }))
+);
+const AdminDashboardScreen = React.lazy(() =>
+  import('./screens/AdminDashboardScreen').then(({ AdminDashboardScreen }) => ({ default: AdminDashboardScreen }))
+);
+const LoginScreen = React.lazy(() =>
+  import('./screens/LoginScreen').then(({ LoginScreen }) => ({ default: LoginScreen }))
+);
+const ProfileScreen = React.lazy(() =>
+  import('./screens/ProfileScreen').then(({ ProfileScreen }) => ({ default: ProfileScreen }))
+);
+const SessionExpiredScreen = React.lazy(() =>
+  import('./screens/SessionExpiredScreen').then(({ SessionExpiredScreen }) => ({ default: SessionExpiredScreen }))
+);
+const OfflineScreen = React.lazy(() =>
+  import('./screens/OfflineScreen').then(({ OfflineScreen }) => ({ default: OfflineScreen }))
+);
+const ErrorScreen = React.lazy(() =>
+  import('./screens/ErrorScreen').then(({ ErrorScreen }) => ({ default: ErrorScreen }))
+);
+
+const ScreenLoadingFallback = () => (
+  <div
+    className="flex min-h-[50vh] items-center justify-center px-4 text-center font-bold text-[#063B5C]"
+    role="status"
+    aria-live="polite"
+  >
+    सेवा लोड हो रही है…
+  </div>
+);
 
 const MainRouter: React.FC = () => {
   const {
@@ -57,11 +136,19 @@ const MainRouter: React.FC = () => {
 
   // Desktop-First / Full-Width Admin Dashboard (Step 17 Requirement 31)
   if (currentScreen === 'admin-login') {
-    return <AdminLoginScreen />;
+    return (
+      <React.Suspense fallback={<ScreenLoadingFallback />}>
+        <AdminLoginScreen />
+      </React.Suspense>
+    );
   }
 
   if (currentScreen === 'admin-dashboard') {
-    return <AdminDashboardScreen />;
+    return (
+      <React.Suspense fallback={<ScreenLoadingFallback />}>
+        <AdminDashboardScreen />
+      </React.Suspense>
+    );
   }
 
   const renderScreen = () => {
@@ -181,7 +268,9 @@ const MainRouter: React.FC = () => {
               )}
             </div>
           )}
-          {renderScreen()}
+          <React.Suspense fallback={<ScreenLoadingFallback />}>
+            {renderScreen()}
+          </React.Suspense>
           <BottomNav />
         </div>
       </div>

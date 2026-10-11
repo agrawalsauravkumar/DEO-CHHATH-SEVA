@@ -455,6 +455,40 @@ summary:focus-visible {
 }
 
 @media (min-width: 1024px) {
+  .app-shell {
+    max-width: none;
+    border-inline: 0;
+  }
+
+  .app-shell main {
+    width: min(calc(100% - 4rem), 90rem);
+    max-width: none;
+    margin-inline: auto;
+  }
+
+  .app-shell header > div {
+    max-width: 90rem;
+  }
+
+  .app-shell nav[aria-label="मुख्य नेविगेशन"] {
+    max-width: none;
+  }
+
+  .app-shell nav[aria-label="मुख्य नेविगेशन"] > div {
+    max-width: 64rem;
+    margin-inline: auto;
+  }
+
+  .home-brand-header__top,
+  .home-brand-header__status {
+    max-width: 90rem;
+  }
+
+  .home-content {
+    width: min(calc(100% - 4rem), 80rem);
+    max-width: none;
+  }
+
   .home-service-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }

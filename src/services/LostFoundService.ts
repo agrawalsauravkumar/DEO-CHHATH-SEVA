@@ -35,65 +35,11 @@ class LostFoundServiceManager {
   }
 
   private initSeedData(): void {
-    if (!localStorage.getItem(STORAGE_KEYS.REPORTS)) {
-      // Clean seed data with DEMO notice
-      const initialReports: LostFoundReport[] = [
-        {
-          id: 'rep_1',
-          reportId: 'LF-2026-104921',
-          type: 'LOST_PERSON',
-          category: 'वृद्ध नागरिक',
-          title: 'रामेश्वर प्रसाद (उम्र 72 वर्ष)',
-          description: 'पीला कुर्ता, सफेद धोती पहने हुए। देव सूर्य मंदिर पूर्वी द्वार के पास बिछड़े।',
-          location: 'देव सूर्य मंदिर पूर्वी द्वार पड़ाव',
-          latitude: 24.6548,
-          longitude: 84.4362,
-          createdBy: 'admin_demo',
-          contactName: 'सुरेश कुमार (पुत्र)',
-          createdAt: 'आज, 06:30 AM',
-          updatedAt: 'आज, 07:15 AM',
-          status: 'UNDER_REVIEW',
-          verificationStatus: 'VERIFIED',
-          identifyingFeatures: 'हाथ में लकड़ी की छड़ी, चश्मा पहने हैं',
-        },
-        {
-          id: 'rep_2',
-          reportId: 'LF-2026-209843',
-          type: 'FOUND_ITEM',
-          category: 'बैग / थैला',
-          title: 'नीले रंग का यात्रा बैग',
-          description: 'सूर्य कुंड उत्तरी घाट पर लावारिस अवस्था में प्राप्त। अंदर पूजा सामग्री व कपड़े।',
-          location: 'सूर्य कुंड उत्तरी घाट सहायता केंद्र',
-          latitude: 24.6552,
-          longitude: 84.4385,
-          createdBy: 'volunteer_5',
-          createdAt: 'आज, 07:00 AM',
-          updatedAt: 'आज, 07:20 AM',
-          status: 'TRANSFERRED_TO_HELP_POINT',
-          assignedHelpPointId: 'hp_surya_kund',
-          verificationStatus: 'VERIFIED',
-          identifyingFeatures: 'गोपनीय: अंदर मौजूद सामान की पहचान बताने पर सौंपा जाएगा',
-        },
-        {
-          id: 'rep_3',
-          reportId: 'LF-2026-301142',
-          type: 'FOUND_PERSON',
-          category: 'बालक',
-          title: 'बालक (लगभग 8 वर्ष)',
-          description: 'लाल टी-शर्ट, नीली पैंट। नाम "आर्यन" बता रहा है। पुलिस सहायता केंद्र पर सुरक्षित है।',
-          location: 'थाना मोड़ मुख्य सहायता शिविर',
-          latitude: 24.6534,
-          longitude: 84.4347,
-          createdBy: 'police_desk',
-          createdAt: 'आज, 08:15 AM',
-          updatedAt: 'आज, 08:30 AM',
-          status: 'TRANSFERRED_TO_HELP_POINT',
-          assignedHelpPointId: 'hp_police_control',
-          verificationStatus: 'VERIFIED',
-          identifyingFeatures: 'थाना मोड़ सहायता शिविर में उपस्थित अधिकारी से संपर्क करें',
-        },
-      ];
-      this.saveReports(initialReports);
+    const savedReports = this.getAllReports();
+    const demoReportIds = new Set(['rep_1', 'rep_2', 'rep_3']);
+    const actualReports = savedReports.filter((report) => !demoReportIds.has(report.id));
+    if (actualReports.length !== savedReports.length) {
+      this.saveReports(actualReports);
     }
   }
 

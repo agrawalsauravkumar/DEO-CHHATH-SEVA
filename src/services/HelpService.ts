@@ -3,80 +3,6 @@ import { LocationService } from './LocationService';
 
 const STORAGE_HELP_REQUESTS_KEY = 'deo_chhath_user_help_requests_v1';
 
-// Official Verified Emergency Contacts
-export const OFFICIAL_EMERGENCY_CONTACTS = [
-  {
-    id: 'ambulance',
-    category: 'MEDICAL',
-    title: 'आपातकालीन एम्बुलेंस',
-    titleEn: 'Emergency Ambulance',
-    number: '108',
-    description: 'बिहार राज्य निःशुल्क आपातकालीन चिकित्सा एम्बुलेंस सेवा',
-    verified: true,
-    available24x7: true,
-  },
-  {
-    id: 'police',
-    category: 'POLICE',
-    title: 'आपातकालीन पुलिस (ERSS)',
-    titleEn: 'Emergency Police Service',
-    number: '112',
-    description: 'राष्ट्रीय एकल आपातकालीन हेल्पलाइन (पुलिस, फायर, मेडिकल)',
-    verified: true,
-    available24x7: true,
-  },
-  {
-    id: 'fire',
-    category: 'FIRE',
-    title: 'अग्निशमन सेवा (Fire Brigade)',
-    titleEn: 'Fire Emergency Service',
-    number: '101',
-    description: 'आपातकालीन दमकल सेवा',
-    verified: true,
-    available24x7: true,
-  },
-  {
-    id: 'women',
-    category: 'WOMEN',
-    title: 'महिला हेल्पलाइन',
-    titleEn: 'Women Emergency Helpline',
-    number: '181',
-    description: 'महिला सुरक्षा एवं त्वरित सहायता हेल्पलाइन',
-    verified: true,
-    available24x7: true,
-  },
-  {
-    id: 'senior',
-    category: 'SENIOR',
-    title: 'वरिष्ठ नागरिक हेल्पलाइन (Elderline)',
-    titleEn: 'National Elderline Helpline',
-    number: '14567',
-    description: 'बुजुर्गों हेतु राष्ट्रीय परामर्श एवं सहायता सेवा',
-    verified: true,
-    available24x7: true,
-  },
-  {
-    id: 'deo_thana',
-    category: 'POLICE_LOCAL',
-    title: 'देव थाना (स्थानीय पुलिस स्टेशन)',
-    titleEn: 'Deo Police Station',
-    number: '06186-222100',
-    description: 'स्थानीय थाना नियंत्रण कक्ष, देव, औरंगाबाद',
-    verified: true,
-    available24x7: true,
-  },
-  {
-    id: 'control_room',
-    category: 'CONTROL_ROOM',
-    title: 'मेला केंद्रीय नियंत्रण कक्ष (थाना मोड़)',
-    titleEn: 'Central Mela Control Room',
-    number: '06186-222120',
-    description: 'जिला प्रशासन औरंगाबाद मेला नियंत्रण कक्ष',
-    verified: true,
-    available24x7: true,
-  },
-];
-
 // Verified Help Points in Deo
 export const DEO_HELP_POINTS: HelpPoint[] = [
   {
@@ -219,8 +145,18 @@ export const DEO_VERIFIED_VOLUNTEERS: VolunteerProfile[] = [
 ];
 
 class HelpServiceManager {
-  private helpPoints: HelpPoint[] = DEO_HELP_POINTS;
-  private volunteers: VolunteerProfile[] = DEO_VERIFIED_VOLUNTEERS;
+  private helpPoints: HelpPoint[] = DEO_HELP_POINTS.map((point) => ({
+    ...point,
+    verified: false,
+    active: false,
+    lastUpdated: 'स्थिर डेटा; पुष्टि की तारीख उपलब्ध नहीं',
+    source: 'DEMO_DATA',
+  }));
+  private volunteers: VolunteerProfile[] = DEO_VERIFIED_VOLUNTEERS.map((volunteer) => ({
+    ...volunteer,
+    verified: false,
+    active: false,
+  }));
 
   // 1. Get all help points
   public getHelpPoints(): HelpPoint[] {
@@ -313,7 +249,7 @@ class HelpServiceManager {
     userLat?: number,
     userLng?: number
   ): (VolunteerProfile & { distanceMeters?: number; distanceDisplay?: string })[] {
-    return this.volunteers.map((vol) => {
+    return this.volunteers.filter((vol) => vol.verified && vol.active).map((vol) => {
       if (userLat !== undefined && userLng !== undefined && vol.latitude && vol.longitude) {
         const distKm = LocationService.calculateDistanceKm(
           { latitude: userLat, longitude: userLng },

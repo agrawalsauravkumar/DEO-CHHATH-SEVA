@@ -3,15 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
-import { LostFoundService } from '../services/LostFoundService';
 import {
   LostFoundReport,
   LostFoundType,
-  LostFoundStatus,
-  LostFoundMatch,
 } from '../types';
 import {
   Search,
@@ -32,6 +29,58 @@ import {
   Compass,
 } from 'lucide-react';
 
+const LOST_FOUND_TYPES: LostFoundType[] = [
+  'LOST_PERSON',
+  'FOUND_PERSON',
+  'LOST_ITEM',
+  'FOUND_ITEM',
+];
+const LOST_FOUND_STATUSES: LostFoundReport['status'][] = [
+  'SUBMITTED',
+  'UNDER_REVIEW',
+  'MATCH_FOUND',
+  'VERIFICATION_REQUIRED',
+  'TRANSFERRED_TO_HELP_POINT',
+  'RESOLVED',
+  'CLOSED',
+  'CANCELLED',
+];
+
+function parsePublicReport(value: unknown): LostFoundReport | null {
+  if (typeof value !== 'object' || value === null) return null;
+  const report = value as Record<string, unknown>;
+  if (
+    typeof report.id !== 'string' ||
+    typeof report.reportId !== 'string' ||
+    typeof report.type !== 'string' ||
+    !LOST_FOUND_TYPES.includes(report.type as LostFoundType) ||
+    typeof report.category !== 'string' ||
+    typeof report.title !== 'string' ||
+    typeof report.description !== 'string' ||
+    typeof report.locationName !== 'string' ||
+    typeof report.createdAt !== 'string' ||
+    typeof report.updatedAt !== 'string' ||
+    typeof report.status !== 'string' ||
+    !LOST_FOUND_STATUSES.includes(report.status as LostFoundReport['status'])
+  ) {
+    return null;
+  }
+  return {
+    id: report.id,
+    reportId: report.reportId,
+    type: report.type as LostFoundType,
+    category: report.category,
+    title: report.title,
+    description: report.description,
+    location: report.locationName,
+    createdBy: 'server',
+    createdAt: report.createdAt,
+    updatedAt: report.updatedAt,
+    status: report.status as LostFoundReport['status'],
+    verificationStatus: 'PENDING',
+  };
+}
+
 export const LostFoundScreen: React.FC = () => {
   const { navigate, deviceLocation, isOnline } = useApp();
 
@@ -41,7 +90,7 @@ export const LostFoundScreen: React.FC = () => {
   const [selectedReport, setSelectedReport] = useState<LostFoundReport | null>(null);
 
   // Filter for reports list
-  const [listFilter, setListFilter] = useState<'ALL' | 'PERSON' | 'ITEM' | 'MY'>('ALL');
+  const [listFilter, setListFilter] = useState<'ALL' | 'PERSON' | 'ITEM'>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Form Fields
@@ -56,6 +105,10 @@ export const LostFoundScreen: React.FC = () => {
   const [contactName, setContactName] = useState<string>('');
   const [contactPhone, setContactPhone] = useState<string>('');
   const [photoConsent, setPhotoConsent] = useState<boolean>(false);
+  const [allReports, setAllReports] = useState<LostFoundReport[]>([]);
+  const [isLoadingReports, setIsLoadingReports] = useState<boolean>(false);
+  const [reportLoadError, setReportLoadError] = useState<string | null>(null);
+  const [isSubmittingReport, setIsSubmittingReport] = useState<boolean>(false);
 
   // Success Confirmation modal
   const [submittedReport, setSubmittedReport] = useState<LostFoundReport | null>(null);
@@ -75,9 +128,55 @@ export const LostFoundScreen: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const allReports = useMemo(() => {
-    return LostFoundService.getAllReports();
-  }, [submittedReport, currentView]);
+  useEffect(() => {
+    if (currentView !== 'LIST') return;
+    if (!isOnline) {
+      setReportLoadError('रिपोर्ट देखने के लिए इंटरनेट कनेक्शन आवश्यक है।');
+      return;
+    }
+
+    const controller = new AbortController();
+    setIsLoadingReports(true);
+    setReportLoadError(null);
+    fetch('/api/lost-found', { signal: controller.signal })
+      .then(async (response) => {
+        const result: unknown = await response.json();
+        if (!response.ok) {
+          const message =
+            typeof result === 'object' && result !== null && 'error' in result &&
+            typeof result.error === 'string'
+              ? result.error
+              : 'रिपोर्टें लोड नहीं हो सकीं। कृपया दोबारा प्रयास करें।';
+          throw new Error(message);
+        }
+        if (
+          typeof result !== 'object' ||
+          result === null ||
+          !('reports' in result) ||
+          !Array.isArray(result.reports)
+        ) {
+          throw new Error('सर्वर से रिपोर्टों की सही जानकारी नहीं मिली।');
+        }
+        const reports = result.reports
+          .map(parsePublicReport)
+          .filter((report): report is LostFoundReport => report !== null);
+        setAllReports(reports);
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) {
+          setReportLoadError(
+            error instanceof Error
+              ? error.message
+              : 'रिपोर्टें लोड करते समय त्रुटि हुई।'
+          );
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsLoadingReports(false);
+      });
+
+    return () => controller.abort();
+  }, [currentView, isOnline]);
 
   const filteredReports = useMemo(() => {
     let list = allReports;
@@ -85,8 +184,6 @@ export const LostFoundScreen: React.FC = () => {
       list = list.filter((r) => r.type === 'LOST_PERSON' || r.type === 'FOUND_PERSON');
     } else if (listFilter === 'ITEM') {
       list = list.filter((r) => r.type === 'LOST_ITEM' || r.type === 'FOUND_ITEM');
-    } else if (listFilter === 'MY') {
-      list = LostFoundService.getMyReports();
     }
 
     if (searchQuery.trim()) {
@@ -106,9 +203,7 @@ export const LostFoundScreen: React.FC = () => {
     setSelectedReportType(type);
     setTitle('');
     setDescription('');
-    setLocationStr(
-      deviceLocation ? 'वर्तमान GPS स्थल (देव मेला)' : 'देव सूर्य मंदिर / सूर्य कुंड क्षेत्र'
-    );
+    setLocationStr('');
     setAge('');
     setClothes('');
     setIdentifyingFeatures('');
@@ -117,11 +212,15 @@ export const LostFoundScreen: React.FC = () => {
     setCurrentView('FORM');
   };
 
-  const handleSubmitForm = (e: React.FormEvent) => {
+  const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isOnline) {
-      showToast('Internet connection उपलब्ध नहीं है। Report server पर भेजने के लिए internet connection आवश्यक है।');
+      showToast('रिपोर्ट सर्वर पर भेजने के लिए इंटरनेट कनेक्शन आवश्यक है।');
+      return;
+    }
+    if (!contactName.trim()) {
+      showToast('कृपया सत्यापन के लिए अपना नाम दर्ज करें।');
       return;
     }
 
@@ -130,33 +229,66 @@ export const LostFoundScreen: React.FC = () => {
         ? `${description} | उम्र: ${age || 'अज्ञात'} | कपड़े: ${clothes || 'विवरण नहीं'} | पहचान: ${identifyingFeatures || 'सामान्य'}`
         : `${description} | पहचान विशेषता: ${identifyingFeatures || 'सामान्य'}`;
 
-    const newRep = LostFoundService.createReport({
-      type: selectedReportType,
-      category,
-      title: title.trim() || (selectedReportType.includes('PERSON') ? 'अज्ञात व्यक्ति' : 'अज्ञात सामान'),
-      description: compiledDesc,
-      location: locationStr.trim(),
-      latitude: deviceLocation?.latitude,
-      longitude: deviceLocation?.longitude,
-      contactName,
-      contactPhone,
-      identifyingFeatures,
-    });
+    setIsSubmittingReport(true);
+    try {
+      const response = await fetch('/api/lost-found', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: selectedReportType,
+          category,
+          title: title.trim(),
+          description: compiledDesc.trim(),
+          locationName: locationStr.trim(),
+          latitude: deviceLocation?.latitude,
+          longitude: deviceLocation?.longitude,
+          contactName: contactName.trim(),
+          contactPhone: contactPhone.trim() || undefined,
+          identifyingFeatures: identifyingFeatures.trim() || undefined,
+        }),
+      });
+      const result: unknown = await response.json();
+      if (!response.ok) {
+        const message =
+          typeof result === 'object' && result !== null && 'error' in result &&
+          typeof result.error === 'string'
+            ? result.error
+            : 'रिपोर्ट सर्वर पर भेजी नहीं जा सकी। कृपया दोबारा प्रयास करें।';
+        throw new Error(message);
+      }
+      const reportData =
+        typeof result === 'object' && result !== null && 'report' in result
+          ? result.report
+          : null;
+      const newReport = parsePublicReport(reportData);
+      if (!newReport) {
+        throw new Error('सर्वर से रिपोर्ट की पुष्टि नहीं मिली। कृपया सहायता से संपर्क करें।');
+      }
 
-    setSubmittedReport(newRep);
+      setAllReports((reports) => [newReport, ...reports.filter((report) => report.id !== newReport.id)]);
+      setSubmittedReport(newReport);
+    } catch (error) {
+      showToast(
+        error instanceof Error
+          ? error.message
+          : 'रिपोर्ट भेजते समय त्रुटि हुई। कृपया दोबारा प्रयास करें।'
+      );
+    } finally {
+      setIsSubmittingReport(false);
+    }
   };
 
   const handleReportMisuseConfirm = () => {
     if (!misuseReportId) return;
-    LostFoundService.reportMisuse(misuseReportId, misuseReason);
     setMisuseReportId(null);
-    showToast('रिपोर्ट दुरुपयोग की सूचना प्रशासन को भेज दी गई है। समीक्षा की जाएगी।');
+    showToast('दुरुपयोग रिपोर्ट भेजी नहीं गई है; इस ऐप में यह सुविधा अभी उपलब्ध नहीं है। कृपया सहायता डेस्क से संपर्क करें।');
   };
 
   const handleClaimSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowClaimModal(false);
-    showToast('दावे की जानकारी Help Point और अधिकृत अधिकारी को भेज दी गई है। सत्यापन के पश्चात सूचित किया जाएगा।');
+    setClaimDetails('');
+    showToast('दावा भेजा नहीं गया है; इस ऐप में यह सुविधा अभी उपलब्ध नहीं है। कृपया सहायता डेस्क से संपर्क करें।');
   };
 
   return (
@@ -181,16 +313,16 @@ export const LostFoundScreen: React.FC = () => {
               <span className="text-2xl">🔎</span>
               <div>
                 <h2 className="text-base sm:text-lg font-black tracking-tight text-amber-200">
-                  खोया-पाया केंद्रीय सहायता कक्ष
+                  खोया-पाया रिपोर्टिंग
                 </h2>
                 <span className="text-xs text-stone-300 block">
-                  सुरक्षित रिपोर्टिंग • लाउडस्पीकर प्रसारण • हेल्प पॉइंट समन्वय
+                  सर्वर प्रक्रिया रिपोर्ट प्राप्त करेगी; स्थायी संग्रहण या सहायता की पुष्टि नहीं।
                 </span>
               </div>
             </div>
           </div>
           <p className="text-[11px] text-stone-300 leading-relaxed">
-            गोपनीयता नीति: व्यक्तिगत फोन नंबर या संवेदनशील जानकारी कभी भी सार्वजनिक नहीं की जाती। केवल अधिकृत हेल्प डेस्क एवं स्वयंसेवक ही सत्यापन करते हैं।
+            रिपोर्ट की सार्वजनिक सूची से संपर्क विवरण हटाए जाते हैं। कृपया यहाँ संवेदनशील जानकारी न लिखें।
           </p>
 
           {/* Quick Safety Shortcuts (Req 12) */}
@@ -467,7 +599,7 @@ export const LostFoundScreen: React.FC = () => {
                 required
                 value={locationStr}
                 onChange={(e) => setLocationStr(e.target.value)}
-                placeholder="उदा. सूर्य कुंड उत्तरी घाट / देव सूर्य मंदिर तोरण द्वार"
+                placeholder="नजदीकी landmark लिखें; GPS उपलब्ध होने पर coordinates साथ भेजे जाएंगे"
                 className="w-full min-h-[46px] px-3.5 rounded-2xl border border-stone-300 text-sm font-bold bg-stone-50"
               />
             </div>
@@ -498,6 +630,7 @@ export const LostFoundScreen: React.FC = () => {
                 अतिरिक्त जानकारी / स्थिति:
               </label>
               <textarea
+                required
                 rows={2}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -514,6 +647,7 @@ export const LostFoundScreen: React.FC = () => {
               <div className="grid grid-cols-2 gap-2">
                 <input
                   type="text"
+                  required
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
                   placeholder="आपका नाम"
@@ -532,9 +666,10 @@ export const LostFoundScreen: React.FC = () => {
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full min-h-[50px] bg-[#0B5E8E] hover:bg-[#073B5A] active:scale-98 text-white font-black text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+                disabled={isSubmittingReport}
+                className="w-full min-h-[50px] bg-[#0B5E8E] hover:bg-[#073B5A] disabled:opacity-60 disabled:cursor-not-allowed active:scale-98 text-white font-black text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
               >
-                <span>सुरक्षित रिपोर्ट दर्ज करें</span>
+                <span>{isSubmittingReport ? 'रिपोर्ट भेजी जा रही है…' : 'रिपोर्ट दर्ज करें'}</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
@@ -559,7 +694,7 @@ export const LostFoundScreen: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-4 gap-1 text-[11px] font-black">
+              <div className="grid grid-cols-3 gap-1 text-[11px] font-black">
                 <button
                   onClick={() => setListFilter('ALL')}
                   className={`py-1.5 rounded-xl border ${
@@ -590,21 +725,19 @@ export const LostFoundScreen: React.FC = () => {
                 >
                   सामान
                 </button>
-                <button
-                  onClick={() => setListFilter('MY')}
-                  className={`py-1.5 rounded-xl border ${
-                    listFilter === 'MY'
-                      ? 'bg-amber-800 text-white border-amber-800'
-                      : 'bg-white text-stone-700 border-stone-300'
-                  }`}
-                >
-                  मेरी रिपोर्ट
-                </button>
               </div>
             </div>
 
             {/* Reports Cards */}
-            {filteredReports.length === 0 ? (
+            {reportLoadError ? (
+              <div className="bg-rose-50 rounded-3xl p-5 text-center text-xs text-rose-900 border border-rose-200">
+                {reportLoadError}
+              </div>
+            ) : isLoadingReports ? (
+              <div className="bg-white rounded-3xl p-8 text-center text-xs text-stone-500 border border-stone-200">
+                रिपोर्टें लोड हो रही हैं…
+              </div>
+            ) : filteredReports.length === 0 ? (
               <div className="bg-white rounded-3xl p-8 text-center text-xs text-stone-500 border border-stone-200">
                 कोई रिपोर्ट नहीं मिली।
               </div>
@@ -760,10 +893,10 @@ export const LostFoundScreen: React.FC = () => {
 
             <div className="space-y-1">
               <h4 className="text-base font-black text-stone-900">
-                आपका Lost & Found report दर्ज हो गया है।
+                सर्वर प्रक्रिया ने रिपोर्ट प्राप्त की है।
               </h4>
               <p className="text-xs text-stone-500">
-                केंद्रीय सहायता डेस्क एवं हेल्प पॉइंट्स को सूचित कर दिया गया है।
+                यह पुष्टि नहीं है कि रिपोर्ट स्थायी रूप से सहेजी, सत्यापित या किसी सहायता डेस्क को भेजी गई है।
               </p>
             </div>
 
