@@ -9,7 +9,9 @@ const ANNOUNCEMENTS_STORE = 'verified-announcements';
 const PRIVATE_DATA_STORE = 'private-user-data';
 
 export interface CachedAnnouncement extends OfficialAnnouncement {
+  publishedAt: string;
   expiresAt: string;
+  status: 'PUBLISHED';
 }
 
 export interface OfflineAnnouncementSnapshot {

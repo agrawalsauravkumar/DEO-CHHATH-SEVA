@@ -24,9 +24,8 @@ class FamilyServiceManager {
   private currentUserName: string;
 
   constructor() {
-    this.currentUserId = this.initUserId();
-    this.currentUserName = this.initUserName();
-    this.cleanExpiredSharing();
+    this.currentUserId = '';
+    this.currentUserName = '';
   }
 
   private initUserId(): string {
@@ -69,107 +68,23 @@ class FamilyServiceManager {
   // FAMILY GROUP MANAGEMENT
   // ============================================================
   public getFamilyGroup(): FamilyGroup | null {
-    try {
-      const data = localStorage.getItem(STORAGE_KEYS.GROUP);
-      if (!data) return null;
-      return JSON.parse(data) as FamilyGroup;
-    } catch {
-      return null;
-    }
+    return null;
   }
 
   public createFamilyGroup(groupName?: string): FamilyGroup {
-    const now = new Date();
-    // Unique 6-character code
-    const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const inviteCode = `DEO-${randomCode.substring(0, 4)}`;
-
-    const newGroup: FamilyGroup = {
-      id: 'grp_' + Date.now(),
-      name: groupName?.trim() || 'हमारा Chhath परिवार',
-      ownerId: this.currentUserId,
-      inviteCode,
-      createdAt: now.toISOString(),
-      status: 'ACTIVE',
-    };
-
-    localStorage.setItem(STORAGE_KEYS.GROUP, JSON.stringify(newGroup));
-
-    // Add creator as owner member
-    const ownerMember: FamilyGroupMember = {
-      id: 'mem_' + Date.now(),
-      familyGroupId: newGroup.id,
-      userId: this.currentUserId,
-      name: this.currentUserName,
-      role: 'OWNER',
-      locationSharingEnabled: false,
-      joinedAt: now.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    this.saveMembers([ownerMember]);
-
-    this.sendFamilyAlert(
-      `Family group "${newGroup.name}" बनाया गया। Invite Code: ${newGroup.inviteCode}`,
-      'INFO'
-    );
-
-    return newGroup;
+    void groupName;
+    throw new Error('परिवार समूह सेवा सर्वर से जुड़ी नहीं है; समूह नहीं बनाया गया।');
   }
 
   public joinFamilyGroup(
     inviteCode: string,
     memberName: string
   ): { success: boolean; message: string; group?: FamilyGroup } {
-    const cleanCode = inviteCode.trim().toUpperCase();
-    if (!cleanCode) {
-      return { success: false, message: 'कृपया वैध Family Code दर्ज करें।' };
-    }
-
-    const name = memberName.trim() || 'परिवार सदस्य';
-    this.setCurrentUserName(name);
-
-    // If joining by code, simulate group join or match existing
-    const existingGroup = this.getFamilyGroup();
-    let groupToJoin: FamilyGroup;
-
-    if (existingGroup && existingGroup.inviteCode.toUpperCase() === cleanCode) {
-      groupToJoin = existingGroup;
-    } else {
-      // Connect to a new family group with this code
-      groupToJoin = {
-        id: 'grp_' + cleanCode.replace(/[^A-Z0-9]/g, ''),
-        name: 'Chhath परिवार (' + cleanCode + ')',
-        ownerId: 'owner_ref',
-        inviteCode: cleanCode,
-        createdAt: new Date().toISOString(),
-        status: 'ACTIVE',
-      };
-      localStorage.setItem(STORAGE_KEYS.GROUP, JSON.stringify(groupToJoin));
-    }
-
-    const members = this.getFamilyMembers();
-    const alreadyMember = members.some((m) => m.userId === this.currentUserId);
-
-    if (!alreadyMember) {
-      const newMember: FamilyGroupMember = {
-        id: 'mem_' + Date.now(),
-        familyGroupId: groupToJoin.id,
-        userId: this.currentUserId,
-        name,
-        role: 'MEMBER',
-        locationSharingEnabled: false,
-        joinedAt: new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
-      };
-      members.push(newMember);
-      this.saveMembers(members);
-    }
-
-    this.sendFamilyAlert(`${name} परिवार समूह में शामिल हुए।`, 'INFO');
-
+    void inviteCode;
+    void memberName;
     return {
-      success: true,
-      message: 'आप सफलतापूर्वक परिवार समूह में शामिल हो गए हैं।',
-      group: groupToJoin,
+      success: false,
+      message: 'परिवार समूह सेवा सर्वर से जुड़ी नहीं है; समूह से जुड़ना उपलब्ध नहीं है।',
     };
   }
 
@@ -202,15 +117,7 @@ class FamilyServiceManager {
   // MEMBERS LIST & LOCATION
   // ============================================================
   public getFamilyMembers(): FamilyGroupMember[] {
-    try {
-      const data = localStorage.getItem(STORAGE_KEYS.MEMBERS);
-      if (!data) {
-        return [];
-      }
-      return JSON.parse(data) as FamilyGroupMember[];
-    } catch {
-      return [];
-    }
+    return [];
   }
 
   private saveMembers(members: FamilyGroupMember[]): void {
@@ -226,60 +133,11 @@ class FamilyServiceManager {
     lng?: number,
     accuracy?: number
   ): boolean {
-    const group = this.getFamilyGroup();
-    if (!group) return false;
-
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + durationMinutes * 60 * 1000);
-
-    const members = this.getFamilyMembers();
-    const myIndex = members.findIndex((m) => m.userId === this.currentUserId);
-
-    const updatedMember: FamilyGroupMember = {
-      id: myIndex >= 0 ? members[myIndex].id : 'mem_' + Date.now(),
-      familyGroupId: group.id,
-      userId: this.currentUserId,
-      name: this.currentUserName,
-      role: myIndex >= 0 ? members[myIndex].role : 'MEMBER',
-      locationSharingEnabled: true,
-      sharingExpiresAt: expiresAt.toISOString(),
-      lastLatitude: lat,
-      lastLongitude: lng,
-      lastLocationUpdatedAt: now.toLocaleTimeString('hi-IN', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      joinedAt: myIndex >= 0 ? members[myIndex].joinedAt : 'आज',
-    };
-
-    if (myIndex >= 0) {
-      members[myIndex] = updatedMember;
-    } else {
-      members.push(updatedMember);
-    }
-    this.saveMembers(members);
-
-    // Save active sharing state
-    const shareState: FamilyLocationShare = {
-      id: 'share_' + Date.now(),
-      familyGroupId: group.id,
-      userId: this.currentUserId,
-      latitude: lat || 0,
-      longitude: lng || 0,
-      accuracy: accuracy || 10,
-      createdAt: now.toISOString(),
-      expiresAt: expiresAt.toISOString(),
-    };
-    localStorage.setItem(STORAGE_KEYS.SHARING_STATE, JSON.stringify(shareState));
-
-    this.sendFamilyAlert(
-      `${this.currentUserName} ने Location Sharing शुरू की (${this.formatDuration(durationMinutes)})।`,
-      'SHARING_CHANGE',
-      lat,
-      lng
-    );
-
-    return true;
+    void durationMinutes;
+    void lat;
+    void lng;
+    void accuracy;
+    return false;
   }
 
   public stopLocationSharing(): boolean {
@@ -302,45 +160,15 @@ class FamilyServiceManager {
   }
 
   public isSharingActive(): boolean {
-    try {
-      const state = localStorage.getItem(STORAGE_KEYS.SHARING_STATE);
-      if (!state) return false;
-      const parsed = JSON.parse(state) as FamilyLocationShare;
-      const expiry = new Date(parsed.expiresAt).getTime();
-      if (Date.now() > expiry) {
-        this.stopLocationSharing();
-        return false;
-      }
-      return true;
-    } catch {
-      return false;
-    }
+    return false;
   }
 
   public getSharingRemainingMinutes(): number {
-    try {
-      const state = localStorage.getItem(STORAGE_KEYS.SHARING_STATE);
-      if (!state) return 0;
-      const parsed = JSON.parse(state) as FamilyLocationShare;
-      const diffMs = new Date(parsed.expiresAt).getTime() - Date.now();
-      return Math.max(0, Math.round(diffMs / (60 * 1000)));
-    } catch {
-      return 0;
-    }
+    return 0;
   }
 
   public getSharingExpiresTimeString(): string {
-    try {
-      const state = localStorage.getItem(STORAGE_KEYS.SHARING_STATE);
-      if (!state) return '';
-      const parsed = JSON.parse(state) as FamilyLocationShare;
-      return new Date(parsed.expiresAt).toLocaleTimeString('hi-IN', {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch {
-      return '';
-    }
+    return '';
   }
 
   public cleanExpiredSharing(): void {
@@ -372,17 +200,7 @@ class FamilyServiceManager {
   // FAMILY MAP & FRESHNESS (Only approved members with recent data)
   // ============================================================
   public getLatestFamilyLocations(): FamilyGroupMember[] {
-    this.cleanExpiredSharing();
-    const members = this.getFamilyMembers();
-    // Return only members with enabled sharing and valid coordinates
-    return members.filter(
-      (m) =>
-        m.locationSharingEnabled &&
-        typeof m.lastLatitude === 'number' &&
-        typeof m.lastLongitude === 'number' &&
-        m.lastLatitude !== 0 &&
-        m.lastLongitude !== 0
-    );
+    return [];
   }
 
   // ============================================================
@@ -394,37 +212,15 @@ class FamilyServiceManager {
     lat?: number,
     lng?: number
   ): boolean {
-    const group = this.getFamilyGroup();
-    if (!group) return false;
-
-    const alertItem: FamilyAlertItem = {
-      id: 'alert_' + Date.now(),
-      familyGroupId: group.id,
-      userId: this.currentUserId,
-      senderName: this.currentUserName,
-      message,
-      type,
-      latitude: lat,
-      longitude: lng,
-      createdAt: new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    const alerts = this.getFamilyAlerts();
-    alerts.unshift(alertItem);
-    // Keep max 20 alerts
-    if (alerts.length > 20) alerts.pop();
-    localStorage.setItem(STORAGE_KEYS.ALERTS, JSON.stringify(alerts));
-    return true;
+    void message;
+    void type;
+    void lat;
+    void lng;
+    return false;
   }
 
   public getFamilyAlerts(): FamilyAlertItem[] {
-    try {
-      const data = localStorage.getItem(STORAGE_KEYS.ALERTS);
-      if (!data) return [];
-      return JSON.parse(data) as FamilyAlertItem[];
-    } catch {
-      return [];
-    }
+    return [];
   }
 
   private formatDuration(minutes: number): string {

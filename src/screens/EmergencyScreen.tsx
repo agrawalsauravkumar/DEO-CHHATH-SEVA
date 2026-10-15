@@ -139,22 +139,22 @@ export const EmergencyScreen: React.FC = () => {
         });
         setLocationSharedNotice('स्थान सफलतापूर्वक साझा किया गया।');
         setTimeout(() => setLocationSharedNotice(null), 4000);
-      } catch {
-        // Fallback to copy
-        copyToClipboard(textToShare);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        await copyToClipboard(textToShare);
       }
     } else {
-      copyToClipboard(textToShare);
+      await copyToClipboard(textToShare);
     }
   };
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = async (text: string) => {
     try {
-      navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(text);
       setLocationSharedNotice('स्थान की जानकारी कॉपी कर ली गई है। आप इसे WhatsApp/SMS पर भेज सकते हैं।');
       setTimeout(() => setLocationSharedNotice(null), 4000);
     } catch {
-      setLocationSharedNotice('स्थान विवरण: ' + text.slice(0, 80) + '...');
+      setLocationSharedNotice('स्थान की जानकारी साझा या कॉपी नहीं हो सकी। कृपया पुनः प्रयास करें।');
       setTimeout(() => setLocationSharedNotice(null), 4000);
     }
   };

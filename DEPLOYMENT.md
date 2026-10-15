@@ -30,14 +30,14 @@ The DEO CHHATH SEVA platform is architected for zero-downtime high-concurrency p
                                              Spatial GIST Indexes     • OSRM Routing Engine
                                                      │                • OpenStreetMap Tiles
                                                      ▼
-                                          [ Standby Auto-Fallback ]
-                                         Resilient Spatial Cache
+                [ Development-only Memory ]
+                                         Never used in production
 ```
 
 ### High Availability Principles:
-1. **Offline-First PWA**: The frontend functions without live internet connectivity via service workers, cached vector tiles, and `/api/sync/bundle` offline storage.
-2. **Graceful Database Degradation**: If the PostgreSQL cluster suffers transient network disruption, the server automatically switches to the standby high-speed in-memory spatial store rather than crashing.
-3. **Stateless API Layer**: Node.js API processes carry no in-process session affinity, enabling instant horizontal auto-scaling on Google Cloud Run, AWS ECS, or Kubernetes.
+1. **Offline-aware PWA**: Static assets and selected verified data may be cached for limited offline use. Mutations require a live API connection.
+2. **Production persistence gate**: Production refuses to start or serve database operations without PostgreSQL/PostGIS. In-memory demo data is restricted to non-production development only.
+3. **Stateless API layer**: API instances use PostgreSQL for persisted workflows; availability and horizontal scaling still require deployment-level health checks and capacity testing.
 
 ---
 
@@ -49,7 +49,7 @@ All sensitive credentials must be managed via production secret management (e.g.
 |---|---|---|---|---|
 | `PORT` | Yes | `3000` | No | Internal port for the Express application server. |
 | `NODE_ENV` | Yes | `production` | No | Node execution mode (`development` vs `production`). |
-| `DATABASE_URL` | Recommended | `""` | No | PostgreSQL connection URI including user, password, host, port, and database name. If omitted, the server enters `STANDBY_LOCAL_FALLBACK` mode. |
+| `DATABASE_URL` | Yes in production | `""` | No | PostgreSQL connection URI including user, password, host, port, and database name. Production refuses to start if PostgreSQL/PostGIS is unavailable. |
 | `AUTH_SECRET` | Yes | `""` | No | High-entropy cryptographic string (min 32 bytes) for signing and verifying JWT tokens. |
 | `MAP_PROVIDER` | No | `osm` | Yes | Map tile provider identifier (`osm`, `carto`, `mapbox`). |
 | `MAP_TILE_URL` | No | `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png` | Yes | Standard Slippy Map XYZ tile server URL. |
@@ -84,7 +84,13 @@ The first account's identity and role must be approved by the organization's dat
 
 ### Release readiness gate
 
-PostgreSQL persistence is currently implemented for user identity/authentication only. Other application and administration workflows still use in-memory or browser-local data, so records may not be shared across devices or survive a server/browser restart. Do not use this build as the live government operations system until those workflows are backed by PostgreSQL and tested against the production deployment.
+The code includes PostgreSQL-backed paths for facilities, parking, volunteers, help requests, announcements, lost-and-found reports, users, and audit logs. These paths have **not** been verified against a live database. When PostgreSQL is unavailable, public operational lists do not expose in-memory seed records, and configured mutation routes fail with HTTP 503 instead of claiming a volatile write succeeded. Do not treat development fallback data as operational.
+
+Public announcements require an authorized publisher, a verified source, an explicit timezone-aware expiry later than publication, and an active published status. No expiry is synthesized. Expired, malformed, future-dated, unverified, and demo-source records are filtered out. Family safety is deliberately disabled until a persistent, consent-based backend exists. Lost-and-found API writes now use UUID-backed PostgreSQL rows and public responses omit report descriptions, names, contact data, and coordinates; the complete client moderation/contact workflow still needs end-to-end verification. Notification delivery and Android APK/device tests are also unverified.
+
+This is **not yet cleared for live government operations**. No provisioned PostgreSQL/PostGIS database, SMS gateway, approved administrator account, or authoritative live facility/announcement dataset was available for end-to-end verification. Map tiles/data are not confirmed available offline, and the map, emergency contacts, SMS/OTP delivery, data retention, and backup/restore procedures require operational validation. Android SDK/JDK and device testing were unavailable.
+
+Before deployment, provision the production secrets and services, apply/verify the schema migration, verify role-based access with approved accounts, test every mutation across separate clients and a server restart, validate SMS/OTP delivery and incident procedures, and obtain current operational data from the responsible authorities. Do not deploy the development in-memory fallback as a public operations system.
 
 ---
 

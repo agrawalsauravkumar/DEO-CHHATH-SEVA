@@ -163,7 +163,7 @@ export const SearchScreen: React.FC = () => {
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Large Search Box */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-black uppercase tracking-wider text-stone-600">
+          <label htmlFor="destination-search" className="block text-xs font-black uppercase tracking-wider text-stone-600">
             🔍 कहाँ जाना है?
           </label>
           <div className="relative">
@@ -171,6 +171,7 @@ export const SearchScreen: React.FC = () => {
               <Search className="w-5 h-5 text-amber-700" />
             </div>
             <input
+              id="destination-search"
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -194,7 +195,7 @@ export const SearchScreen: React.FC = () => {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-black text-stone-800 tracking-tight">
-              लोकप्रिय स्थान
+              सेवा श्रेणियाँ
             </h3>
             {activeCategory && (
               <button
@@ -335,7 +336,7 @@ export const SearchScreen: React.FC = () => {
         <div className="bg-stone-100 rounded-xl p-3 border border-stone-200 text-xs text-stone-600 flex items-start gap-2">
           <Info className="w-4 h-4 text-stone-500 shrink-0 mt-0.5" />
           <p>
-            यह देव तीर्थ क्षेत्र के आधिकारिक पड़ावों की डेमो सूची है। जीपीएस व ऑफलाइन मैप कनेक्ट होने पर लाइव रूट स्वतः उपलब्ध होगा।
+            ये विकल्प केवल अधिकृत स्रोत से मिले सत्यापित स्थल डेटा को छाँटते हैं। डेटा उपलब्ध न होने पर कोई स्थान या लाइव रूट नहीं दिखाया जाएगा।
           </p>
         </div>
       </main>

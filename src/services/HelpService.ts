@@ -1,5 +1,6 @@
 import { HelpPoint, HelpRequest, VolunteerProfile } from '../types';
 import { LocationService } from './LocationService';
+import { apiRequest } from './apiClient';
 
 const STORAGE_HELP_REQUESTS_KEY = 'deo_chhath_user_help_requests_v1';
 
@@ -145,18 +146,9 @@ export const DEO_VERIFIED_VOLUNTEERS: VolunteerProfile[] = [
 ];
 
 class HelpServiceManager {
-  private helpPoints: HelpPoint[] = DEO_HELP_POINTS.map((point) => ({
-    ...point,
-    verified: false,
-    active: false,
-    lastUpdated: 'स्थिर डेटा; पुष्टि की तारीख उपलब्ध नहीं',
-    source: 'DEMO_DATA',
-  }));
-  private volunteers: VolunteerProfile[] = DEO_VERIFIED_VOLUNTEERS.map((volunteer) => ({
-    ...volunteer,
-    verified: false,
-    active: false,
-  }));
+  private requests: HelpRequest[] = [];
+  private helpPoints: HelpPoint[] = [];
+  private volunteers: VolunteerProfile[] = [];
 
   // 1. Get all help points
   public getHelpPoints(): HelpPoint[] {
@@ -198,11 +190,97 @@ class HelpServiceManager {
 
   // 5. Help Request System (Persisted locally, ready for API sync)
   public getHelpRequests(): HelpRequest[] {
+    if (this.requests.length) return [...this.requests];
     try {
       const raw = localStorage.getItem(STORAGE_HELP_REQUESTS_KEY);
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
+    }
+  }
+
+  public async syncHelpRequests(sessionType: 'admin' | 'user' = 'admin'): Promise<void> {
+    const data = await apiRequest<{
+      requests: Array<{
+        id: string;
+        type: string;
+        description: string;
+        userName?: string;
+        userPhone?: string;
+        latitude?: number;
+        longitude?: number;
+        status: string;
+        assignedVolunteerId?: string;
+        createdAt: string;
+        updatedAt: string;
+      }>;
+    }>('/api/help/requests', {}, true, sessionType);
+    this.requests = data.requests.map((request) => ({
+      id: request.id,
+      type: request.type,
+      description: request.description,
+      userName: request.userName,
+      userPhone: request.userPhone,
+      latitude: request.latitude,
+      longitude: request.longitude,
+      status: this.toLocalStatus(request.status),
+      assignedVolunteerId: request.assignedVolunteerId,
+      createdAt: new Date(request.createdAt).toLocaleString('hi-IN'),
+      updatedAt: new Date(request.updatedAt).toLocaleString('hi-IN'),
+    }));
+    this.persistRequests();
+  }
+
+  private toLocalStatus(status: string): HelpRequest['status'] {
+    switch (status) {
+      case 'ASSIGNED': return 'स्वयंसेवक assigned';
+      case 'IN_PROGRESS': return 'सहायता जारी';
+      case 'RESOLVED': return 'समाधान किया गया';
+      case 'CANCELLED': return 'रद्द किया गया';
+      case 'ESCALATED': return 'ESCALATED';
+      default: return 'प्राप्त';
+    }
+  }
+
+  private persistRequests(): void {
+    try {
+      localStorage.setItem(STORAGE_HELP_REQUESTS_KEY, JSON.stringify(this.requests));
+    } catch (error) {
+      console.warn('Help request cache could not be updated; server data remains saved.', error);
+    }
+  }
+
+  public async updateHelpRequestStatus(
+    id: string,
+    status: HelpRequest['status'],
+    resolutionNotes?: string,
+    sessionType: 'admin' | 'user' = 'admin'
+  ): Promise<void> {
+    const serverStatus = {
+      'प्राप्त': 'RECEIVED',
+      'देखा गया': 'RECEIVED',
+      'स्वयंसेवक assigned': 'ASSIGNED',
+      'सहायता जारी': 'IN_PROGRESS',
+      'समाधान किया गया': 'RESOLVED',
+      'ESCALATED': 'ESCALATED',
+      'रद्द किया गया': 'CANCELLED',
+    }[status];
+    const updated = await apiRequest<{
+      id: string;
+      status: string;
+      assignedVolunteerId?: string;
+    }>(`/api/help/requests/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: serverStatus, resolutionNotes }),
+    }, true, sessionType);
+    const local = this.requests.find((request) => request.id === id);
+    if (local) {
+      local.status = this.toLocalStatus(updated.status);
+      local.assignedVolunteerId = updated.assignedVolunteerId;
+      local.updatedAt = new Date().toLocaleString('hi-IN');
+      this.persistRequests();
+    } else {
+      await this.syncHelpRequests();
     }
   }
 
@@ -214,17 +292,12 @@ class HelpServiceManager {
       id: `req-${Date.now()}`,
       ...data,
       status: 'प्राप्त',
-      createdAt: 'आज ' + new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
-      updatedAt: 'अभी-अभी',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       assignedVolunteerId: undefined,
     };
-
-    const updated = [newRequest, ...current];
-    try {
-      localStorage.setItem(STORAGE_HELP_REQUESTS_KEY, JSON.stringify(updated));
-    } catch {
-      // Ignore
-    }
+    this.requests = [newRequest, ...current];
+    this.persistRequests();
     return newRequest;
   }
 

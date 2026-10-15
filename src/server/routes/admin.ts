@@ -5,54 +5,68 @@
 
 import { Router } from 'express';
 import { repository } from '../db/repository';
-import { requireAuth, requireRole, AuthenticatedRequest } from '../middleware/auth';
+import { requireAuth, requireRole } from '../middleware/auth';
+import { asyncHandler } from '../middleware/asyncHandler';
+import { getDatabaseStatus } from '../db/connection';
 
 export const adminRouter = Router();
 
-// 1. Dashboard Statistics
-adminRouter.get('/stats', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN', 'CONTENT_ADMIN', 'FACILITY_ADMIN', 'HELP_ADMIN'), async (req, res) => {
-  const users = await repository.getAllUsers();
-  const volunteers = await repository.getVolunteers(true);
-  const helpRequests = await repository.getHelpRequests('RECEIVED');
-  const lostFound = await repository.getLostFoundReports();
-  const parkings = await repository.getParkings();
-  const facilities = await repository.getFacilities();
-  const announcements = await repository.getAnnouncements(true);
+adminRouter.get(
+  '/stats',
+  requireAuth,
+  requireRole('SUPER_ADMIN', 'ADMIN', 'CONTENT_ADMIN', 'FACILITY_ADMIN', 'HELP_ADMIN'),
+  asyncHandler(async (_req, res) => {
+    const [users, volunteers, helpRequests, lostFound, parkings, facilities, announcements] =
+      await Promise.all([
+        repository.getAllUsers(),
+        repository.getVolunteers(true),
+        repository.getHelpRequests('RECEIVED'),
+        repository.getLostFoundReports(),
+        repository.getParkings(),
+        repository.getFacilities(),
+        repository.getAnnouncements(true),
+      ]);
+    return res.json({
+      totalUsers: users.length,
+      verifiedVolunteers: volunteers.length,
+      activeHelpRequests: helpRequests.length,
+      activeLostFound: lostFound.filter((report) =>
+        report.status === 'UNDER_REVIEW' || report.status === 'SUBMITTED'
+      ).length,
+      parkingLocations: parkings.length,
+      shuttlePoints: facilities.filter((facility) => facility.category === 'SHUTTLE').length,
+      medicalFacilities: facilities.filter((facility) => facility.category === 'MEDICAL').length,
+      toilets: facilities.filter((facility) => facility.category === 'TOILET').length,
+      waterPoints: facilities.filter((facility) => facility.category === 'WATER').length,
+      activeAnnouncements: announcements.length,
+      isDemoData: getDatabaseStatus().connectionState !== 'CONNECTED',
+      lastUpdated: new Date().toISOString(),
+    });
+  })
+);
 
-  return res.json({
-    totalUsers: users.length,
-    verifiedVolunteers: volunteers.length,
-    activeHelpRequests: helpRequests.length,
-    activeLostFound: lostFound.filter((l) => l.status === 'UNDER_REVIEW' || l.status === 'SUBMITTED').length,
-    parkingLocations: parkings.length,
-    shuttlePoints: facilities.filter((f) => f.category === 'SHUTTLE').length,
-    medicalFacilities: facilities.filter((f) => f.category === 'MEDICAL').length,
-    toilets: facilities.filter((f) => f.category === 'TOILET').length,
-    waterPoints: facilities.filter((f) => f.category === 'WATER').length,
-    activeAnnouncements: announcements.length,
-    lastUpdated: new Date().toISOString(),
-  });
-});
+adminRouter.get('/festival-config', (_req, res) => res.status(503).json({
+  error: 'Authoritative festival dates, contact numbers, and ghat coordinates are not configured.',
+}));
 
-// 2. Festival Configuration
-adminRouter.get('/festival-config', (req, res) => {
-  return res.json(repository.getFestivalConfig());
-});
-
-// 3. User Directory (Admin Only)
-adminRouter.get('/users', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN'), async (req, res) => {
-  const users = await repository.getAllUsers();
-  return res.json({
-    total: users.length,
-    users: users.map((u) => ({
-      id: u.id,
-      fullName: u.fullName,
-      phone: u.phone,
-      email: u.email,
-      role: u.role,
-      status: u.status,
-      lastLoginAt: u.lastLoginAt,
-      createdAt: u.createdAt,
-    })),
-  });
-});
+adminRouter.get(
+  '/users',
+  requireAuth,
+  requireRole('SUPER_ADMIN', 'ADMIN'),
+  asyncHandler(async (_req, res) => {
+    const users = await repository.getAllUsers();
+    return res.json({
+      total: users.length,
+      users: users.map((user) => ({
+        id: user.id,
+        fullName: user.fullName,
+        phone: user.phone,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        lastLoginAt: user.lastLoginAt,
+        createdAt: user.createdAt,
+      })),
+    });
+  })
+);

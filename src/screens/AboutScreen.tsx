@@ -9,17 +9,8 @@ import { TopBar } from '../components/TopBar';
 import { DeoChhathSevaLogo } from '../components/DeoChhathSevaLogo';
 import { BrandFooter } from '../components/ChhathThemeComponents';
 import {
-  Sun,
-  Heart,
-  ShieldCheck,
-  Mail,
-  MapPin,
-  Globe,
-  Phone,
   ArrowRight,
-  Compass,
   Sparkles,
-  CheckCircle2,
 } from 'lucide-react';
 
 export const AboutScreen: React.FC = () => {
@@ -65,7 +56,7 @@ export const AboutScreen: React.FC = () => {
             <span>हमारा सेवा संकल्प</span>
           </span>
           <blockquote className="text-sm sm:text-base font-bold text-stone-900 leading-relaxed italic border-l-4 border-amber-600 pl-3">
-            “देव आने वाले श्रद्धालुओं को सरल Navigation, आवश्यक सुविधाओं की जानकारी और सहायता उपलब्ध कराने के उद्देश्य से यह निःशुल्क सेवा पहल विकसित की गई है।”
+            “देव आने वाले श्रद्धालुओं को सरल नेविगेशन, आवश्यक सुविधाओं की जानकारी और सहायता विकल्प उपलब्ध कराने के उद्देश्य से यह सेवा पहल विकसित की गई है।”
           </blockquote>
           <p className="text-xs text-stone-600 font-black text-right">
             — NEXTGEN DEVBHOOMI FOUNDATION
@@ -75,13 +66,16 @@ export const AboutScreen: React.FC = () => {
         {/* Implemented Services List (Requirement 26) */}
         <div className="bg-white border-2 border-stone-200 rounded-3xl p-5 shadow-xs space-y-3">
           <h3 className="text-xs font-black uppercase tracking-wider text-stone-700">
-            श्रद्धालुओं हेतु उपलब्ध सेवाएँ (Implemented Public Services)
+            ऐप में सेवा स्क्रीन
           </h3>
 
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-200/90 font-bold flex items-center gap-2">
               <span>🧭</span> <span>Navigation (मार्ग)</span>
             </div>
+            <p className="text-xs leading-relaxed text-stone-600">
+              सुविधा और संचालन संबंधी जानकारी केवल अधिकृत, सत्यापित स्रोत उपलब्ध होने पर दिखाई जाती है। कुछ सेवाएँ या लाइव डेटा इस बिल्ड में उपलब्ध नहीं हैं।
+            </p>
             <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-200/90 font-bold flex items-center gap-2">
               <span>🅿️</span> <span>Parking (पार्किंग)</span>
             </div>
@@ -125,7 +119,7 @@ export const AboutScreen: React.FC = () => {
             <div>
               <h4 className="text-sm font-black text-stone-900">रास्ता भी (Navigation)</h4>
               <p className="text-xs text-stone-600">
-                सूर्य मंदिर, पवित्र सूर्य कुंड घाट, अधिकृत 5 पार्किंग स्थल और प्राथमिक सुविधाओं तक वास्तविक जीपीएस मार्ग।
+                सत्यापित स्थान दिखाए जा सकते हैं; रास्ते के लिए इंटरनेट, उपलब्ध स्थान डेटा और GPS की आवश्यकता हो सकती है।
               </p>
             </div>
           </div>
@@ -137,7 +131,7 @@ export const AboutScreen: React.FC = () => {
             <div>
               <h4 className="text-sm font-black text-stone-900">सहायता भी (Assistance)</h4>
               <p className="text-xs text-stone-600">
-                वरिष्ठ नागरिकों हेतु ई-रिक्शा, खोया-पाया उद्घोषणा, प्राथमिक चिकित्सा और 24x7 इमरजेंसी सहायता।
+                ऐप सहायता विकल्प और आपातकालीन नंबर दिखाता है; बाहरी सेवाओं की उपलब्धता ऐप द्वारा सुनिश्चित नहीं की जाती।
               </p>
             </div>
           </div>
@@ -149,27 +143,14 @@ export const AboutScreen: React.FC = () => {
             <div>
               <h4 className="text-sm font-black text-stone-900">सेवा भी (Public Service)</h4>
               <p className="text-xs text-stone-600">
-                अमृत जल वितरण, स्वच्छता सहयोग, और निष्ठावान स्वयंसेवकों की अनवरत उपस्थिति।
+                सुविधाओं और स्वयंसेवक सेवाओं की जानकारी केवल अधिकृत डेटा उपलब्ध होने पर दिखाई जाती है।
               </p>
             </div>
           </div>
         </div>
 
-        {/* Contact and Foundation Info */}
-        <div className="bg-stone-100 rounded-3xl p-4 border border-stone-200 space-y-2 text-xs text-stone-700">
-          <h4 className="font-black text-stone-900">NEXTGEN DEVBHOOMI FOUNDATION संपर्क:</h4>
-          <p className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-amber-800 shrink-0" />
-            <span>NextGen सेवा शिविर, सूर्य मंदिर पूर्वी तोरण द्वार, देव (औरंगाबाद), बिहार</span>
-          </p>
-          <p className="flex items-center gap-2">
-            <Mail className="w-4 h-4 text-amber-800 shrink-0" />
-            <span>contact@nextgendevbhoomi.org</span>
-          </p>
-          <p className="flex items-center gap-2">
-            <Globe className="w-4 h-4 text-amber-800 shrink-0" />
-            <span>www.nextgendevbhoomi.org</span>
-          </p>
+        <div className="rounded-3xl border border-stone-200 bg-stone-100 p-4 text-xs text-stone-700">
+          NEXTGEN DEVBHOOMI FOUNDATION के सत्यापित संपर्क विवरण इस ऐप में उपलब्ध नहीं हैं। कृपया अपुष्ट संपर्क जानकारी पर निर्भर न करें।
         </div>
 
         {/* Standard Brand Footer */}

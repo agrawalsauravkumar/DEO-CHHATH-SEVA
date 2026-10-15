@@ -24,6 +24,7 @@ import { HelpService } from './HelpService';
 import { LostFoundService } from './LostFoundService';
 import { VolunteerService } from './VolunteerService';
 import { apiUrl } from './apiUrl';
+import { apiRequest } from './apiClient';
 
 const STORAGE_KEYS = {
   ADMIN_SESSION: 'deo_admin_current_session_v1',
@@ -37,8 +38,8 @@ export interface ManagedUser {
   name: string;
   phone: string;
   email?: string;
-  role: 'USER' | 'VOLUNTEER' | 'ADMIN';
-  status: 'ACTIVE' | 'SUSPENDED';
+  role: 'USER' | 'VOLUNTEER' | AdminRole;
+  status: 'ACTIVE' | 'SUSPENDED' | 'PENDING';
   joinedAt: string;
   lastActive: string;
   familyGroupCount: number; // Count only - NEVER exposing GPS coordinates
@@ -49,6 +50,20 @@ class AdminServiceManager {
   private users: ManagedUser[] = [];
   private auditLogs: AuditLogItem[] = [];
   private notifications: AdminNotification[] = [];
+  private dashboardStats: AdminDashboardStats = {
+    totalUsers: 0,
+    verifiedVolunteers: 0,
+    activeHelpRequests: 0,
+    activeLostFound: 0,
+    parkingLocations: 0,
+    shuttlePoints: 0,
+    medicalFacilities: 0,
+    toilets: 0,
+    waterPoints: 0,
+    activeAnnouncements: 0,
+    isDemoData: false,
+    lastUpdated: '',
+  };
 
   constructor() {
     this.loadState();
@@ -232,36 +247,69 @@ class AdminServiceManager {
     return this.currentAdmin.permissions.includes(permission) || this.currentAdmin.permissions.includes('ALL');
   }
 
+  public async syncDashboardData(): Promise<void> {
+    const canManageUsers = this.currentAdmin?.role === 'SUPER_ADMIN' || this.currentAdmin?.role === 'ADMIN';
+    const [stats, userResult, serverLogs] = await Promise.all([
+      apiRequest<AdminDashboardStats>('/api/admin/stats', {}, true),
+      canManageUsers ? apiRequest<{
+        users: Array<{
+          id: string;
+          fullName: string;
+          phone?: string;
+          email?: string;
+          role: ManagedUser['role'];
+          status: ManagedUser['status'];
+          createdAt: string;
+          lastLoginAt?: string;
+        }>;
+      }>('/api/admin/users', {}, true) : Promise.resolve(null),
+      canManageUsers ? apiRequest<Array<{
+        id: string;
+        userId?: string;
+        userName?: string;
+        action: string;
+        entity: string;
+        entityId?: string;
+        oldValueSummary?: string;
+        newValueSummary?: string;
+        ipAddress?: string;
+        createdAt: string;
+      }>>('/api/audit', {}, true) : Promise.resolve(null),
+    ]);
+    this.dashboardStats = stats;
+    this.users = userResult?.users.map((user) => ({
+      id: user.id,
+      name: user.fullName,
+      phone: user.phone || '',
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      joinedAt: new Date(user.createdAt).toLocaleDateString('hi-IN'),
+      lastActive: user.lastLoginAt
+        ? new Date(user.lastLoginAt).toLocaleString('hi-IN')
+        : 'अभी तक लॉगिन नहीं',
+      familyGroupCount: 0,
+    })) || [];
+    this.auditLogs = serverLogs?.map((log) => ({
+      id: log.id,
+      userId: log.userId || '',
+      userName: log.userName || 'सिस्टम',
+      action: log.action,
+      entity: log.entity,
+      entityId: log.entityId || '',
+      oldValueSummary: log.oldValueSummary,
+      newValueSummary: log.newValueSummary,
+      timestamp: new Date(log.createdAt).toLocaleString('hi-IN'),
+      ipAddress: log.ipAddress,
+    })) || [];
+  }
+
   // ============================================================
   // 2. DASHBOARD SUMMARY STATS (DEMO DATA LABELLED)
   // ============================================================
   public getDashboardStats(period: TimeFilterPeriod = 'TODAY'): AdminDashboardStats {
-    const facilities = FacilityService.getAllFacilities();
-    const announcements = AnnouncementService.getAllAnnouncements();
-    const helpRequests = HelpService.getHelpRequests();
-    const lostFound = LostFoundService.getAllPublicReports();
-    const volunteers = VolunteerService.getVerifiedVolunteers();
-
-    const parkingCount = facilities.filter((f: Facility) => f.category === 'PARKING').length;
-    const shuttleCount = facilities.filter((f: Facility) => f.category === 'SHUTTLE').length;
-    const medicalCount = facilities.filter((f: Facility) => f.category === 'MEDICAL').length;
-    const toiletCount = facilities.filter((f: Facility) => f.category === 'TOILET').length;
-    const waterCount = facilities.filter((f: Facility) => f.category === 'WATER').length;
-
-    return {
-      totalUsers: this.users.length + 128, // includes offline registered counts
-      verifiedVolunteers: volunteers.length > 0 ? volunteers.length : 48,
-      activeHelpRequests: helpRequests.filter((r) => r.status !== 'समाधान किया गया' && r.status !== 'रद्द किया गया').length,
-      activeLostFound: lostFound.filter((l: LostFoundReport) => l.status !== 'RESOLVED' && l.status !== 'CLOSED').length,
-      parkingLocations: parkingCount || 5,
-      shuttlePoints: shuttleCount || 8,
-      medicalFacilities: medicalCount || 6,
-      toilets: toiletCount || 12,
-      waterPoints: waterCount || 15,
-      activeAnnouncements: announcements.filter((a: OfficialAnnouncement) => a.isActive).length,
-      isDemoData: true, // Clearly displays DEMO DATA badge
-      lastUpdated: new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
-    };
+    void period;
+    return { ...this.dashboardStats };
   }
 
   // ============================================================
@@ -271,21 +319,15 @@ class AdminServiceManager {
     return [...this.users];
   }
 
-  public updateUserStatus(userId: string, newStatus: 'ACTIVE' | 'SUSPENDED'): void {
+  public async updateUserStatus(userId: string, newStatus: 'ACTIVE' | 'SUSPENDED'): Promise<void> {
     const target = this.users.find((u) => u.id === userId);
-    if (!target) return;
+    if (!target) throw new Error('उपयोगकर्ता सूची सर्वर से लोड नहीं हुई है।');
 
-    const old = target.status;
+    await apiRequest(`/api/users/${encodeURIComponent(userId)}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: newStatus }),
+    }, true);
     target.status = newStatus;
-    this.saveUsers();
-
-    this.recordAuditLog(
-      'USER_STATUS_CHANGE',
-      'User',
-      userId,
-      `Status: ${old}`,
-      `Status: ${newStatus}`
-    );
   }
 
   // ============================================================

@@ -1,6 +1,6 @@
 import { Facility, FacilityCategory, ShuttlePoint, ShuttleRoute } from '../types';
 import { LocationService } from './LocationService';
-import { apiUrl } from './apiUrl';
+import { apiRequest } from './apiClient';
 
 const STORAGE_OFFLINE_FACILITIES_KEY = 'deo_chhath_offline_facilities_v1';
 
@@ -399,12 +399,8 @@ export const DEO_SHUTTLE_ROUTES: ShuttleRoute[] = [
 ];
 
 class FacilityServiceManager {
-  private facilities: Facility[] = this.markUnverified(DEO_FACILITIES_DATABASE);
-  private shuttleRoutes: ShuttleRoute[] = DEO_SHUTTLE_ROUTES.map((route) => ({
-    ...route,
-    verified: false,
-    lastUpdated: 'वर्तमान पुष्टि उपलब्ध नहीं',
-  }));
+  private facilities: Facility[] = [];
+  private shuttleRoutes: ShuttleRoute[] = [];
 
   constructor() {
     this.initOfflineCache();
@@ -414,9 +410,9 @@ class FacilityServiceManager {
     try {
       const cached = localStorage.getItem(STORAGE_OFFLINE_FACILITIES_KEY);
       if (cached) {
-        this.facilities = this.markUnverified(JSON.parse(cached) as Facility[]);
-      } else {
-        localStorage.setItem(STORAGE_OFFLINE_FACILITIES_KEY, JSON.stringify(this.facilities));
+        this.facilities = (JSON.parse(cached) as Facility[]).filter(
+          (facility) => facility.verified && facility.active && facility.source !== 'DEMO_DATA'
+        );
       }
     } catch {
       // Ignore localStorage error
@@ -440,24 +436,59 @@ class FacilityServiceManager {
     return this.facilities;
   }
 
-  public addFacility(facility: Omit<Facility, 'id'>): Facility {
-    const newFacility: Facility = {
+  public async addFacility(facility: Omit<Facility, 'id'>): Promise<Facility> {
+    const saved = await apiRequest<{
+      id: string;
+      name: string;
+      nameEn?: string;
+      category: FacilityCategory;
+      latitude: number;
+      longitude: number;
+      address?: string;
+      description?: string;
+      phone?: string;
+      isVerified: boolean;
+      isActive: boolean;
+      updatedAt: string;
+    }>('/api/facilities', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: facility.name,
+        nameEn: facility.nameEn,
+        category: facility.category,
+        latitude: facility.latitude,
+        longitude: facility.longitude,
+        address: facility.address,
+        description: facility.description,
+        phone: facility.phone,
+      }),
+    }, true);
+    const created: Facility = {
       ...facility,
-      id: 'fac-' + Date.now(),
-      lastUpdated: 'अभी-अभी',
+      id: saved.id,
+      verified: saved.isVerified,
+      active: saved.isActive,
+      lastUpdated: new Date(saved.updatedAt).toLocaleString('hi-IN'),
+      source: saved.isVerified ? 'ADMIN_VERIFIED' : 'DEMO_DATA',
     };
-    this.facilities = [newFacility, ...this.facilities];
+    this.facilities = [created, ...this.facilities.filter((item) => item.id !== created.id)];
+    this.persistFacilities();
+    return created;
+  }
+
+  private persistFacilities(): void {
     try {
       localStorage.setItem(STORAGE_OFFLINE_FACILITIES_KEY, JSON.stringify(this.facilities));
-    } catch {
-      // Ignore
+    } catch (error) {
+      console.warn('Facility cache could not be updated; server data remains saved.', error);
     }
-    return newFacility;
   }
 
   // 2. Get facilities filtered by category
   public getFacilitiesByCategory(category: FacilityCategory): Facility[] {
-    return this.facilities.filter((f) => f.category === category);
+    return this.facilities.filter((f) =>
+      f.category === category && f.verified && f.active && f.source !== 'DEMO_DATA'
+    );
   }
 
   // 3. Get facilities sorted by distance to user GPS
@@ -494,7 +525,7 @@ class FacilityServiceManager {
 
   // 5. Get verified facilities only
   public getVerifiedFacilities(): Facility[] {
-    return this.facilities.filter((f) => f.verified);
+    return this.facilities.filter((f) => f.verified && f.active && f.source !== 'DEMO_DATA');
   }
 
   // 6. Get offline facilities from local cache
@@ -509,45 +540,54 @@ class FacilityServiceManager {
 
   // 7. Sync facilities with server (connected to PostGIS backend)
   public async syncFacilities(): Promise<void> {
-    try {
-      if (typeof window !== 'undefined' && navigator.onLine) {
-        const res = await fetch(apiUrl('/api/facilities'));
-        if (res.ok) {
-          const data = await res.json();
-          if (data && Array.isArray(data.facilities) && data.facilities.length > 0) {
-            const mapped: Facility[] = data.facilities.map((f: any) => ({
-              id: f.id,
-              name: f.name,
-              nameEn: f.nameEn,
-              category: f.category as FacilityCategory,
-              latitude: f.latitude,
-              longitude: f.longitude,
-              address: f.address || '',
-              description: f.description || '',
-              phone: f.phone,
-              verified: false,
-              active: Boolean(f.isActive),
-              accessibility: true,
-              lastUpdated: 'सर्वर डेटा; वर्तमान पुष्टि उपलब्ध नहीं',
-              source: 'ADMIN_VERIFIED',
-            }));
-            this.facilities = mapped;
-          }
-        }
-      }
-      localStorage.setItem(STORAGE_OFFLINE_FACILITIES_KEY, JSON.stringify(this.facilities));
-    } catch {
-      // Graceful fallback to local cache
-    }
+    if (typeof window === 'undefined' || !navigator.onLine) return;
+    const data = await apiRequest<{
+      facilities: Array<{
+        id: string;
+        name: string;
+        nameEn?: string;
+        category: FacilityCategory;
+        latitude: number;
+        longitude: number;
+        address?: string;
+        description?: string;
+        phone?: string;
+        isVerified: boolean;
+        isActive: boolean;
+        updatedAt: string;
+      }>;
+    }>('/api/facilities');
+    this.facilities = data.facilities.filter((facility) => facility.isVerified && facility.isActive).map((facility) => ({
+      id: facility.id,
+      name: facility.name,
+      nameEn: facility.nameEn,
+      category: facility.category,
+      latitude: Number(facility.latitude),
+      longitude: Number(facility.longitude),
+      address: facility.address || '',
+      description: facility.description || '',
+      phone: facility.phone,
+      verified: facility.isVerified,
+      active: facility.isActive,
+      accessibility: true,
+      lastUpdated: new Date(facility.updatedAt).toLocaleString('hi-IN'),
+      source: facility.isVerified ? 'ADMIN_VERIFIED' : 'DEMO_DATA',
+    }));
+    this.persistFacilities();
+  }
+
+  public async archiveFacility(id: string): Promise<void> {
+    await apiRequest(`/api/facilities/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      body: JSON.stringify({ isArchived: true, isActive: false }),
+    }, true);
+    this.facilities = this.facilities.filter((facility) => facility.id !== id);
+    this.persistFacilities();
   }
 
   // 8. Shuttle routes and points
   public getShuttleRoutes(): ShuttleRoute[] {
-    return this.shuttleRoutes.map((route) => ({
-      ...route,
-      verified: false,
-      lastUpdated: 'वर्तमान पुष्टि उपलब्ध नहीं',
-    }));
+    return this.shuttleRoutes;
   }
 
   public getShuttlePoints(): ShuttlePoint[] {

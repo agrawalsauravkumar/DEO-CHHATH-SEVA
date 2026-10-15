@@ -51,32 +51,36 @@ function parsePublicReport(value: unknown): LostFoundReport | null {
   if (typeof value !== 'object' || value === null) return null;
   const report = value as Record<string, unknown>;
   if (
-    typeof report.id !== 'string' ||
     typeof report.reportId !== 'string' ||
     typeof report.type !== 'string' ||
     !LOST_FOUND_TYPES.includes(report.type as LostFoundType) ||
     typeof report.category !== 'string' ||
-    typeof report.title !== 'string' ||
-    typeof report.description !== 'string' ||
-    typeof report.locationName !== 'string' ||
     typeof report.createdAt !== 'string' ||
-    typeof report.updatedAt !== 'string' ||
     typeof report.status !== 'string' ||
     !LOST_FOUND_STATUSES.includes(report.status as LostFoundReport['status'])
   ) {
     return null;
   }
+  const title = typeof report.title === 'string'
+    ? report.title
+    : `रिपोर्ट ${report.reportId}`;
+  const description = typeof report.description === 'string'
+    ? report.description
+    : 'व्यक्तिगत विवरण सार्वजनिक रूप से साझा नहीं किया जाता।';
+  const location = typeof report.locationName === 'string'
+    ? report.locationName
+    : 'सत्यापित सहायता केंद्र से जानकारी लें।';
   return {
-    id: report.id,
+    id: typeof report.id === 'string' ? report.id : report.reportId,
     reportId: report.reportId,
     type: report.type as LostFoundType,
     category: report.category,
-    title: report.title,
-    description: report.description,
-    location: report.locationName,
+    title,
+    description,
+    location,
     createdBy: 'server',
     createdAt: report.createdAt,
-    updatedAt: report.updatedAt,
+    updatedAt: typeof report.updatedAt === 'string' ? report.updatedAt : report.createdAt,
     status: report.status as LostFoundReport['status'],
     verificationStatus: 'PENDING',
   };
@@ -99,6 +103,7 @@ export const LostFoundScreen: React.FC = () => {
   const [category, setCategory] = useState<string>('सामान्य');
   const [description, setDescription] = useState<string>('');
   const [locationStr, setLocationStr] = useState<string>('');
+  const [includeLocation, setIncludeLocation] = useState<boolean>(false);
   const [age, setAge] = useState<string>('');
   const [gender, setGender] = useState<string>('कोई भी');
   const [clothes, setClothes] = useState<string>('');
@@ -205,6 +210,7 @@ export const LostFoundScreen: React.FC = () => {
     setTitle('');
     setDescription('');
     setLocationStr('');
+    setIncludeLocation(false);
     setAge('');
     setClothes('');
     setIdentifyingFeatures('');
@@ -241,8 +247,12 @@ export const LostFoundScreen: React.FC = () => {
           title: title.trim(),
           description: compiledDesc.trim(),
           locationName: locationStr.trim(),
-          latitude: deviceLocation?.latitude,
-          longitude: deviceLocation?.longitude,
+          ...(includeLocation && deviceLocation
+            ? {
+                latitude: deviceLocation.latitude,
+                longitude: deviceLocation.longitude,
+              }
+            : {}),
           contactName: contactName.trim(),
           contactPhone: contactPhone.trim() || undefined,
           identifyingFeatures: identifyingFeatures.trim() || undefined,
@@ -392,10 +402,7 @@ export const LostFoundScreen: React.FC = () => {
                     व्यक्ति खो गया
                   </span>
                   <span className="text-xs text-stone-600 font-medium block mt-1">
-                    लापता परिजन, बालक अथवा वृद्ध की रिपोर्ट दर्ज करें
-                  </span>
-                  <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full inline-block mt-1">
-                    प्राथमिकता सहायता 🚨
+                    लापता परिजन, बालक अथवा वृद्ध की रिपोर्ट दर्ज करें; तत्काल खतरे में 112 पर कॉल करें
                   </span>
                 </div>
               </button>
@@ -413,10 +420,7 @@ export const LostFoundScreen: React.FC = () => {
                     व्यक्ति मिला
                   </span>
                   <span className="text-xs text-stone-600 font-medium block mt-1">
-                    बिछड़ा हुआ बच्चा या बुजुर्ग व्यक्ति सहायता केंद्र पर मिला
-                  </span>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full inline-block mt-1">
-                    सुरक्षित हेल्प पॉइंट 🕊️
+                    बिछड़े व्यक्ति की जानकारी दर्ज करें; सहायता स्थल की उपलब्धता यहाँ सत्यापित नहीं है
                   </span>
                 </div>
               </button>
@@ -436,9 +440,6 @@ export const LostFoundScreen: React.FC = () => {
                   <span className="text-xs text-stone-600 font-medium block mt-1">
                     मोबाइल, बैग, दस्तावेज, पूजा सामग्री आदि
                   </span>
-                  <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full inline-block mt-1">
-                    सत्यापन प्रणाली 📦
-                  </span>
                 </div>
               </button>
 
@@ -455,10 +456,7 @@ export const LostFoundScreen: React.FC = () => {
                     सामान मिला
                   </span>
                   <span className="text-xs text-stone-600 font-medium block mt-1">
-                    मेला क्षेत्र में लावारिस मिला सामान हेल्प पॉइंट पर जमा करें
-                  </span>
-                  <span className="text-[10px] font-bold text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded-full inline-block mt-1">
-                    सुरक्षित जमा केंद्र 🏛️
+                    सामान मिलने की सूचना दर्ज करें; जमा करने का स्थान स्थानीय प्रशासन से पूछें
                   </span>
                 </div>
               </button>
@@ -473,7 +471,7 @@ export const LostFoundScreen: React.FC = () => {
                     क्या परिवार का सदस्य नहीं मिल रहा?
                   </h4>
                   <p className="text-[11px] text-purple-700">
-                    हमारे "मेरा परिवार" सुरक्षा समूह से उनकी अंतिम लाइव लोकेशन देखें
+                    परिवार की लाइव लोकेशन इस ऐप में उपलब्ध नहीं है। सहायता के लिए परिवार स्क्रीन देखें।
                   </p>
                 </div>
               </div>
@@ -521,7 +519,7 @@ export const LostFoundScreen: React.FC = () => {
               <div className="p-3 bg-amber-50 border border-amber-300 rounded-2xl text-xs text-amber-950 flex items-start gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
-                  “कृपया नजदीकी verified Help Point / Police / authorized volunteer को तुरंत सूचित करें। बच्चे की संवेदनशील जानकारी सार्वजनिक न करें।”
+                  “तत्काल खतरे में 112 पर कॉल करें या पास के पुलिस कर्मी से संपर्क करें। बच्चे की संवेदनशील जानकारी सार्वजनिक न करें।”
                 </p>
               </div>
             )}
@@ -529,7 +527,7 @@ export const LostFoundScreen: React.FC = () => {
             {/* Title / Name */}
             <div className="space-y-1">
               <label className="text-xs font-black text-stone-700 block">
-                {selectedReportType.includes('PERSON') ? 'नाम (यदि ज्ञात हो):' : 'सामान का प्रकार व नाम:'}
+                {selectedReportType.includes('PERSON') ? 'व्यक्ति की पहचान / अस्थायी नाम *:' : 'सामान का प्रकार व नाम *:'}
               </label>
               <input
                 type="text"
@@ -538,7 +536,7 @@ export const LostFoundScreen: React.FC = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder={
                   selectedReportType.includes('PERSON')
-                    ? 'उदा. रामेश्वर प्रसाद / बालक आर्यन'
+                    ? 'नाम अज्ञात हो तो “नाम अज्ञात” लिखें'
                     : 'उदा. सैमसंग मोबाइल फोन / काला चमड़े का बैग'
                 }
                 className="w-full min-h-[46px] px-3.5 rounded-2xl border border-stone-300 text-sm font-bold bg-stone-50"
@@ -600,9 +598,23 @@ export const LostFoundScreen: React.FC = () => {
                 required
                 value={locationStr}
                 onChange={(e) => setLocationStr(e.target.value)}
-                placeholder="नजदीकी landmark लिखें; GPS उपलब्ध होने पर coordinates साथ भेजे जाएंगे"
+                placeholder="नजदीकी landmark लिखें"
                 className="w-full min-h-[46px] px-3.5 rounded-2xl border border-stone-300 text-sm font-bold bg-stone-50"
               />
+              <label className="flex min-h-11 items-center gap-2 rounded-xl bg-amber-50 px-3 text-xs text-amber-950">
+                <input
+                  type="checkbox"
+                  checked={includeLocation}
+                  disabled={!deviceLocation}
+                  onChange={(e) => setIncludeLocation(e.target.checked)}
+                  className="h-4 w-4 accent-[#0B5E8E]"
+                />
+                <span>
+                  {deviceLocation
+                    ? 'मैं इस रिपोर्ट के साथ अपना वर्तमान GPS स्थान भेजने की सहमति देता/देती हूँ। (वैकल्पिक)'
+                    : 'GPS निर्देशांक उपलब्ध नहीं हैं; रिपोर्ट में केवल ऊपर दिया गया स्थान भेजा जाएगा।'}
+                </span>
+              </label>
             </div>
 
             {/* Identifying features */}

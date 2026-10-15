@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { DeoChhathSevaLogo } from './DeoChhathSevaLogo';
-import { CheckCircle2, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, ShieldCheck, Wifi, WifiOff } from 'lucide-react';
 
 /**
  * REUSABLE BRANDING FOOTER (Step 20 Requirement 6 & 27)
@@ -91,8 +91,8 @@ export const OnlineOfflineBadge: React.FC<{ isOnline: boolean; className?: strin
       <span
         className={`inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold px-2 py-0.5 rounded-lg select-none ${className}`}
       >
-        <span>🟢</span>
-        <span>Online</span>
+        <Wifi className="h-3.5 w-3.5" aria-hidden />
+        <span>ऑनलाइन</span>
       </span>
     );
   }
@@ -101,8 +101,8 @@ export const OnlineOfflineBadge: React.FC<{ isOnline: boolean; className?: strin
     <span
       className={`inline-flex items-center gap-1 bg-amber-50 text-amber-900 border border-amber-300 text-[11px] font-bold px-2 py-0.5 rounded-lg select-none ${className}`}
     >
-      <span>🟠</span>
-      <span>Offline</span>
+      <WifiOff className="h-3.5 w-3.5" aria-hidden />
+      <span>ऑफलाइन</span>
     </span>
   );
 };

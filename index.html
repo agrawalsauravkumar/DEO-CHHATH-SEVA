@@ -3,24 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <script>
-      // Gracefully prevent benign WebSocket disconnection errors in iframe/preview environment
-      window.addEventListener('unhandledrejection', function(event) {
-        var reason = event.reason;
-        var msg = reason && (reason.message || String(reason));
-        if (msg && (msg.indexOf('WebSocket') !== -1 || msg.indexOf('vite:ws') !== -1)) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-        }
-      });
-      window.addEventListener('error', function(event) {
-        var msg = event.message || '';
-        if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('vite:ws') !== -1) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-        }
-      });
-    </script>
     <title>DEO CHHATH SEVA | NEXTGEN DEVBHOOMI FOUNDATION</title>
     <meta name="description" content="रास्ता भी • सहायता भी • सेवा भी — देव, औरंगाबाद छठ पूजा श्रद्धालुओं के लिए निःशुल्क जनसेवा ऐप। NEXTGEN DEVBHOOMI FOUNDATION." />
     <link rel="icon" type="image/png" href="/branding/deo-chhath-seva-icon-192.png" />

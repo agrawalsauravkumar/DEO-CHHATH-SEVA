@@ -50,7 +50,7 @@ export const SplashScreen: React.FC = () => {
       {/* 2. Top Header / Exact Official Organization Branding */}
       <header className="pt-6 px-6 text-center space-y-1 relative z-10">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-amber-400/40">
-          <Sun className="w-3.5 h-3.5 text-amber-300 animate-spin-slow" />
+          <Sun className="w-3.5 h-3.5 text-amber-300" />
           <span className="text-[11px] sm:text-xs uppercase tracking-widest text-amber-300 font-black">
             NEXTGEN DEVBHOOMI FOUNDATION
           </span>
@@ -64,8 +64,8 @@ export const SplashScreen: React.FC = () => {
       <main className="my-auto flex flex-col items-center text-center space-y-4 py-3 px-6 relative z-10">
         <div className="relative flex items-center justify-center">
           {/* Radial Sunrise Glow */}
-          <div className="w-48 h-48 rounded-full bg-amber-500/30 blur-2xl absolute animate-pulse" />
-          <div className="relative overflow-hidden rounded-3xl border-4 border-amber-300 bg-white shadow-2xl">
+          <div className="w-48 h-48 rounded-full bg-amber-500/25 blur-2xl absolute" />
+          <div className="relative overflow-hidden rounded-3xl border-2 border-amber-300 bg-white shadow-2xl">
             <DeoChhathSevaLogo size={236} className="drop-shadow-none" />
           </div>
         </div>
@@ -73,8 +73,8 @@ export const SplashScreen: React.FC = () => {
         <div className="space-y-1.5">
           <h1 className="sr-only">DEO CHHATH SEVA — देव छठ सेवा</h1>
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-white/10 backdrop-blur-sm rounded-full border border-amber-400/40 text-xs font-bold text-amber-200 mt-1">
-            <span>☀️</span>
-            <span>देव सूर्य मंदिर व सूर्य कुंड महातीर्थ • छठ महापर्व 2026</span>
+            <Sun className="h-4 w-4 text-amber-300" aria-hidden />
+            <span>देव • औरंगाबाद • बिहार</span>
           </div>
         </div>
 

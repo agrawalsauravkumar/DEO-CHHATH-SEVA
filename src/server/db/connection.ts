@@ -55,6 +55,9 @@ if (databaseUrl && !databaseUrl.includes('placeholder_password')) {
  */
 export async function initializeDatabase(): Promise<DatabaseStatus> {
   if (!pool) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('DATABASE_URL is required in production; refusing to start without PostgreSQL.');
+    }
     return getDatabaseStatus();
   }
 
@@ -71,12 +74,13 @@ export async function initializeDatabase(): Promise<DatabaseStatus> {
       if (postgisCheck.rows.length > 0 && postgisCheck.rows[0].installed_version) {
         hasPostGisExtension = true;
       } else {
-        // Attempt to install postgis
-        try {
-          await client.query('CREATE EXTENSION IF NOT EXISTS postgis;');
-          hasPostGisExtension = true;
-        } catch (extErr: any) {
-          console.warn('⚠️ Could not auto-enable postgis extension:', extErr.message);
+        await client.query('CREATE EXTENSION IF NOT EXISTS postgis;');
+        const installedPostgis = await client.query(
+          "SELECT 1 FROM pg_extension WHERE extname = 'postgis' LIMIT 1"
+        );
+        hasPostGisExtension = installedPostgis.rows.length > 0;
+        if (!hasPostGisExtension) {
+          throw new Error('PostGIS extension is unavailable.');
         }
       }
 
@@ -98,6 +102,13 @@ export async function initializeDatabase(): Promise<DatabaseStatus> {
         }
       }
 
+      await client.query(`
+        ALTER TABLE volunteers ADD COLUMN IF NOT EXISTS languages TEXT[] NOT NULL DEFAULT '{}';
+        ALTER TABLE volunteers ADD COLUMN IF NOT EXISTS availability_time VARCHAR(150);
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_volunteers_user_id_unique
+          ON volunteers (user_id) WHERE user_id IS NOT NULL;
+      `);
+
       isConnected = true;
       connectionError = undefined;
       console.log('✅ Connected to PostgreSQL + PostGIS database.');
@@ -107,7 +118,12 @@ export async function initializeDatabase(): Promise<DatabaseStatus> {
   } catch (err: any) {
     isConnected = false;
     connectionError = err.message;
-    console.warn('ℹ️ PostgreSQL not reachable at DATABASE_URL. Seamlessly operating in High-Fidelity Standby Mode.');
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('PostgreSQL initialization failed; refusing to start without persistent storage.', {
+        cause: err,
+      });
+    }
+    console.warn('ℹ️ PostgreSQL unavailable. Using the development-only in-memory dataset.');
   }
 
   return getDatabaseStatus();
@@ -131,8 +147,12 @@ export function getDatabaseStatus(): DatabaseStatus {
   return {
     engine: 'PostgreSQL + PostGIS',
     isConfigured,
-    connectionState: isConnected ? 'CONNECTED' : 'STANDBY_LOCAL_FALLBACK',
-    databaseUrlMasked: isConfigured ? masked : 'Not configured (using robust in-memory PostGIS store)',
+    connectionState: isConnected
+      ? 'CONNECTED'
+      : connectionError
+        ? 'ERROR'
+        : 'STANDBY_LOCAL_FALLBACK',
+    databaseUrlMasked: isConfigured ? masked : 'Not configured (development-only in-memory fallback)',
     hasPostGIS: hasPostGisExtension,
     activePoolSize: pool ? pool.totalCount : 0,
     lastCheckedAt: new Date().toISOString(),
@@ -145,6 +165,9 @@ export function getDatabaseStatus(): DatabaseStatus {
  */
 export async function executeQuery<T = any>(text: string, params: any[] = []): Promise<T[] | null> {
   if (!pool || !isConnected) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('PostgreSQL is not connected; database operation rejected.');
+    }
     return null;
   }
   try {

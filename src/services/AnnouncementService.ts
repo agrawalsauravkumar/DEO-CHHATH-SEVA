@@ -10,6 +10,7 @@ import {
   AnnouncementPriority,
 } from '../types';
 import { LocationService } from './LocationService';
+import { apiRequest } from './apiClient';
 
 const STORAGE_KEY_ANNOUNCEMENTS = 'deo_official_announcements_v1';
 const STORAGE_KEY_LAST_UPDATED = 'deo_announcements_last_sync_v1';
@@ -198,9 +199,26 @@ class AnnouncementServiceManager {
     try {
       const stored = localStorage.getItem(STORAGE_KEY_ANNOUNCEMENTS);
       if (stored) {
-        this.announcements = JSON.parse(stored);
+        const cached = JSON.parse(stored) as OfficialAnnouncement[];
+        this.announcements = cached.map((announcement) => ({
+          ...announcement,
+          isVerifiedOfficial: false,
+          isActive: false,
+          badgeText: 'स्थानीय कैश • वर्तमान पुष्टि नहीं',
+          routeAlert: announcement.routeAlert
+            ? { ...announcement.routeAlert, isVerified: false, isActive: false }
+            : undefined,
+        }));
       } else {
-        this.announcements = DEFAULT_ANNOUNCEMENTS;
+        this.announcements = DEFAULT_ANNOUNCEMENTS.map((announcement) => ({
+          ...announcement,
+          isVerifiedOfficial: false,
+          isActive: false,
+          badgeText: 'डेमो सूचना • अधिकृत पुष्टि नहीं',
+          routeAlert: announcement.routeAlert
+            ? { ...announcement.routeAlert, isVerified: false, isActive: false }
+            : undefined,
+        }));
         this.saveToStorage();
       }
 
@@ -215,7 +233,15 @@ class AnnouncementServiceManager {
         localStorage.setItem(STORAGE_KEY_LAST_UPDATED, this.lastUpdated);
       }
     } catch {
-      this.announcements = DEFAULT_ANNOUNCEMENTS;
+      this.announcements = DEFAULT_ANNOUNCEMENTS.map((announcement) => ({
+        ...announcement,
+        isVerifiedOfficial: false,
+        isActive: false,
+        badgeText: 'डेमो सूचना • अधिकृत पुष्टि नहीं',
+        routeAlert: announcement.routeAlert
+          ? { ...announcement.routeAlert, isVerified: false, isActive: false }
+          : undefined,
+      }));
       this.lastUpdated = '10:00 AM';
     }
   }
@@ -235,6 +261,46 @@ class AnnouncementServiceManager {
 
   public getAllAnnouncements(): OfficialAnnouncement[] {
     return [...this.announcements];
+  }
+
+  public async syncAnnouncements(includeInactive = false): Promise<void> {
+    const data = await apiRequest<{
+      announcements: Array<{
+        id: string;
+        title: string;
+        shortDescription: string;
+        details?: string;
+        category: AnnouncementCategory;
+        priority: AnnouncementPriority;
+        status: string;
+        isVerifiedOfficial: boolean;
+        source: string;
+        publishedAt: string;
+        expiresAt?: string;
+        routeAlert?: RouteAlert;
+      }>;
+    }>(
+      includeInactive ? '/api/announcements/admin' : '/api/announcements',
+      {},
+      includeInactive
+    );
+    this.announcements = data.announcements.map((item) => ({
+      id: item.id,
+      title: item.title,
+      shortDescription: item.shortDescription,
+      details: item.details,
+      category: item.category,
+      priority: item.priority,
+      isVerifiedOfficial: item.isVerifiedOfficial,
+      publishedTime: new Date(item.publishedAt).toLocaleString('hi-IN'),
+      lastUpdatedTime: new Date(item.publishedAt).toLocaleString('hi-IN'),
+      source: item.source,
+      badgeText: item.isVerifiedOfficial ? 'VERIFIED OFFICIAL' : 'अपुष्ट सूचना',
+      isActive: item.status === 'PUBLISHED' && item.isVerifiedOfficial &&
+        (!item.expiresAt || new Date(item.expiresAt).getTime() > Date.now()),
+      routeAlert: item.routeAlert,
+    }));
+    this.saveToStorage();
   }
 
   public getActiveAnnouncements(): OfficialAnnouncement[] {
@@ -259,6 +325,12 @@ class AnnouncementServiceManager {
     return this.announcements
       .filter((a) => a.isActive && a.routeAlert && a.routeAlert.isActive)
       .map((a) => a.routeAlert as RouteAlert);
+  }
+
+  public getAllRouteAlerts(): RouteAlert[] {
+    return this.announcements
+      .filter((announcement) => announcement.routeAlert)
+      .map((announcement) => announcement.routeAlert as RouteAlert);
   }
 
   public getRouteAlertById(id: string): RouteAlert | undefined {
@@ -339,7 +411,11 @@ class AnnouncementServiceManager {
   }
 
   // Admin / Simulator capabilities for verification testing (Req 13)
-  public toggleRouteAlert(alertId: string, active: boolean): void {
+  public async toggleRouteAlert(alertId: string, active: boolean): Promise<void> {
+    await apiRequest(`/api/announcements/route-alerts/${encodeURIComponent(alertId)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive: active }),
+    }, true);
     this.announcements = this.announcements.map((ann) => {
       if (ann.routeAlert && ann.routeAlert.id === alertId) {
         return {
@@ -356,11 +432,51 @@ class AnnouncementServiceManager {
     this.saveToStorage();
   }
 
-  public addAnnouncement(announcement: Omit<OfficialAnnouncement, 'id'>): OfficialAnnouncement {
-    const newId = 'ann-' + Date.now();
+  public async setAnnouncementActive(id: string, active: boolean): Promise<void> {
+    await apiRequest(`/api/announcements/${encodeURIComponent(id)}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: active ? 'PUBLISHED' : 'EXPIRED' }),
+    }, true);
+    this.announcements = this.announcements.map((announcement) =>
+      announcement.id === id ? { ...announcement, isActive: active } : announcement
+    );
+    this.saveToStorage();
+  }
+
+  public async addAnnouncement(
+    announcement: Omit<OfficialAnnouncement, 'id'> & { expiresAt: string }
+  ): Promise<OfficialAnnouncement> {
+    const result = await apiRequest<{ announcement: {
+      id: string;
+      title: string;
+      shortDescription: string;
+      details?: string;
+      category: AnnouncementCategory;
+      priority: AnnouncementPriority;
+      isVerifiedOfficial: boolean;
+      source: string;
+      publishedAt: string;
+      expiresAt: string;
+      status: string;
+    } }>('/api/announcements', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: announcement.title,
+        shortDescription: announcement.shortDescription,
+        details: announcement.details,
+        category: announcement.category,
+        priority: announcement.priority,
+        expiresAt: announcement.expiresAt,
+      }),
+    }, true);
     const created: OfficialAnnouncement = {
       ...announcement,
-      id: newId,
+      ...result.announcement,
+      publishedTime: new Date(result.announcement.publishedAt).toLocaleString('hi-IN'),
+      lastUpdatedTime: new Date(result.announcement.publishedAt).toLocaleString('hi-IN'),
+      expiresAt: result.announcement.expiresAt,
+      badgeText: result.announcement.isVerifiedOfficial ? 'VERIFIED OFFICIAL' : 'अपुष्ट सूचना',
+      isActive: result.announcement.status === 'PUBLISHED' && result.announcement.isVerifiedOfficial,
     };
     this.announcements = [created, ...this.announcements];
     this.saveToStorage();

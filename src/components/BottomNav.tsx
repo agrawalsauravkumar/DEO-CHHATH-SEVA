@@ -1,15 +1,20 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { ScreenId } from '../types';
+import { HandHeart, House, Map, Menu } from 'lucide-react';
 
 export const BottomNav: React.FC = () => {
   const { currentScreen, navigate, seniorMode } = useApp();
 
-  const navItems: { id: ScreenId; label: string; icon: string }[] = [
-    { id: 'home', label: 'Home', icon: '🏠' },
-    { id: 'map', label: 'Map', icon: '🗺️' },
-    { id: 'help', label: 'Help', icon: '🆘' },
-    { id: 'more', label: 'More', icon: '☰' },
+  const navItems: {
+    id: ScreenId;
+    label: string;
+    icon: React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
+  }[] = [
+    { id: 'home', label: 'होम', icon: House },
+    { id: 'map', label: 'नक्शा', icon: Map },
+    { id: 'help', label: 'सहायता', icon: HandHeart },
+    { id: 'more', label: 'सेवाएँ', icon: Menu },
   ];
 
   // Hidden on splash or full-screen navigation HUD
@@ -51,15 +56,15 @@ export const BottomNav: React.FC = () => {
               {isActive && (
                 <span className="absolute top-1 w-9 h-1 bg-[#F57C00] rounded-full" />
               )}
-              <span className={`text-xl transition-transform ${isActive ? 'scale-110' : 'opacity-90'}`}>
-                {item.icon}
+              <span className={`transition-transform ${isActive ? 'scale-110' : 'opacity-90'}`}>
+                <item.icon className="h-5 w-5" aria-hidden />
               </span>
               <span
                 className={`leading-none mt-1 tracking-wide ${
                   isActive ? 'text-[#F57C00] font-black text-xs' : 'text-[#063B5C] text-[11px]'
                 }`}
               >
-                {({ home: 'होम', map: 'नक्शा', help: 'सहायता', more: 'अन्य' } as Record<string, string>)[item.id] ?? item.label}
+                {item.label}
               </span>
             </button>
           );

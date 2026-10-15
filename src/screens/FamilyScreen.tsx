@@ -8,6 +8,8 @@ import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
 import { DeoMap } from '../components/DeoMap';
 import { FamilyService } from '../services/FamilyService';
+
+const FAMILY_SAFETY_BACKEND_AVAILABLE = false;
 import {
   FamilyGroup,
   FamilyGroupMember,
@@ -225,6 +227,35 @@ export const FamilyScreen: React.FC = () => {
 
     startNavigation(memberLocationItem);
   };
+
+  if (!FAMILY_SAFETY_BACKEND_AVAILABLE) {
+    return (
+      <div className="min-h-screen bg-[#FFF8E1] px-4 py-8 font-['Mukta',sans-serif]">
+        <TopBar title="मेरा परिवार" showBack />
+        <main className="mx-auto mt-6 max-w-lg rounded-3xl border border-[#0B5E8E]/15 bg-white p-6 text-center shadow-lg">
+          <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-[#FFF8E1] text-3xl">
+            👨‍👩‍👧
+          </div>
+          <h1 className="text-xl font-black text-[#063B5C]">
+            परिवार सुरक्षा अभी उपलब्ध नहीं है
+          </h1>
+          <p className="mt-3 text-sm leading-relaxed text-stone-700">
+            इस build में परिवार समूह और लोकेशन साझा करने की सुविधा स्थायी, दूसरे डिवाइस से जुड़ी सेवा नहीं है।
+            इसलिए इस स्क्रीन से कोई समूह, लोकेशन या आपातकालीन अलर्ट सक्रिय या भेजा नहीं जाता।
+          </p>
+          <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs font-semibold text-amber-950">
+            परिवार-सुरक्षा backend, स्पष्ट सदस्य-सहमति और वास्तविक डिवाइस परीक्षण के बाद ही यह सुविधा चालू की जाएगी।
+          </p>
+          <button
+            onClick={() => navigate('more')}
+            className="mt-5 min-h-12 w-full rounded-xl bg-[#0B5E8E] px-4 text-sm font-black text-white"
+          >
+            अन्य सेवाएँ देखें
+          </button>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-stone-100/70 pb-20 flex flex-col font-['Mukta',sans-serif]">

@@ -4,9 +4,12 @@
  */
 
 import { Router } from 'express';
+import { randomInt, randomUUID } from 'node:crypto';
 import { AuthenticatedRequest, requireAuth, requireRole } from '../middleware/auth';
 import { repository } from '../db/repository';
 import { DbLostFoundStatus, DbLostFoundType } from '../db/types';
+import { asyncHandler } from '../middleware/asyncHandler';
+import { requirePersistentDatabase } from '../middleware/requirePersistentDatabase';
 
 export const lostFoundRouter = Router();
 
@@ -29,28 +32,28 @@ function isLostFoundType(value: unknown): value is DbLostFoundType {
 }
 
 // 1. Get All Reports (Optional filter by type)
-lostFoundRouter.get('/', async (req, res) => {
+lostFoundRouter.get('/', asyncHandler(async (req, res) => {
   const type = req.query.type as string | undefined;
-  const reports = await repository.getLostFoundReports(type);
+  if (type && !isLostFoundType(type)) {
+    return res.status(400).json({ error: 'Valid lost-and-found report type required' });
+  }
+  const reports = (await repository.getLostFoundReports(type)).filter((report) =>
+    report.status === 'MATCH_FOUND' || report.status === 'TRANSFERRED_TO_HELP_POINT'
+  );
   return res.json({
     total: reports.length,
-    reports: reports.map((report) => {
-      const {
-        contactName,
-        contactPhone,
-        identifyingFeatures,
-        latitude,
-        longitude,
-        photoUrl,
-        ...publicReport
-      } = report;
-      return publicReport;
-    }),
+    reports: reports.map((report) => ({
+      reportId: report.reportId,
+      type: report.type,
+      category: report.category,
+      status: report.status,
+      createdAt: report.createdAt,
+    })),
   });
-});
+}));
 
 // 2. Submit New Report
-lostFoundRouter.post('/', async (req, res) => {
+lostFoundRouter.post('/', requirePersistentDatabase, asyncHandler(async (req, res) => {
   const body = req.body as Record<string, unknown> | null;
   if (!body || typeof body !== 'object') {
     return res.status(400).json({ error: 'Valid report details required' });
@@ -101,13 +104,13 @@ lostFoundRouter.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Valid report details and contact name required' });
   }
 
-  const reportId = `LF-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+  const reportId = `LF-${new Date().getUTCFullYear()}-${randomInt(100000, 1000000)}`;
   const reportCoordinates =
     typeof latitude === 'number' && typeof longitude === 'number'
       ? { latitude, longitude }
       : {};
   const newReport = await repository.createLostFoundReport({
-    id: `rep_${Date.now()}`,
+    id: randomUUID(),
     reportId,
     type,
     category: category || 'सामान्य',
@@ -126,13 +129,24 @@ lostFoundRouter.post('/', async (req, res) => {
 
   return res.status(201).json({
     success: true,
-    message: 'रिपोर्ट सर्वर प्रक्रिया ने प्राप्त की है। स्थायी संग्रहण, सत्यापन या सहायता भेजे जाने की पुष्टि नहीं है।',
-    report: newReport,
+    message: 'रिपोर्ट सुरक्षित रूप से दर्ज हुई है। सहायता की पुष्टि के लिए कृपया सहायता केंद्र से संपर्क करें।',
+    report: {
+      id: newReport.id,
+      reportId: newReport.reportId,
+      type: newReport.type,
+      category: newReport.category,
+      title: newReport.title,
+      description: newReport.description,
+      locationName: newReport.locationName,
+      status: newReport.status,
+      createdAt: newReport.createdAt,
+      updatedAt: newReport.updatedAt,
+    },
   });
-});
+}));
 
 // 3. Update Report Status (Help Desk / Admin)
-lostFoundRouter.patch('/:id/status', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN', 'HELP_ADMIN'), async (req: AuthenticatedRequest, res) => {
+lostFoundRouter.patch('/:id/status', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN', 'HELP_ADMIN'), requirePersistentDatabase, asyncHandler(async (req: AuthenticatedRequest, res) => {
   const { status } = req.body;
   if (!isLostFoundStatus(status)) {
     return res.status(400).json({ error: 'Valid lost-and-found status required' });
@@ -154,4 +168,4 @@ lostFoundRouter.patch('/:id/status', requireAuth, requireRole('SUPER_ADMIN', 'AD
   });
 
   return res.json(updated);
-});
+}));

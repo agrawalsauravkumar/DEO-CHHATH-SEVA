@@ -91,6 +91,10 @@ export const HelpScreen: React.FC = () => {
       setFormError('सहायता हेतु स्थान साझा करने की अनुमति आवश्यक है।');
       return;
     }
+    if (!deviceLocation) {
+      setFormError('सहायता अनुरोध भेजने से पहले GPS स्थान उपलब्ध होना आवश्यक है। कृपया स्थान अनुमति देकर पुनः प्रयास करें।');
+      return;
+    }
 
     setIsSubmittingRequest(true);
     try {
@@ -217,21 +221,22 @@ export const HelpScreen: React.FC = () => {
         });
         setCopiedNotice('स्थान सफलतापूर्वक साझा किया गया।');
         setTimeout(() => setCopiedNotice(null), 3000);
-      } catch {
-        copyText(textToShare);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        await copyText(textToShare);
       }
     } else {
-      copyText(textToShare);
+      await copyText(textToShare);
     }
   };
 
-  const copyText = (txt: string) => {
+  const copyText = async (txt: string) => {
     try {
-      navigator.clipboard.writeText(txt);
+      await navigator.clipboard.writeText(txt);
       setCopiedNotice('स्थान की जानकारी कॉपी कर ली गई है।');
       setTimeout(() => setCopiedNotice(null), 3000);
     } catch {
-      setCopiedNotice('स्थान विवरण: ' + txt.slice(0, 80) + '...');
+      setCopiedNotice('स्थान की जानकारी साझा या कॉपी नहीं हो सकी। कृपया पुनः प्रयास करें।');
       setTimeout(() => setCopiedNotice(null), 4000);
     }
   };

@@ -122,8 +122,6 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
             className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[#FFD54F] hover:text-amber-100 active:scale-95 relative"
           >
             <Bell className="w-5 h-5" />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#E53935] animate-ping" />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#E53935]" />
           </button>
 
           <button

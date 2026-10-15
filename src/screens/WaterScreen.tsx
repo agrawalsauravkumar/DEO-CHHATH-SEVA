@@ -119,9 +119,9 @@ export const WaterScreen: React.FC = () => {
   const getWaterTypeLabel = (type?: string) => {
     switch (type) {
       case 'SEVA_CAMP':
-        return 'NextGen आरओ जल शिविर';
+        return 'सेवा शिविर';
       case 'WATER_TANKER':
-        return 'पीएचईडी सरकारी टैंकर';
+        return 'टैंकर';
       case 'DRINKING_WATER':
         return 'शीतल पेयजल बूथ';
       default:
@@ -135,7 +135,7 @@ export const WaterScreen: React.FC = () => {
       <DataFreshnessNotice />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
-        {/* Foundation Amrit Jal Seva Header Banner */}
+        {/* Verified water facilities are supplied by the operational data source. */}
         <div className="bg-gradient-to-br from-[#0B5E8E] via-[#0284C7] to-[#0369A1] text-white rounded-3xl p-5 border-2 border-cyan-400/40 shadow-xl space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-white/20 border border-white/30 text-white flex items-center justify-center font-bold text-2xl shrink-0">
@@ -146,12 +146,14 @@ export const WaterScreen: React.FC = () => {
                 NEXTGEN DEVBHOOMI FOUNDATION
               </span>
               <h2 className="text-lg font-black text-white leading-tight">
-                अमृत जल सेवा केंद्र
+                पेयजल सुविधा
               </h2>
             </div>
           </div>
           <p className="text-xs text-cyan-100 leading-relaxed">
-            मंदिर पूर्वी द्वार, सूर्य कुंड तट, रुद्र कुंड एवं मुख्य पार्किंग स्थलों पर 24 घंटे आरओ शुद्ध शीतल पेयजल व टैंकर की निःशुल्क व्यवस्था।
+            {waterList.length
+              ? 'दिखाए गए स्थल अधिकृत स्रोत से सत्यापित हैं; जल की वर्तमान उपलब्धता और समय-सारणी की स्थानीय पुष्टि करें।'
+              : 'सत्यापित पेयजल केंद्रों का डेटा अभी उपलब्ध नहीं है। यहाँ कोई अनुमानित स्थान या सेवा उपलब्धता नहीं दिखाई जाएगी।'}
           </p>
 
           <div className="pt-1 flex items-center gap-2">
@@ -168,7 +170,7 @@ export const WaterScreen: React.FC = () => {
         {/* Devotional Quote */}
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-xs text-amber-950 flex items-center gap-2">
           <HeartHandshake className="w-4 h-4 text-amber-800 shrink-0" />
-          <span className="font-bold">“जल सेवा ही नारायण सेवा है — व्रतियों व श्रद्धालुओं हेतु पूर्णतः निःशुल्क।”</span>
+          <span className="font-bold">“जल सेवा ही नारायण सेवा है।”</span>
         </div>
 
         {/* GPS Error Alert */}
@@ -200,7 +202,7 @@ export const WaterScreen: React.FC = () => {
                   : 'bg-stone-200 text-stone-700'
               }`}
             >
-              NextGen आरओ शिविर
+              सेवा शिविर
             </button>
             <button
               onClick={() => setFilterType('WATER_TANKER')}
@@ -210,7 +212,7 @@ export const WaterScreen: React.FC = () => {
                   : 'bg-stone-200 text-stone-700'
               }`}
             >
-              पीएचईडी टैंकर
+              टैंकर जानकारी
             </button>
           </div>
 
@@ -260,11 +262,9 @@ export const WaterScreen: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="text-right shrink-0">
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 inline-block">
-                      ✓ निःशुल्क जल
-                    </span>
-                  </div>
+                  <span className="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black text-emerald-800">
+                    स्थल सत्यापित
+                  </span>
                 </div>
 
                 <p className="text-xs text-stone-600 leading-relaxed">

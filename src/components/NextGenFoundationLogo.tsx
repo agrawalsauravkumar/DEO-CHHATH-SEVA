@@ -14,8 +14,8 @@ interface Props {
 }
 
 /**
- * NEXTGEN DEVBHOOMI FOUNDATION - OFFICIAL DEO CHHATH SEVA EMBLEM
- * Re-exports the unified official Deo Chhath Seva logo.
+ * Compatibility alias for the supplied DEO CHHATH SEVA logo.
+ * The asset is the combined app/foundation lockup, not a standalone foundation mark.
  */
 export const NextGenFoundationLogo: React.FC<Props> = (props) => {
   return <DeoChhathSevaLogo {...props} />;

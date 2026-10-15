@@ -1,53 +1,18 @@
 import {
   Volunteer,
-  VolunteerAssignment,
   VolunteerVerificationStatus,
   VolunteerAvailability,
   UserRole,
   HelpRequest,
 } from '../types';
 import { HelpService } from './HelpService';
+import { apiRequest } from './apiClient';
 
 const STORAGE_VOLUNTEER_KEY = 'deo_chhath_active_volunteer_v1';
 const STORAGE_ALL_VOLUNTEERS_KEY = 'deo_chhath_all_volunteers_v1';
-const STORAGE_ASSIGNMENTS_KEY = 'deo_chhath_volunteer_assignments_v1';
 const STORAGE_CURRENT_ROLE_KEY = 'deo_chhath_user_role_v1';
 
-// Seed demo verified volunteer for immediate testing if desired
-const DEFAULT_VOLUNTEERS: Volunteer[] = [
-  {
-    id: 'vol-rahul-01',
-    name: 'राहुल कुमार (सेवा दल प्रमुख)',
-    phone: '9876543210',
-    serviceArea: 'सूर्य मंदिर पूर्वी द्वार',
-    services: ['🆘 सहायता', '👴 वरिष्ठ नागरिक सहायता', '🚑 मेडिकल सहायता', '🧭 रास्ता बताना'],
-    languages: ['हिन्दी', 'मगही', 'भोजपुरी'],
-    availabilityTime: '24 घंटे निरंतर सेवा',
-    verificationStatus: 'VERIFIED',
-    availability: 'AVAILABLE',
-    locationSharingEnabled: true,
-    lastLocation: { latitude: 24.6540, longitude: 84.4385, timestamp: Date.now() },
-    badge: 'फर्स्ट एड व व्हीलचेयर सारथी',
-    createdAt: '2026-10-01T10:00:00Z',
-    updatedAt: '2026-10-03T02:00:00Z',
-  },
-  {
-    id: 'vol-amit-02',
-    name: 'अमित कुमार सिंह',
-    phone: '9876543211',
-    serviceArea: 'सूर्य कुंड घाट 1 व 2',
-    services: ['🆘 सहायता', '👨‍👩‍👧 परिवार सहायता', '🔎 Lost & Found'],
-    languages: ['हिन्दी', 'भोजपुरी'],
-    availabilityTime: 'प्रातः एवं सांध्य अर्घ्य समय',
-    verificationStatus: 'VERIFIED',
-    availability: 'AVAILABLE',
-    locationSharingEnabled: true,
-    lastLocation: { latitude: 24.6546, longitude: 84.4376, timestamp: Date.now() },
-    badge: 'घाट सुरक्षा व जल सेवा',
-    createdAt: '2026-10-01T11:00:00Z',
-    updatedAt: '2026-10-03T02:00:00Z',
-  },
-];
+const DEFAULT_VOLUNTEERS: Volunteer[] = [];
 
 class VolunteerServiceManager {
   private activeVolunteerId: string | null = null;
@@ -70,7 +35,13 @@ class VolunteerServiceManager {
       // Ensure volunteers seed exists
       const existing = localStorage.getItem(STORAGE_ALL_VOLUNTEERS_KEY);
       if (!existing) {
-        localStorage.setItem(STORAGE_ALL_VOLUNTEERS_KEY, JSON.stringify(DEFAULT_VOLUNTEERS));
+        localStorage.setItem(STORAGE_ALL_VOLUNTEERS_KEY, JSON.stringify([]));
+      } else {
+        const stored = JSON.parse(existing) as Volunteer[];
+        const genuineProfiles = stored.filter(
+          (volunteer) => volunteer.id !== 'vol-rahul-01' && volunteer.id !== 'vol-amit-02'
+        );
+        if (genuineProfiles.length !== stored.length) this.saveVolunteers(genuineProfiles);
       }
     } catch {
       // Ignore
@@ -109,33 +80,55 @@ class VolunteerServiceManager {
   }
 
   // 1. Volunteer Registration (Defaults strictly to PENDING)
-  public registerVolunteer(data: {
+  public async registerVolunteer(data: {
     name: string;
     phone: string;
     serviceArea: string;
     services: string[];
     languages: string[];
     availabilityTime?: string;
-  }): Volunteer {
-    const volunteers = this.getAllVolunteers();
+  }): Promise<Volunteer> {
+    const result = await apiRequest<{ volunteer: {
+      id: string;
+      fullName: string;
+      phone: string;
+      badgeNumber: string;
+      status: Volunteer['verificationStatus'];
+      serviceAreas: string[];
+      servicesOffered: string[];
+      languages: string[];
+      availabilityTime?: string;
+      isOnDuty: boolean;
+      createdAt: string;
+      updatedAt: string;
+    } }>('/api/volunteers', {
+      method: 'POST',
+      body: JSON.stringify({
+        fullName: data.name.trim(),
+        phone: data.phone.trim(),
+        serviceAreas: [data.serviceArea],
+        servicesOffered: data.services,
+        languages: data.languages,
+        availabilityTime: data.availabilityTime,
+        currentAssignedZone: data.serviceArea,
+      }),
+    }, true, 'user');
     const newVol: Volunteer = {
-      id: `vol-${Date.now()}`,
-      name: data.name.trim(),
-      phone: data.phone.trim(),
-      serviceArea: data.serviceArea,
-      services: data.services,
-      languages: data.languages,
-      availabilityTime: data.availabilityTime || '24 घंटे',
-      verificationStatus: 'PENDING', // Strict specification rule: PENDING initially
-      availability: 'UNAVAILABLE',
+      id: result.volunteer.id,
+      name: result.volunteer.fullName,
+      phone: result.volunteer.phone,
+      serviceArea: result.volunteer.serviceAreas.join(', '),
+      services: result.volunteer.servicesOffered,
+      languages: result.volunteer.languages,
+      availabilityTime: result.volunteer.availabilityTime || data.availabilityTime || '24 घंटे',
+      verificationStatus: result.volunteer.status,
+      availability: result.volunteer.isOnDuty ? 'AVAILABLE' : 'UNAVAILABLE',
       locationSharingEnabled: false,
-      badge: 'स्वयंसेवक (Verification Pending)',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      badge: result.volunteer.badgeNumber,
+      createdAt: result.volunteer.createdAt,
+      updatedAt: result.volunteer.updatedAt,
     };
-
-    volunteers.unshift(newVol);
-    this.saveVolunteers(volunteers);
+    this.saveVolunteers([newVol, ...this.getAllVolunteers().filter((v) => v.id !== newVol.id)]);
     this.setActiveVolunteerId(newVol.id);
     this.setCurrentUserRole('VOLUNTEER');
     return newVol;
@@ -144,10 +137,50 @@ class VolunteerServiceManager {
   public getAllVolunteers(): Volunteer[] {
     try {
       const raw = localStorage.getItem(STORAGE_ALL_VOLUNTEERS_KEY);
-      return raw ? JSON.parse(raw) : DEFAULT_VOLUNTEERS;
+      return raw ? JSON.parse(raw) : [];
     } catch {
-      return DEFAULT_VOLUNTEERS;
+      return [];
     }
+  }
+
+  public async syncMyVolunteerProfile(): Promise<Volunteer | undefined> {
+    const result = await apiRequest<{ volunteer: {
+      id: string;
+      fullName: string;
+      phone: string;
+      badgeNumber: string;
+      status: VolunteerVerificationStatus;
+      serviceAreas: string[];
+      servicesOffered: string[];
+      languages: string[];
+      availabilityTime?: string;
+      isOnDuty: boolean;
+      createdAt: string;
+      updatedAt: string;
+    } | null }>('/api/volunteers/me', {}, true, 'user');
+    if (!result.volunteer) {
+      this.setActiveVolunteerId(null);
+      return undefined;
+    }
+    const saved = result.volunteer;
+    const profile: Volunteer = {
+      id: saved.id,
+      name: saved.fullName,
+      phone: saved.phone,
+      serviceArea: saved.serviceAreas.join(', '),
+      services: saved.servicesOffered,
+      languages: saved.languages,
+      availabilityTime: saved.availabilityTime || '',
+      verificationStatus: saved.status,
+      availability: saved.isOnDuty ? 'AVAILABLE' : 'UNAVAILABLE',
+      locationSharingEnabled: false,
+      badge: saved.badgeNumber,
+      createdAt: saved.createdAt,
+      updatedAt: saved.updatedAt,
+    };
+    this.setActiveVolunteerId(profile.id);
+    this.saveVolunteers([profile, ...this.getAllVolunteers().filter((item) => item.id !== profile.id)]);
+    return profile;
   }
 
   public getVerifiedVolunteers(): Volunteer[] {
@@ -193,16 +226,60 @@ class VolunteerServiceManager {
   }
 
   // Admin Verification Toggle (Used by Admin Dashboard & Dev verification tool)
-  public adminVerifyVolunteer(volunteerId: string, status: VolunteerVerificationStatus): boolean {
-    const updated = this.updateVolunteerProfile(volunteerId, {
-      verificationStatus: status,
-      badge: status === 'VERIFIED' ? '✅ अधिकृत स्वयंसेवक' : undefined,
-    });
-    return !!updated;
+  public async syncAdminVolunteers(): Promise<void> {
+    const data = await apiRequest<{ volunteers: Array<{
+      id: string;
+      fullName: string;
+      phone: string;
+      badgeNumber: string;
+      status: VolunteerVerificationStatus;
+      serviceAreas: string[];
+      servicesOffered: string[];
+      languages: string[];
+      availabilityTime?: string;
+      isOnDuty: boolean;
+      createdAt: string;
+      updatedAt: string;
+    }> }>('/api/volunteers/admin', {}, true);
+    this.saveVolunteers(data.volunteers.map((volunteer) => ({
+      id: volunteer.id,
+      name: volunteer.fullName,
+      phone: volunteer.phone,
+      serviceArea: volunteer.serviceAreas.join(', '),
+      services: volunteer.servicesOffered,
+      languages: volunteer.languages,
+      availabilityTime: volunteer.availabilityTime || '',
+      verificationStatus: volunteer.status,
+      availability: volunteer.isOnDuty ? 'AVAILABLE' : 'UNAVAILABLE',
+      locationSharingEnabled: false,
+      badge: volunteer.badgeNumber,
+      createdAt: volunteer.createdAt,
+      updatedAt: volunteer.updatedAt,
+    })));
+  }
+
+  public async adminVerifyVolunteer(volunteerId: string, status: VolunteerVerificationStatus): Promise<boolean> {
+    const response = await apiRequest<{ volunteer: { id: string; status: VolunteerVerificationStatus } }>(
+      `/api/volunteers/${encodeURIComponent(volunteerId)}/status`,
+      { method: 'PATCH', body: JSON.stringify({ status }) },
+      true
+    );
+    const volunteer = this.getVolunteerProfile(volunteerId);
+    if (volunteer) {
+      this.updateVolunteerProfile(volunteerId, {
+        verificationStatus: response.volunteer.status,
+        badge: response.volunteer.status === 'VERIFIED' ? '✅ अधिकृत स्वयंसेवक' : volunteer.badge,
+      });
+    }
+    return true;
   }
 
   // 5. Availability Control
-  public setAvailability(id: string, availability: VolunteerAvailability): void {
+  public async setAvailability(id: string, availability: VolunteerAvailability): Promise<void> {
+    await apiRequest(`/api/volunteers/${encodeURIComponent(id)}/duty`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isOnDuty: availability === 'AVAILABLE' }),
+    }, true, 'user');
     this.updateVolunteerProfile(id, { availability });
   }
 
@@ -226,140 +303,33 @@ class VolunteerServiceManager {
   }
 
   // Volunteer Accepts Request
-  public acceptRequest(volunteerId: string, requestId: string): boolean {
-    const volunteer = this.getVolunteerProfile(volunteerId);
-    if (!volunteer || volunteer.verificationStatus !== 'VERIFIED') return false;
-
-    const allRequests = HelpService.getHelpRequests();
-    const req = allRequests.find((r) => r.id === requestId);
-    if (!req) return false;
-
-    // Update HelpRequest
-    req.status = 'स्वयंसेवक assigned';
-    req.assignedVolunteerId = volunteerId;
-    req.volunteerName = volunteer.name;
-    req.updatedAt = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
-
-    // Save back to HelpService localStorage
-    try {
-      localStorage.setItem('deo_chhath_user_help_requests_v1', JSON.stringify(allRequests));
-    } catch {
-      // Ignore
-    }
-
-    // Record Assignment
-    this.recordAssignment(requestId, volunteerId, 'ASSIGNED');
+  public async acceptRequest(_volunteerId: string, requestId: string): Promise<boolean> {
+    await HelpService.updateHelpRequestStatus(requestId, 'स्वयंसेवक assigned', undefined, 'user');
     return true;
   }
 
   // Volunteer Rejects Request
-  public rejectRequest(volunteerId: string, requestId: string, reason?: string): boolean {
-    const allRequests = HelpService.getHelpRequests();
-    const req = allRequests.find((r) => r.id === requestId);
-    if (!req) return false;
-
-    if (req.assignedVolunteerId === volunteerId) {
-      req.assignedVolunteerId = undefined;
-      req.volunteerName = undefined;
-      req.status = 'देखा गया';
-      req.updatedAt = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
-
-      try {
-        localStorage.setItem('deo_chhath_user_help_requests_v1', JSON.stringify(allRequests));
-      } catch {
-        // Ignore
-      }
-    }
-
-    this.recordAssignment(requestId, volunteerId, 'REJECTED', reason);
+  public async rejectRequest(_volunteerId: string, requestId: string, reason?: string): Promise<boolean> {
+    await HelpService.updateHelpRequestStatus(requestId, 'प्राप्त', reason, 'user');
     return true;
   }
 
   // Volunteer Starts Assistance
-  public startRequest(volunteerId: string, requestId: string): boolean {
-    const allRequests = HelpService.getHelpRequests();
-    const req = allRequests.find((r) => r.id === requestId);
-    if (!req || req.assignedVolunteerId !== volunteerId) return false;
-
-    req.status = 'सहायता जारी';
-    req.updatedAt = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
-
-    try {
-      localStorage.setItem('deo_chhath_user_help_requests_v1', JSON.stringify(allRequests));
-    } catch {
-      // Ignore
-    }
-
-    this.recordAssignment(requestId, volunteerId, 'IN_PROGRESS');
+  public async startRequest(_volunteerId: string, requestId: string): Promise<boolean> {
+    await HelpService.updateHelpRequestStatus(requestId, 'सहायता जारी', undefined, 'user');
     return true;
   }
 
   // Volunteer Completes Assistance
-  public completeRequest(volunteerId: string, requestId: string): boolean {
-    const allRequests = HelpService.getHelpRequests();
-    const req = allRequests.find((r) => r.id === requestId);
-    if (!req || req.assignedVolunteerId !== volunteerId) return false;
-
-    req.status = 'समाधान किया गया';
-    req.updatedAt = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
-
-    try {
-      localStorage.setItem('deo_chhath_user_help_requests_v1', JSON.stringify(allRequests));
-    } catch {
-      // Ignore
-    }
-
-    this.recordAssignment(requestId, volunteerId, 'RESOLVED');
+  public async completeRequest(_volunteerId: string, requestId: string): Promise<boolean> {
+    await HelpService.updateHelpRequestStatus(requestId, 'समाधान किया गया', undefined, 'user');
     return true;
   }
 
   // Escalate Request to Admin
-  public escalateRequest(volunteerId: string, requestId: string, reason: string): boolean {
-    const allRequests = HelpService.getHelpRequests();
-    const req = allRequests.find((r) => r.id === requestId);
-    if (!req) return false;
-
-    req.status = 'ESCALATED';
-    req.description = `${req.description} [एस्केलेशन कारण: ${reason}]`;
-    req.updatedAt = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
-
-    try {
-      localStorage.setItem('deo_chhath_user_help_requests_v1', JSON.stringify(allRequests));
-    } catch {
-      // Ignore
-    }
-
-    this.recordAssignment(requestId, volunteerId, 'ESCALATED', reason);
+  public async escalateRequest(_volunteerId: string, requestId: string, reason: string): Promise<boolean> {
+    await HelpService.updateHelpRequestStatus(requestId, 'ESCALATED', reason, 'user');
     return true;
-  }
-
-  private recordAssignment(
-    requestId: string,
-    volunteerId: string,
-    status: VolunteerAssignment['status'],
-    notes?: string
-  ) {
-    try {
-      const raw = localStorage.getItem(STORAGE_ASSIGNMENTS_KEY);
-      const list: VolunteerAssignment[] = raw ? JSON.parse(raw) : [];
-
-      const newAssignment: VolunteerAssignment = {
-        id: `asg-${Date.now()}`,
-        requestId,
-        volunteerId,
-        status,
-        assignedAt: new Date().toISOString(),
-        acceptedAt: status === 'ASSIGNED' ? new Date().toISOString() : undefined,
-        completedAt: status === 'RESOLVED' ? new Date().toISOString() : undefined,
-        updatedAt: new Date().toISOString(),
-        notes,
-      };
-
-      list.unshift(newAssignment);
-      localStorage.setItem(STORAGE_ASSIGNMENTS_KEY, JSON.stringify(list));
-    } catch {
-      // Ignore
-    }
   }
 }
 

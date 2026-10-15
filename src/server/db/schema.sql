@@ -49,6 +49,8 @@ CREATE TABLE IF NOT EXISTS volunteers (
     status volunteer_status DEFAULT 'PENDING',
     service_areas TEXT[] DEFAULT '{}',
     services_offered TEXT[] DEFAULT '{}',
+    languages TEXT[] NOT NULL DEFAULT '{}',
+    availability_time VARCHAR(150),
     current_assigned_zone VARCHAR(100),
     is_on_duty BOOLEAN DEFAULT false,
     verified_by UUID REFERENCES users(id),
@@ -57,6 +59,11 @@ CREATE TABLE IF NOT EXISTS volunteers (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE volunteers ADD COLUMN IF NOT EXISTS languages TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE volunteers ADD COLUMN IF NOT EXISTS availability_time VARCHAR(150);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_volunteers_user_id_unique
+    ON volunteers (user_id) WHERE user_id IS NOT NULL;
 
 -- 5. Facilities Table (Unified)
 CREATE TABLE IF NOT EXISTS facilities (

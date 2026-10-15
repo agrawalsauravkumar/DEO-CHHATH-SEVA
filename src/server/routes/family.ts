@@ -10,6 +10,10 @@ import { requireAuth, AuthenticatedRequest } from '../middleware/auth';
 
 export const familyRouter = Router();
 
+familyRouter.use((_req, res) => res.status(503).json({
+  error: 'Family safety service is not backed by persistent storage and is unavailable.',
+}));
+
 // 1. Create Family Group
 familyRouter.post('/groups', requireAuth, async (req: AuthenticatedRequest, res) => {
   const { groupName, meetingPointName } = req.body;

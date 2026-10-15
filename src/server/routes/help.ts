@@ -3,24 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { randomUUID } from 'node:crypto';
 import { Router } from 'express';
 import { repository } from '../db/repository';
 import { DbHelpRequestStatus } from '../db/types';
-import { requireAuth, requireRole, AuthenticatedRequest } from '../middleware/auth';
+import { AuthenticatedRequest, requireAuth, requireRole } from '../middleware/auth';
+import { asyncHandler } from '../middleware/asyncHandler';
+import { requirePersistentDatabase } from '../middleware/requirePersistentDatabase';
 
 export const helpRouter = Router();
 
 function isHelpRequestStatus(value: unknown): value is DbHelpRequestStatus {
-  return value === 'RECEIVED' ||
-    value === 'ASSIGNED' ||
-    value === 'IN_PROGRESS' ||
-    value === 'ESCALATED' ||
-    value === 'RESOLVED' ||
-    value === 'CANCELLED';
+  return value === 'RECEIVED' || value === 'ASSIGNED' || value === 'IN_PROGRESS' ||
+    value === 'ESCALATED' || value === 'RESOLVED' || value === 'CANCELLED';
 }
 
-// 1. Get Official Help Points & Emergency Helplines
-helpRouter.get('/points', async (req, res) => {
+helpRouter.get('/points', asyncHandler(async (_req, res) => {
   const points = await repository.getFacilities('HELP');
   return res.json({
     helplines: {
@@ -29,87 +27,156 @@ helpRouter.get('/points', async (req, res) => {
       fire: '101',
       women: '181',
       elderline: '14567',
-      melaControlRoom: '06186-224200',
     },
     helpPoints: points,
   });
-});
+}));
 
-// 2. Submit Help Request (SOS)
-helpRouter.post('/request', async (req, res) => {
+helpRouter.post('/request', requirePersistentDatabase, asyncHandler(async (req, res) => {
   const { type, description, userName, userPhone, latitude, longitude } = req.body;
   if (
-    typeof type !== 'string' ||
-    !type.trim() ||
-    type.length > 80 ||
-    typeof description !== 'string' ||
-    !description.trim() ||
-    description.length > 2000 ||
+    typeof type !== 'string' || !type.trim() || type.length > 80 ||
+    typeof description !== 'string' || !description.trim() || description.length > 2000 ||
     (userName !== undefined && (typeof userName !== 'string' || userName.length > 120)) ||
-    (userPhone !== undefined && (typeof userPhone !== 'string' || !/^\+?[\d\s()-]{7,20}$/.test(userPhone))) ||
-    ((latitude !== undefined || longitude !== undefined) &&
-      (typeof latitude !== 'number' ||
-        !Number.isFinite(latitude) ||
-        latitude < -90 ||
-        latitude > 90 ||
-        typeof longitude !== 'number' ||
-        !Number.isFinite(longitude) ||
-        longitude < -180 ||
-        longitude > 180))
+    (userPhone !== undefined &&
+      (typeof userPhone !== 'string' || !/^\+?[\d\s()-]{7,20}$/.test(userPhone))) ||
+    typeof latitude !== 'number' || !Number.isFinite(latitude) || latitude < -90 || latitude > 90 ||
+    typeof longitude !== 'number' || !Number.isFinite(longitude) || longitude < -180 || longitude > 180
   ) {
     return res.status(400).json({ error: 'Valid help request details required' });
   }
 
-  const reqNumber = `REQ-DEO-${Date.now().toString().slice(-6)}`;
-  const newReq = await repository.createHelpRequest({
-    id: `help-${Date.now()}`,
-    requestNumber: reqNumber,
+  const now = new Date().toISOString();
+  const request = await repository.createHelpRequest({
+    id: randomUUID(),
+    requestNumber: `REQ-DEO-${randomUUID().slice(0, 8).toUpperCase()}`,
     type: type.trim(),
     description: description.trim(),
-    userName: userName || 'अज्ञात श्रद्धालु',
-    userPhone: userPhone || '',
+    userName: userName?.trim() || 'अज्ञात श्रद्धालु',
+    userPhone: userPhone?.trim() || '',
     latitude,
     longitude,
     status: 'RECEIVED',
     priority: 'NORMAL',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: now,
+    updatedAt: now,
   });
-
   return res.status(201).json({
     success: true,
-    message: 'सर्वर प्रक्रिया ने अनुरोध प्राप्त किया है। स्थायी संग्रहण या सहायता भेजे जाने की पुष्टि नहीं है।',
-    request: newReq,
+    message: 'आपका सहायता अनुरोध सफलतापूर्वक दर्ज हुआ है।',
+    request,
   });
-});
+}));
 
-// 3. Get Help Requests (Volunteers & Admin)
-helpRouter.get('/requests', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN', 'HELP_ADMIN', 'VOLUNTEER'), async (req, res) => {
-  const status = req.query.status as string | undefined;
-  const requests = await repository.getHelpRequests(status);
-  return res.json({ total: requests.length, requests });
-});
+helpRouter.get(
+  '/requests',
+  requireAuth,
+  requireRole('SUPER_ADMIN', 'ADMIN', 'HELP_ADMIN', 'VOLUNTEER', 'USER'),
+  requirePersistentDatabase,
+  asyncHandler(async (req: AuthenticatedRequest, res) => {
+    const status = req.query.status as string | undefined;
+    if (status && !isHelpRequestStatus(status)) {
+      return res.status(400).json({ error: 'Valid help request status required' });
+    }
+    const isAdmin = ['SUPER_ADMIN', 'ADMIN', 'HELP_ADMIN'].includes(req.user!.role);
+    let requests = await repository.getHelpRequests(status);
+    if (!isAdmin) {
+      const volunteer = (await repository.getVolunteers()).find(
+        (item) => item.userId === req.user!.id && item.status === 'VERIFIED'
+      );
+      if (!volunteer) return res.status(403).json({ error: 'Verified volunteer account required' });
+      requests = requests.filter(
+        (item) => !item.assignedVolunteerId || item.assignedVolunteerId === volunteer.id
+      );
+      requests = requests.map((item) => item.assignedVolunteerId === volunteer.id
+        ? item
+        : { ...item, userPhone: undefined });
+    }
+    return res.json({ total: requests.length, requests });
+  })
+);
 
-// 4. Update Help Request Status (Assign / Resolve)
-helpRouter.patch('/requests/:id', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN', 'HELP_ADMIN', 'VOLUNTEER'), async (req: AuthenticatedRequest, res) => {
-  const { status, resolutionNotes } = req.body;
-  if (!isHelpRequestStatus(status)) {
-    return res.status(400).json({ error: 'Valid help request status required' });
-  }
-  const updated = await repository.updateHelpRequestStatus(req.params.id, status, resolutionNotes);
-  if (!updated) {
-    return res.status(404).json({ error: 'Help request not found' });
-  }
+helpRouter.patch(
+  '/requests/:id',
+  requireAuth,
+  requireRole('SUPER_ADMIN', 'ADMIN', 'HELP_ADMIN', 'VOLUNTEER', 'USER'),
+  asyncHandler(async (req: AuthenticatedRequest, res) => {
+    const { status, resolutionNotes } = req.body;
+    if (!isHelpRequestStatus(status)) {
+      return res.status(400).json({ error: 'Valid help request status required' });
+    }
+    if (resolutionNotes !== undefined &&
+      (typeof resolutionNotes !== 'string' || resolutionNotes.length > 2000)) {
+      return res.status(400).json({ error: 'Resolution notes must be 2000 characters or fewer' });
+    }
 
-  await repository.logAudit({
-    userId: req.user?.id,
-    userName: req.user?.fullName,
-    action: 'HELP_REQUEST_UPDATE',
-    entity: 'HelpRequest',
-    entityId: updated.id,
-    newValueSummary: `Status set to ${status}`,
-    ipAddress: req.ip,
-  });
+    const isAdmin = ['SUPER_ADMIN', 'ADMIN', 'HELP_ADMIN'].includes(req.user!.role);
+    let assignedVolunteerId: string | undefined;
+    if (isAdmin && req.body.assignedVolunteerId !== undefined) {
+      if (typeof req.body.assignedVolunteerId !== 'string') {
+        return res.status(400).json({ error: 'assignedVolunteerId must be a string' });
+      }
+      const volunteer = (await repository.getVolunteers()).find(
+        (item) => item.id === req.body.assignedVolunteerId && item.status === 'VERIFIED'
+      );
+      if (!volunteer) return res.status(400).json({ error: 'Verified volunteer not found' });
+      assignedVolunteerId = volunteer.id;
+    }
 
-  return res.json(updated);
-});
+    if (!isAdmin) {
+      const volunteer = (await repository.getVolunteers()).find(
+        (item) => item.userId === req.user!.id && item.status === 'VERIFIED'
+      );
+      if (!volunteer) return res.status(403).json({ error: 'Verified volunteer account required' });
+      const existing = (await repository.getHelpRequests()).find((item) => item.id === req.params.id);
+      if (!existing) return res.status(404).json({ error: 'Help request not found' });
+      if (status === 'RECEIVED' && existing.assignedVolunteerId === volunteer.id) {
+        const released = await repository.releaseHelpRequest(req.params.id, volunteer.id);
+        if (!released) return res.status(409).json({ error: 'Help request assignment changed; refresh and retry' });
+        await repository.logAudit({
+          userId: req.user?.id,
+          userName: req.user?.fullName,
+          action: 'HELP_REQUEST_RELEASED',
+          entity: 'HelpRequest',
+          entityId: released.id,
+          newValueSummary: 'Volunteer released the assignment',
+          ipAddress: req.ip,
+        });
+        return res.json(released);
+      }
+      if (status === 'ASSIGNED' && !existing.assignedVolunteerId) {
+        if (!volunteer.isOnDuty) {
+          return res.status(403).json({ error: 'Set yourself on duty before accepting a help request' });
+        }
+        assignedVolunteerId = volunteer.id;
+      } else if (existing.assignedVolunteerId !== volunteer.id) {
+        return res.status(403).json({ error: 'You may only update a request assigned to you' });
+      }
+    }
+
+    const updated = await repository.updateHelpRequestStatus(
+      req.params.id,
+      status,
+      resolutionNotes,
+      assignedVolunteerId
+    );
+    if (!updated) {
+      return res.status(status === 'ASSIGNED' ? 409 : 404).json({
+        error: status === 'ASSIGNED'
+          ? 'Help request was just assigned to another volunteer; refresh the list'
+          : 'Help request not found',
+      });
+    }
+
+    await repository.logAudit({
+      userId: req.user?.id,
+      userName: req.user?.fullName,
+      action: 'HELP_REQUEST_UPDATE',
+      entity: 'HelpRequest',
+      entityId: updated.id,
+      newValueSummary: `Status set to ${updated.status}`,
+      ipAddress: req.ip,
+    });
+    return res.json(updated);
+  })
+);

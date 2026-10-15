@@ -3,14 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
 import { apiRouter } from './src/server/routes';
 import { initializeDatabase } from './src/server/db/connection';
-
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -72,14 +70,18 @@ app.use('/api', apiRouter);
 // VITE DEV SERVER OR STATIC PRODUCTION SERVE
 // ================================================================
 async function startServer() {
-  // 1. Initialize PostgreSQL + PostGIS or Standby local store
+  // 1. Initialize PostgreSQL + PostGIS before accepting requests.
   await initializeDatabase();
 
   if (!isProd) {
     // Development: Create Vite server in middleware mode
     const { createServer } = await import('vite');
     const vite = await createServer({
-      server: { middlewareMode: true, hmr: false },
+      server: {
+        middlewareMode: true,
+        hmr: false,
+        ws: { port: PORT + 1000 },
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);

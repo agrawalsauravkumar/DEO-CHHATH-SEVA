@@ -13,7 +13,10 @@
     "android:open": "cap open android",
     "clean": "node scripts/clean.mjs",
     "postinstall": "node scripts/patch-leaflet.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test": "npm run test:announcements && npm run test:app",
+    "test:app": "tsx --test src/screens/homeActions.test.ts src/services/MapFacilityValidation.test.ts src/utils/indianMobileNumber.test.ts",
+    "test:announcements": "tsx --test src/services/VerifiedAnnouncementValidation.test.ts"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.3",

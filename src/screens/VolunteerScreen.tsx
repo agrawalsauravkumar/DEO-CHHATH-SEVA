@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
 import { VolunteerService } from '../services/VolunteerService';
-import { Volunteer, UserRole } from '../types';
+import { Volunteer } from '../types';
 import {
   HeartHandshake,
   UserCheck,
@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   MapPin,
   ArrowRight,
-  ShieldAlert,
   Languages,
   CheckCircle2,
   AlertCircle,
@@ -21,45 +20,27 @@ import {
 
 export const VolunteerScreen: React.FC = () => {
   const { navigate } = useApp();
-  const [profile, setProfile] = useState<Volunteer | undefined>(() =>
-    VolunteerService.getVolunteerProfile()
-  );
-  const [currentRole, setCurrentRole] = useState<UserRole>(() =>
-    VolunteerService.getCurrentUserRole()
-  );
+  const [profile, setProfile] = useState<Volunteer | undefined>();
   const [adminNotice, setAdminNotice] = useState<string | null>(null);
 
   useEffect(() => {
-    setProfile(VolunteerService.getVolunteerProfile());
-    setCurrentRole(VolunteerService.getCurrentUserRole());
+    let isMounted = true;
+    VolunteerService.syncMyVolunteerProfile()
+      .then((volunteer) => {
+        if (isMounted) setProfile(volunteer);
+      })
+      .catch((error: unknown) => {
+        if (isMounted) {
+          setAdminNotice(error instanceof Error ? error.message : 'स्वयंसेवक प्रोफाइल सर्वर से लोड नहीं हुई।');
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const isVerified = profile?.verificationStatus === 'VERIFIED';
   const isPending = profile?.verificationStatus === 'PENDING';
-
-  // Admin Quick Test Verification (Prepares architecture for Admin Dashboard integration)
-  const handleAdminVerifyToggle = () => {
-    if (!profile) return;
-    const nextStatus = profile.verificationStatus === 'VERIFIED' ? 'PENDING' : 'VERIFIED';
-    VolunteerService.adminVerifyVolunteer(profile.id, nextStatus);
-    const updated = VolunteerService.getVolunteerProfile(profile.id);
-    setProfile(updated);
-    setAdminNotice(
-      nextStatus === 'VERIFIED'
-        ? '✅ Admin Action: स्वयंसेवक को अधिकृत (VERIFIED) कर दिया गया है।'
-        : '⏳ Admin Action: स्वयंसेवक की स्थिति PENDING कर दी गई है।'
-    );
-    setTimeout(() => setAdminNotice(null), 4000);
-  };
-
-  const handleSwitchToDemoVolunteer = () => {
-    VolunteerService.setActiveVolunteerId('vol-rahul-01');
-    VolunteerService.setCurrentUserRole('VOLUNTEER');
-    setProfile(VolunteerService.getVolunteerProfile('vol-rahul-01'));
-    setCurrentRole('VOLUNTEER');
-    setAdminNotice('राहुल कुमार (Verified Volunteer) प्रोफाइल लोड किया गया।');
-    setTimeout(() => setAdminNotice(null), 3000);
-  };
 
   return (
     <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
@@ -272,38 +253,6 @@ export const VolunteerScreen: React.FC = () => {
           </div>
         )}
 
-        {/* ======================================================== */}
-        {/* ADMIN TESTING & DEMO TOOLBAR                             */}
-        {/* ======================================================== */}
-        <div className="bg-stone-200/70 border border-stone-300 rounded-3xl p-4 space-y-2.5 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="font-black text-stone-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-              <ShieldAlert className="w-3.5 h-3.5 text-amber-700" />
-              <span>Admin Verification & Demo Tool (Testing)</span>
-            </span>
-          </div>
-
-          <p className="text-[11px] text-stone-600">
-            सिस्टम परीक्षण हेतु आप स्वयंसेवक को सत्यापित (Verify/Unverify) कर सकते हैं अथवा पहले से अधिकृत स्वयंसेवक राहुल कुमार की प्रोफाइल लोड कर सकते हैं:
-          </p>
-
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            {profile && (
-              <button
-                onClick={handleAdminVerifyToggle}
-                className="min-h-[38px] px-3 py-1.5 bg-[#0B5E8E] hover:bg-[#073B5A] text-white font-bold rounded-xl text-[11px] shadow-xs"
-              >
-                {isVerified ? 'Admin: Unverify करें' : 'Admin: Verify करें (Test)'}
-              </button>
-            )}
-            <button
-              onClick={handleSwitchToDemoVolunteer}
-              className="min-h-[38px] px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-[11px] shadow-xs"
-            >
-              Demo Verified Volunteer
-            </button>
-          </div>
-        </div>
       </main>
     </div>
   );

@@ -19,8 +19,8 @@ import {
   DbAnnouncement,
   DbRouteAlert,
   DbAuditLog,
-  DbFestivalConfig,
 } from './types';
+import { randomUUID } from 'node:crypto';
 import { calculateDistanceMeters } from './spatial';
 import { executeQuery } from './connection';
 
@@ -38,6 +38,191 @@ interface UserRow {
   updated_at: Date | string;
   last_login_at: Date | string | null;
 }
+
+interface FacilityRow {
+  id: string;
+  name: string;
+  name_en: string | null;
+  category: DbFacility['category'];
+  latitude: number;
+  longitude: number;
+  address: string | null;
+  description: string | null;
+  phone: string | null;
+  is_verified: boolean;
+  is_active: boolean;
+  is_archived: boolean;
+  metadata: Record<string, unknown> | null;
+  created_at: Date | string;
+  updated_at: Date | string;
+}
+
+interface ParkingRow {
+  id: string;
+  facility_id: string;
+  name: string;
+  total_capacity: number | null;
+  available_capacity: number | null;
+  capacity_display: string | null;
+  vehicle_types: string[] | null;
+  status: DbParking['status'];
+  is_verified: boolean;
+  is_active: boolean;
+  latitude: number;
+  longitude: number;
+  address: string | null;
+  updated_at: Date | string;
+}
+
+interface LostFoundRow {
+  id: string;
+  report_id: string;
+  type: DbLostFoundReport['type'];
+  category: string;
+  title: string;
+  description: string;
+  location_name: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  identifying_features: string | null;
+  contact_name: string | null;
+  contact_phone: string | null;
+  photo_url: string | null;
+  status: DbLostFoundReport['status'];
+  is_flagged_misuse: boolean;
+  created_at: Date | string;
+  updated_at: Date | string;
+}
+
+interface VolunteerRow {
+  id: string;
+  user_id: string | null;
+  badge_number: string;
+  full_name: string;
+  phone: string;
+  gender: string | null;
+  age: number | null;
+  status: DbVolunteer['status'];
+  service_areas: string[] | null;
+  services_offered: string[] | null;
+  languages: string[] | null;
+  availability_time: string | null;
+  current_assigned_zone: string | null;
+  is_on_duty: boolean;
+  verified_by: string | null;
+  verified_at: Date | string | null;
+  created_at: Date | string;
+  updated_at: Date | string;
+}
+
+interface HelpRequestRow {
+  id: string;
+  request_number: string;
+  type: string;
+  description: string;
+  user_name: string | null;
+  user_phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  status: DbHelpRequest['status'];
+  priority: DbHelpRequest['priority'];
+  assigned_volunteer_id: string | null;
+  assigned_at: Date | string | null;
+  resolved_at: Date | string | null;
+  resolution_notes: string | null;
+  created_at: Date | string;
+  updated_at: Date | string;
+}
+
+interface AnnouncementRow {
+  id: string;
+  title: string;
+  short_description: string;
+  details: string | null;
+  category: DbAnnouncement['category'];
+  priority: DbAnnouncement['priority'];
+  status: DbAnnouncement['status'];
+  is_verified_official: boolean;
+  source: string;
+  published_at: Date | string;
+  expires_at: Date | string | null;
+  created_by: string | null;
+  route_alert: DbRouteAlert | null;
+}
+
+const mapFacilityRow = (row: FacilityRow): DbFacility => ({
+  id: row.id,
+  name: row.name,
+  nameEn: row.name_en || undefined,
+  category: row.category,
+  latitude: Number(row.latitude),
+  longitude: Number(row.longitude),
+  address: row.address || undefined,
+  description: row.description || undefined,
+  phone: row.phone || undefined,
+  isVerified: row.is_verified,
+  isActive: row.is_active,
+  isArchived: row.is_archived,
+  metadata: row.metadata || undefined,
+  createdAt: new Date(row.created_at).toISOString(),
+  updatedAt: new Date(row.updated_at).toISOString(),
+});
+
+const mapVolunteerRow = (row: VolunteerRow): DbVolunteer => ({
+  id: row.id,
+  userId: row.user_id || undefined,
+  badgeNumber: row.badge_number,
+  fullName: row.full_name,
+  phone: row.phone,
+  gender: row.gender || undefined,
+  age: row.age ?? undefined,
+  status: row.status,
+  serviceAreas: row.service_areas || [],
+  servicesOffered: row.services_offered || [],
+  languages: row.languages || [],
+  availabilityTime: row.availability_time || undefined,
+  currentAssignedZone: row.current_assigned_zone || '',
+  isOnDuty: row.is_on_duty,
+  verifiedBy: row.verified_by || undefined,
+  verifiedAt: row.verified_at ? new Date(row.verified_at).toISOString() : undefined,
+  createdAt: new Date(row.created_at).toISOString(),
+  updatedAt: new Date(row.updated_at).toISOString(),
+});
+
+const mapHelpRequestRow = (row: HelpRequestRow): DbHelpRequest => ({
+  id: row.id,
+  requestNumber: row.request_number,
+  type: row.type,
+  description: row.description,
+  userName: row.user_name || undefined,
+  userPhone: row.user_phone || undefined,
+  latitude: row.latitude === null ? undefined : Number(row.latitude),
+  longitude: row.longitude === null ? undefined : Number(row.longitude),
+  status: row.status,
+  priority: row.priority,
+  assignedVolunteerId: row.assigned_volunteer_id || undefined,
+  assignedAt: row.assigned_at ? new Date(row.assigned_at).toISOString() : undefined,
+  resolvedAt: row.resolved_at ? new Date(row.resolved_at).toISOString() : undefined,
+  resolutionNotes: row.resolution_notes || undefined,
+  createdAt: new Date(row.created_at).toISOString(),
+  updatedAt: new Date(row.updated_at).toISOString(),
+});
+
+const mapAnnouncementRow = (row: AnnouncementRow): DbAnnouncement => ({
+  id: row.id,
+  title: row.title,
+  shortDescription: row.short_description,
+  details: row.details || undefined,
+  category: row.category,
+  priority: row.priority,
+  status: row.status,
+  isVerifiedOfficial: row.is_verified_official,
+  source: row.source,
+  publishedAt: new Date(row.published_at).toISOString(),
+  expiresAt: row.expires_at ? new Date(row.expires_at).toISOString() : undefined,
+  createdBy: row.created_by || undefined,
+  routeAlert: row.route_alert || undefined,
+});
 
 const mapUserRow = (row: UserRow): DbUser => ({
   id: row.id,
@@ -293,6 +478,8 @@ const SEED_VOLUNTEERS: DbVolunteer[] = [
     status: 'VERIFIED',
     serviceAreas: ['सूर्य कुंड घाट', 'सूर्य मंदिर परिसर'],
     servicesOffered: ['प्राथमिक चिकित्सा', 'भीड़ नियंत्रण', 'खोया-पाया सहायता'],
+    languages: ['हिन्दी', 'मगही'],
+    availabilityTime: '24 घंटे',
     currentAssignedZone: 'सूर्य कुंड पश्चिमी घाट (जोन 1)',
     isOnDuty: true,
     location: { latitude: 24.6548, longitude: 84.4372 },
@@ -309,6 +496,8 @@ const SEED_VOLUNTEERS: DbVolunteer[] = [
     status: 'VERIFIED',
     serviceAreas: ['रुद्र कुंड', 'महिला चेंजिंग रूम'],
     servicesOffered: ['महिला सहायता', 'वरिष्ठ नागरिक सेवा', 'जल सेवा'],
+    languages: ['हिन्दी', 'भोजपुरी'],
+    availabilityTime: 'अर्घ्य समय',
     currentAssignedZone: 'रुद्र कुंड दक्षिणी घाट (जोन 2)',
     isOnDuty: true,
     location: { latitude: 24.6521, longitude: 84.4389 },
@@ -361,26 +550,6 @@ const SEED_ANNOUNCEMENTS: DbAnnouncement[] = [
     publishedAt: '2026-10-05T18:00:00Z',
   },
 ];
-
-const FESTIVAL_CONFIG: DbFestivalConfig = {
-  festivalName: 'कार्तिक छठ महापर्व 2026 (देव, औरंगाबाद)',
-  organization: 'NEXTGEN DEVBHOOMI FOUNDATION',
-  tagline: 'रास्ता भी • सहायता भी • सेवा भी',
-  year: 2026,
-  dates: {
-    nahayKhay: 'शुक्रवार, 13 नवम्बर 2026 (नहाय-खाय)',
-    kharna: 'शनिवार, 14 नवम्बर 2026 (खरना)',
-    sandhyaArghya: 'रविवार, 15 नवम्बर 2026 - सायं 05:14 बजे (संध्या अर्घ्य)',
-    pratahArghya: 'सोमवार, 16 नवम्बर 2026 - प्रातः 06:08 बजे (उषा अर्घ्य / पारण)',
-  },
-  melaControlRoomPhone: '06186-224200',
-  policeControlPhone: '112',
-  medicalHelpline: '108',
-  primaryGhatCoordinates: {
-    suryaKund: { latitude: 24.6548, longitude: 84.4372, srid: 4326 },
-    rudraKund: { latitude: 24.6521, longitude: 84.4389, srid: 4326 },
-  },
-};
 
 // In-Memory Data Store (Active fallback & synchronization state)
 class DataRepository {
@@ -493,16 +662,52 @@ class DataRepository {
     return databaseUsers === null ? [...this.users] : databaseUsers.map(mapUserRow);
   }
 
+  public async updateUserStatus(id: string, status: DbUser['status']): Promise<DbUser | null> {
+    const databaseUsers = await executeQuery<UserRow>(
+      `UPDATE users SET status = $2, updated_at = NOW()
+       WHERE id = $1
+       RETURNING id, email, phone, username, password_hash, full_name, role, status,
+                 avatar_url, created_at, updated_at, last_login_at`,
+      [id, status]
+    );
+    if (databaseUsers !== null) {
+      return databaseUsers[0] ? mapUserRow(databaseUsers[0]) : null;
+    }
+    const user = this.users.find((item) => item.id === id);
+    if (!user) return null;
+    user.status = status;
+    user.updatedAt = new Date().toISOString();
+    return user;
+  }
+
   // ================= FACILITIES & POSTGIS PROXIMITY =================
   public async getFacilities(category?: string): Promise<DbFacility[]> {
-    if (category) {
-      return this.facilities.filter((f) => f.category === category && f.isActive && !f.isArchived);
+    const databaseFacilities = await executeQuery<FacilityRow>(
+      `SELECT id, name, name_en, category, latitude, longitude, address, description, phone,
+              is_verified, is_active, is_archived, metadata, created_at, updated_at
+       FROM facilities
+       WHERE is_active = true AND is_archived = false AND is_verified = true
+         AND ($1::facility_category IS NULL OR category = $1::facility_category)
+       ORDER BY name`,
+      [category || null]
+    );
+    if (databaseFacilities !== null) {
+      return databaseFacilities.map(mapFacilityRow);
     }
-    return this.facilities.filter((f) => f.isActive && !f.isArchived);
+    return [];
   }
 
   public async getFacilityById(id: string): Promise<DbFacility | null> {
-    return this.facilities.find((f) => f.id === id) || null;
+    const databaseFacilities = await executeQuery<FacilityRow>(
+      `SELECT id, name, name_en, category, latitude, longitude, address, description, phone,
+              is_verified, is_active, is_archived, metadata, created_at, updated_at
+       FROM facilities WHERE id = $1 AND is_active = true AND is_archived = false AND is_verified = true`,
+      [id]
+    );
+    if (databaseFacilities !== null) {
+      return databaseFacilities[0] ? mapFacilityRow(databaseFacilities[0]) : null;
+    }
+    return null;
   }
 
   /**
@@ -516,6 +721,30 @@ class DataRepository {
     radiusMeters: number = 2000,
     category?: string
   ): Promise<(DbFacility & { distanceMeters: number })[]> {
+    const databaseFacilities = await executeQuery<FacilityRow & { distance_meters: number }>(
+      `SELECT id, name, name_en, category, latitude, longitude, address, description, phone,
+              is_verified, is_active, is_archived, metadata, created_at, updated_at,
+              ST_Distance(
+                location::geography,
+                ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography
+              ) AS distance_meters
+       FROM facilities
+       WHERE is_active = true AND is_archived = false AND is_verified = true
+         AND ($4::facility_category IS NULL OR category = $4::facility_category)
+         AND ST_DWithin(
+               location::geography,
+               ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography,
+               $3
+             )
+       ORDER BY distance_meters`,
+      [lat, lon, radiusMeters, category || null]
+    );
+    if (databaseFacilities !== null) {
+      return databaseFacilities.map((row) => ({
+        ...mapFacilityRow(row),
+        distanceMeters: Number(row.distance_meters),
+      }));
+    }
     const list = category ? await this.getFacilities(category) : await this.getFacilities();
     return list
       .map((f) => {
@@ -527,11 +756,75 @@ class DataRepository {
   }
 
   public async createFacility(facility: DbFacility): Promise<DbFacility> {
+    const databaseFacilities = await executeQuery<FacilityRow>(
+      `INSERT INTO facilities (
+         id, name, name_en, category, latitude, longitude, location, address, description,
+         phone, is_verified, is_active, is_archived, metadata, created_at, updated_at
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint($6, $5), 4326),
+         $7, $8, $9, $10, $11, $12, $13, $14, $15
+       )
+       RETURNING id, name, name_en, category, latitude, longitude, address, description, phone,
+                 is_verified, is_active, is_archived, metadata, created_at, updated_at`,
+      [
+        facility.id, facility.name, facility.nameEn || null, facility.category,
+        facility.latitude, facility.longitude, facility.address || null,
+        facility.description || null, facility.phone || null, facility.isVerified,
+        facility.isActive, facility.isArchived, facility.metadata || {},
+        facility.createdAt, facility.updatedAt,
+      ]
+    );
+    if (databaseFacilities !== null) {
+      if (!databaseFacilities[0]) throw new Error('Database did not return the created facility.');
+      return mapFacilityRow(databaseFacilities[0]);
+    }
     this.facilities.push(facility);
     return facility;
   }
 
   public async updateFacility(id: string, updates: Partial<DbFacility>): Promise<DbFacility | null> {
+    const columns: Partial<Record<keyof DbFacility, string>> = {
+      name: 'name',
+      nameEn: 'name_en',
+      category: 'category',
+      latitude: 'latitude',
+      longitude: 'longitude',
+      address: 'address',
+      description: 'description',
+      phone: 'phone',
+      isVerified: 'is_verified',
+      isActive: 'is_active',
+      isArchived: 'is_archived',
+      metadata: 'metadata',
+    };
+    const values: unknown[] = [id];
+    const assignments: string[] = [];
+    for (const [key, column] of Object.entries(columns) as [keyof DbFacility, string][]) {
+      const value = updates[key];
+      if (value === undefined) continue;
+      values.push(key === 'metadata' ? JSON.stringify(value) : value);
+      assignments.push(`${column} = $${values.length}${key === 'metadata' ? '::jsonb' : ''}`);
+    }
+    if (updates.latitude !== undefined || updates.longitude !== undefined) {
+      values.push(updates.longitude ?? null, updates.latitude ?? null);
+      const longitudeIndex = values.length - 1;
+      const latitudeIndex = values.length;
+      assignments.push(
+        `location = ST_SetSRID(ST_MakePoint(COALESCE($${longitudeIndex}, longitude), COALESCE($${latitudeIndex}, latitude)), 4326)`
+      );
+    }
+    if (assignments.length > 0) {
+      assignments.push('updated_at = NOW()');
+      const databaseFacilities = await executeQuery<FacilityRow>(
+        `UPDATE facilities SET ${assignments.join(', ')} WHERE id = $1
+         RETURNING id, name, name_en, category, latitude, longitude, address, description,
+                   phone, is_verified, is_active, is_archived, metadata, created_at, updated_at`,
+        values
+      );
+      if (databaseFacilities !== null) {
+        return databaseFacilities[0] ? mapFacilityRow(databaseFacilities[0]) : null;
+      }
+    }
     const index = this.facilities.findIndex((f) => f.id === id);
     if (index === -1) return null;
     this.facilities[index] = { ...this.facilities[index], ...updates, updatedAt: new Date().toISOString() };
@@ -540,7 +833,32 @@ class DataRepository {
 
   // ================= PARKING =================
   public async getParkings(): Promise<DbParking[]> {
-    return [...this.parkings];
+    const rows = await executeQuery<ParkingRow>(
+      `SELECT p.id, p.facility_id, p.name, p.total_capacity, p.available_capacity,
+              p.capacity_display, p.vehicle_types, p.status, p.is_verified, p.is_active,
+              f.latitude, f.longitude, f.address, p.updated_at
+       FROM parkings p
+       JOIN facilities f ON f.id = p.facility_id
+       WHERE p.is_active = true AND p.is_verified = true
+         AND f.is_active = true AND f.is_archived = false AND f.is_verified = true
+       ORDER BY p.name`
+    );
+    return rows === null ? [] : rows.map((row) => ({
+      id: row.id,
+      facilityId: row.facility_id,
+      name: row.name,
+      totalCapacity: row.total_capacity === null ? undefined : Number(row.total_capacity),
+      availableCapacity: row.available_capacity === null ? undefined : Number(row.available_capacity),
+      capacityDisplay: row.capacity_display || undefined,
+      vehicleTypes: row.vehicle_types || [],
+      status: row.status,
+      isVerified: row.is_verified,
+      isActive: row.is_active,
+      latitude: Number(row.latitude),
+      longitude: Number(row.longitude),
+      address: row.address || undefined,
+      updatedAt: new Date(row.updated_at).toISOString(),
+    }));
   }
 
   public async updateParkingStatus(
@@ -548,30 +866,134 @@ class DataRepository {
     status: DbParking['status'],
     availableCapacity?: number
   ): Promise<DbParking | null> {
-    const parking = this.parkings.find((p) => p.id === id);
-    if (!parking) return null;
-    parking.status = status;
-    if (availableCapacity !== undefined) {
-      parking.availableCapacity = availableCapacity;
-      parking.capacityDisplay = `${availableCapacity} / ${parking.totalCapacity} स्थान रिक्त`;
-    }
-    return parking;
+    const rows = await executeQuery<ParkingRow>(
+      `UPDATE parkings p SET status = $2,
+          available_capacity = COALESCE($3, p.available_capacity),
+          capacity_display = CASE WHEN $3 IS NULL THEN p.capacity_display
+            ELSE $3::text || ' / ' || COALESCE(p.total_capacity::text, '?') || ' स्थान रिक्त' END,
+          updated_at = NOW()
+       FROM facilities f
+       WHERE p.id = $1 AND p.facility_id = f.id
+       RETURNING p.id, p.facility_id, p.name, p.total_capacity, p.available_capacity,
+                 p.capacity_display, p.vehicle_types, p.status, p.is_verified, p.is_active,
+                 f.latitude, f.longitude, f.address, p.updated_at`,
+      [id, status, availableCapacity ?? null]
+    );
+    const row = rows?.[0];
+    if (!row) return null;
+    return {
+      id: row.id,
+      facilityId: row.facility_id,
+      name: row.name,
+      totalCapacity: row.total_capacity === null ? undefined : Number(row.total_capacity),
+      availableCapacity: row.available_capacity === null ? undefined : Number(row.available_capacity),
+      capacityDisplay: row.capacity_display || undefined,
+      vehicleTypes: row.vehicle_types || [],
+      status: row.status,
+      isVerified: row.is_verified,
+      isActive: row.is_active,
+      latitude: Number(row.latitude),
+      longitude: Number(row.longitude),
+      address: row.address || undefined,
+      updatedAt: new Date(row.updated_at).toISOString(),
+    };
   }
 
   // ================= SHUTTLE =================
   public async getShuttleRoutes(): Promise<DbShuttleRoute[]> {
-    return [...this.shuttleRoutes];
+    return [];
   }
 
   // ================= VOLUNTEERS =================
-  public async getVolunteers(onDutyOnly: boolean = false): Promise<DbVolunteer[]> {
-    if (onDutyOnly) {
-      return this.volunteers.filter((v) => v.isOnDuty && v.status === 'VERIFIED');
+  public async getVolunteers(
+    onDutyOnly: boolean = false,
+    verifiedOnly: boolean = false
+  ): Promise<DbVolunteer[]> {
+    const databaseVolunteers = await executeQuery<VolunteerRow>(
+      `SELECT id, user_id, badge_number, full_name, phone, gender, age, status,
+              service_areas, services_offered, languages, availability_time,
+              current_assigned_zone, is_on_duty,
+              verified_by, verified_at, created_at, updated_at
+       FROM volunteers
+       WHERE ($1::boolean = false OR (is_on_duty = true AND status = 'VERIFIED'))
+         AND ($2::boolean = false OR status = 'VERIFIED')
+       ORDER BY created_at DESC`,
+      [onDutyOnly, verifiedOnly]
+    );
+    if (databaseVolunteers !== null) {
+      return databaseVolunteers.map(mapVolunteerRow);
     }
-    return [...this.volunteers];
+    return [];
+  }
+
+  public async createVolunteer(volunteer: DbVolunteer): Promise<DbVolunteer> {
+    const databaseVolunteers = await executeQuery<VolunteerRow>(
+      `INSERT INTO volunteers (
+         id, user_id, badge_number, full_name, phone, gender, age, status, service_areas,
+         services_offered, languages, availability_time, current_assigned_zone, is_on_duty,
+         verified_by, verified_at, created_at, updated_at
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+       RETURNING id, user_id, badge_number, full_name, phone, gender, age, status,
+         service_areas, services_offered, languages, availability_time, current_assigned_zone,
+         is_on_duty, verified_by, verified_at, created_at, updated_at`,
+      [
+        volunteer.id, volunteer.userId || null, volunteer.badgeNumber, volunteer.fullName,
+        volunteer.phone, volunteer.gender || null, volunteer.age ?? null, volunteer.status,
+        volunteer.serviceAreas, volunteer.servicesOffered, volunteer.languages,
+        volunteer.availabilityTime || null, volunteer.currentAssignedZone, volunteer.isOnDuty,
+        volunteer.verifiedBy || null, volunteer.verifiedAt || null, volunteer.createdAt,
+        volunteer.updatedAt,
+      ]
+    );
+    if (databaseVolunteers !== null) {
+      if (!databaseVolunteers[0]) throw new Error('Database did not return the created volunteer.');
+      return mapVolunteerRow(databaseVolunteers[0]);
+    }
+    this.volunteers.unshift(volunteer);
+    return volunteer;
+  }
+
+  public async updateVolunteerStatus(
+    id: string,
+    status: DbVolunteer['status'],
+    verifiedBy?: string
+  ): Promise<DbVolunteer | null> {
+    const databaseVolunteers = await executeQuery<VolunteerRow>(
+      `UPDATE volunteers
+       SET status = $2, verified_by = $3,
+           verified_at = CASE WHEN $2 = 'VERIFIED' THEN NOW() ELSE NULL END,
+           is_on_duty = CASE WHEN $2 = 'VERIFIED' THEN is_on_duty ELSE false END,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING id, user_id, badge_number, full_name, phone, gender, age, status,
+         service_areas, services_offered, languages, availability_time, current_assigned_zone,
+         is_on_duty, verified_by, verified_at, created_at, updated_at`,
+      [id, status, verifiedBy || null]
+    );
+    if (databaseVolunteers !== null) {
+      return databaseVolunteers[0] ? mapVolunteerRow(databaseVolunteers[0]) : null;
+    }
+    const volunteer = this.volunteers.find((item) => item.id === id);
+    if (!volunteer) return null;
+    volunteer.status = status;
+    volunteer.verifiedBy = verifiedBy;
+    volunteer.verifiedAt = status === 'VERIFIED' ? new Date().toISOString() : undefined;
+    if (status !== 'VERIFIED') volunteer.isOnDuty = false;
+    volunteer.updatedAt = new Date().toISOString();
+    return volunteer;
   }
 
   public async toggleVolunteerDuty(id: string, isOnDuty: boolean): Promise<DbVolunteer | null> {
+    const databaseVolunteers = await executeQuery<VolunteerRow>(
+      `UPDATE volunteers SET is_on_duty = $2, updated_at = NOW()
+       WHERE id = $1 RETURNING id, user_id, badge_number, full_name, phone, gender, age,
+         status, service_areas, services_offered, languages, availability_time,
+         current_assigned_zone, is_on_duty, verified_by, verified_at, created_at, updated_at`,
+      [id, isOnDuty]
+    );
+    if (databaseVolunteers !== null) {
+      return databaseVolunteers[0] ? mapVolunteerRow(databaseVolunteers[0]) : null;
+    }
     const volunteer = this.volunteers.find((v) => v.id === id);
     if (!volunteer) return null;
     volunteer.isOnDuty = isOnDuty;
@@ -581,6 +1003,18 @@ class DataRepository {
 
   // ================= HELP REQUESTS =================
   public async getHelpRequests(status?: string): Promise<DbHelpRequest[]> {
+    const databaseRequests = await executeQuery<HelpRequestRow>(
+      `SELECT id, request_number, type, description, user_name, user_phone, latitude, longitude,
+              status, priority, assigned_volunteer_id, assigned_at, resolved_at, resolution_notes,
+              created_at, updated_at
+       FROM help_requests
+       WHERE ($1::help_request_status IS NULL OR status = $1::help_request_status)
+       ORDER BY created_at DESC`,
+      [status || null]
+    );
+    if (databaseRequests !== null) {
+      return databaseRequests.map(mapHelpRequestRow);
+    }
     if (status) {
       return this.helpRequests.filter((h) => h.status === status);
     }
@@ -588,6 +1022,31 @@ class DataRepository {
   }
 
   public async createHelpRequest(req: DbHelpRequest): Promise<DbHelpRequest> {
+    const databaseRequests = await executeQuery<HelpRequestRow>(
+      `INSERT INTO help_requests (
+         id, request_number, type, description, user_name, user_phone, latitude, longitude, location,
+         status, priority, assigned_volunteer_id, assigned_at, resolved_at, resolution_notes,
+         created_at, updated_at
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6, $7, $8,
+         CASE WHEN $7 IS NULL OR $8 IS NULL THEN NULL
+              ELSE ST_SetSRID(ST_MakePoint($8, $7), 4326) END,
+         $9, $10, $11, $12, $13, $14, $15, $16
+       )
+       RETURNING id, request_number, type, description, user_name, user_phone, latitude, longitude,
+         status, priority, assigned_volunteer_id, assigned_at, resolved_at, resolution_notes,
+         created_at, updated_at`,
+      [
+        req.id, req.requestNumber, req.type, req.description, req.userName || null,
+        req.userPhone || null, req.latitude ?? null, req.longitude ?? null, req.status,
+        req.priority, req.assignedVolunteerId || null, req.assignedAt || null,
+        req.resolvedAt || null, req.resolutionNotes || null, req.createdAt, req.updatedAt,
+      ]
+    );
+    if (databaseRequests !== null) {
+      if (!databaseRequests[0]) throw new Error('Database did not return the created help request.');
+      return mapHelpRequestRow(databaseRequests[0]);
+    }
     this.helpRequests.unshift(req);
     return req;
   }
@@ -595,66 +1054,302 @@ class DataRepository {
   public async updateHelpRequestStatus(
     id: string,
     status: DbHelpRequest['status'],
-    notes?: string
+    notes?: string,
+    assignedVolunteerId?: string
   ): Promise<DbHelpRequest | null> {
+    const databaseRequests = await executeQuery<HelpRequestRow>(
+      `UPDATE help_requests
+       SET status = $2, resolution_notes = COALESCE($3, resolution_notes),
+           assigned_volunteer_id = COALESCE($4, assigned_volunteer_id),
+           assigned_at = CASE WHEN $2 = 'ASSIGNED' AND $4 IS NOT NULL THEN NOW() ELSE assigned_at END,
+           resolved_at = CASE WHEN $2 = 'RESOLVED' THEN NOW() ELSE resolved_at END,
+           updated_at = NOW()
+       WHERE id = $1
+         AND ($2::help_request_status <> 'ASSIGNED'
+              OR assigned_volunteer_id IS NULL
+              OR assigned_volunteer_id = $4)
+       RETURNING id, request_number, type, description, user_name, user_phone, latitude, longitude,
+         status, priority, assigned_volunteer_id, assigned_at, resolved_at, resolution_notes,
+         created_at, updated_at`,
+      [id, status, notes || null, assignedVolunteerId || null]
+    );
+    if (databaseRequests !== null) {
+      return databaseRequests[0] ? mapHelpRequestRow(databaseRequests[0]) : null;
+    }
     const req = this.helpRequests.find((h) => h.id === id);
     if (!req) return null;
     req.status = status;
     if (notes) req.resolutionNotes = notes;
+    if (assignedVolunteerId) {
+      req.assignedVolunteerId = assignedVolunteerId;
+      req.assignedAt = new Date().toISOString();
+    }
     if (status === 'RESOLVED') req.resolvedAt = new Date().toISOString();
     req.updatedAt = new Date().toISOString();
     return req;
   }
 
+  public async releaseHelpRequest(id: string, volunteerId: string): Promise<DbHelpRequest | null> {
+    const databaseRequests = await executeQuery<HelpRequestRow>(
+      `UPDATE help_requests
+       SET status = 'RECEIVED', assigned_volunteer_id = NULL, assigned_at = NULL,
+           updated_at = NOW()
+       WHERE id = $1 AND assigned_volunteer_id = $2
+       RETURNING id, request_number, type, description, user_name, user_phone, latitude, longitude,
+         status, priority, assigned_volunteer_id, assigned_at, resolved_at, resolution_notes,
+         created_at, updated_at`,
+      [id, volunteerId]
+    );
+    if (databaseRequests !== null) {
+      return databaseRequests[0] ? mapHelpRequestRow(databaseRequests[0]) : null;
+    }
+    const request = this.helpRequests.find(
+      (item) => item.id === id && item.assignedVolunteerId === volunteerId
+    );
+    if (!request) return null;
+    request.status = 'RECEIVED';
+    request.assignedVolunteerId = undefined;
+    request.assignedAt = undefined;
+    request.updatedAt = new Date().toISOString();
+    return request;
+  }
+
   // ================= ANNOUNCEMENTS & ROUTE ALERTS =================
   public async getAnnouncements(activeOnly: boolean = true): Promise<DbAnnouncement[]> {
-    if (activeOnly) {
-      return this.announcements.filter((a) => a.status === 'PUBLISHED');
+    const databaseAnnouncements = await executeQuery<AnnouncementRow>(
+      `SELECT a.id, a.title, a.short_description, a.details, a.category, a.priority, a.status,
+              a.is_verified_official, a.source, a.published_at, a.expires_at, a.created_by,
+              CASE WHEN r.id IS NULL THEN NULL ELSE json_build_object(
+                'id', r.id, 'announcementId', r.announcement_id, 'type', r.type, 'title', r.title,
+                'roadName', r.road_name, 'reason', r.reason, 'affectedArea', r.affected_area,
+                'latitude', r.latitude, 'longitude', r.longitude, 'radiusMeters', r.radius_meters,
+                'startTime', r.start_time, 'endTime', r.end_time,
+                'alternativeRouteAvailable', r.alternative_route_available,
+                'alternativeRouteAdvice', r.alternative_route_advice,
+                'isActive', r.is_active, 'isVerified', r.is_verified
+              ) END AS route_alert
+       FROM announcements a
+       LEFT JOIN route_alerts r ON r.announcement_id = a.id
+       WHERE ($1::boolean = false OR (a.status = 'PUBLISHED' AND a.is_verified_official = true
+         AND a.source <> '' AND a.source NOT ILIKE '%demo%' AND a.source NOT ILIKE '%sample%'
+         AND a.source NOT ILIKE '%test%' AND a.published_at <= NOW()
+         AND a.expires_at IS NOT NULL AND a.expires_at > NOW()))
+       ORDER BY a.published_at DESC`,
+      [activeOnly]
+    );
+    if (databaseAnnouncements !== null) {
+      return databaseAnnouncements.map(mapAnnouncementRow);
     }
-    return [...this.announcements];
+    if (activeOnly) {
+      return [];
+    }
+    return [];
   }
 
   public async createAnnouncement(announcement: DbAnnouncement): Promise<DbAnnouncement> {
+    const databaseAnnouncements = await executeQuery<AnnouncementRow>(
+      `INSERT INTO announcements (
+         id, title, short_description, details, category, priority, status,
+         is_verified_official, source, published_at, expires_at, created_by
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+       RETURNING id, title, short_description, details, category, priority, status,
+         is_verified_official, source, published_at, expires_at, created_by, NULL::json AS route_alert`,
+      [
+        announcement.id, announcement.title, announcement.shortDescription,
+        announcement.details || null, announcement.category, announcement.priority,
+        announcement.status, announcement.isVerifiedOfficial, announcement.source,
+        announcement.publishedAt, announcement.expiresAt || null, announcement.createdBy || null,
+      ]
+    );
+    if (databaseAnnouncements !== null) {
+      if (!databaseAnnouncements[0]) throw new Error('Database did not return the created announcement.');
+      return mapAnnouncementRow(databaseAnnouncements[0]);
+    }
     this.announcements.unshift(announcement);
     return announcement;
   }
 
-  public async getRouteAlerts(): Promise<DbRouteAlert[]> {
-    const alerts: DbRouteAlert[] = [];
-    for (const ann of this.announcements) {
-      if (ann.routeAlert && ann.routeAlert.isActive) {
-        alerts.push(ann.routeAlert);
+  public async updateAnnouncementStatus(
+    id: string,
+    status: DbAnnouncement['status']
+  ): Promise<DbAnnouncement | null> {
+    const databaseAnnouncements = await executeQuery<AnnouncementRow>(
+      `UPDATE announcements SET status = $2, updated_at = NOW(),
+         published_at = CASE WHEN $2 = 'PUBLISHED' THEN NOW() ELSE published_at END
+       WHERE id = $1
+       RETURNING id, title, short_description, details, category, priority, status,
+         is_verified_official, source, published_at, expires_at, created_by, NULL::json AS route_alert`,
+      [id, status]
+    );
+    if (databaseAnnouncements !== null) {
+      return databaseAnnouncements[0] ? mapAnnouncementRow(databaseAnnouncements[0]) : null;
+    }
+    const announcement = this.announcements.find((item) => item.id === id);
+    if (!announcement) return null;
+    announcement.status = status;
+    if (status === 'PUBLISHED') announcement.publishedAt = new Date().toISOString();
+    return announcement;
+  }
+
+  public async toggleRouteAlert(id: string, isActive: boolean): Promise<DbRouteAlert | null> {
+    const databaseAlerts = await executeQuery<DbRouteAlert>(
+      `UPDATE route_alerts SET is_active = $2, updated_at = NOW()
+       WHERE id = $1
+       RETURNING id, announcement_id AS "announcementId", type, title,
+         road_name AS "roadName", reason, affected_area AS "affectedArea",
+         latitude, longitude, radius_meters AS "radiusMeters", start_time AS "startTime",
+         end_time AS "endTime", alternative_route_available AS "alternativeRouteAvailable",
+         alternative_route_advice AS "alternativeRouteAdvice", is_active AS "isActive",
+         is_verified AS "isVerified"`,
+      [id, isActive]
+    );
+    if (databaseAlerts !== null) {
+      return databaseAlerts[0] || null;
+    }
+    for (const announcement of this.announcements) {
+      if (announcement.routeAlert?.id === id) {
+        announcement.routeAlert.isActive = isActive;
+        return announcement.routeAlert;
       }
     }
-    return alerts;
+    return null;
+  }
+
+  public async getRouteAlerts(): Promise<DbRouteAlert[]> {
+    const databaseAlerts = await executeQuery<DbRouteAlert>(
+      `SELECT r.id, r.announcement_id AS "announcementId", r.type, r.title,
+              r.road_name AS "roadName", r.reason, r.affected_area AS "affectedArea",
+              r.latitude, r.longitude, r.radius_meters AS "radiusMeters",
+              r.start_time AS "startTime", r.end_time AS "endTime",
+              r.alternative_route_available AS "alternativeRouteAvailable",
+              r.alternative_route_advice AS "alternativeRouteAdvice",
+              r.is_active AS "isActive", r.is_verified AS "isVerified"
+       FROM route_alerts r
+       JOIN announcements a ON a.id = r.announcement_id
+       WHERE r.is_active = true AND r.is_verified = true
+         AND a.status = 'PUBLISHED' AND a.is_verified_official = true
+         AND a.source <> '' AND a.source NOT ILIKE '%demo%' AND a.source NOT ILIKE '%sample%'
+         AND a.source NOT ILIKE '%test%'
+         AND a.published_at <= NOW() AND a.expires_at IS NOT NULL AND a.expires_at > NOW()
+       ORDER BY r.created_at DESC`
+    );
+    if (databaseAlerts !== null) {
+      return databaseAlerts;
+    }
+    return [];
   }
 
   // ================= LOST & FOUND =================
   public async getLostFoundReports(type?: string): Promise<DbLostFoundReport[]> {
-    if (type) {
-      return this.lostFoundReports.filter(
-        (r) => r.type === type && !r.isFlaggedMisuse && !['rep_1', 'rep_2', 'rep_3'].includes(r.id)
-      );
-    }
-    return this.lostFoundReports.filter(
-      (r) => !r.isFlaggedMisuse && !['rep_1', 'rep_2', 'rep_3'].includes(r.id)
+    const rows = await executeQuery<LostFoundRow>(
+      `SELECT id, report_id, type, category, title, description, location_name,
+              latitude, longitude, identifying_features, contact_name, contact_phone,
+              photo_url, status, is_flagged_misuse, created_at, updated_at
+       FROM lost_found_reports
+       WHERE is_flagged_misuse = false AND ($1::lost_found_type IS NULL OR type = $1)
+       ORDER BY created_at DESC`,
+      [type || null]
     );
+    if (!rows) return [];
+    return rows.map((row) => ({
+      id: row.id,
+      reportId: row.report_id,
+      type: row.type,
+      category: row.category,
+      title: row.title,
+      description: row.description,
+      locationName: row.location_name || '',
+      latitude: row.latitude === null ? undefined : Number(row.latitude),
+      longitude: row.longitude === null ? undefined : Number(row.longitude),
+      identifyingFeatures: row.identifying_features || undefined,
+      contactName: row.contact_name || '',
+      contactPhone: row.contact_phone || '',
+      photoUrl: row.photo_url || undefined,
+      status: row.status,
+      isFlaggedMisuse: row.is_flagged_misuse,
+      createdAt: new Date(row.created_at).toISOString(),
+      updatedAt: new Date(row.updated_at).toISOString(),
+    }));
   }
 
   public async createLostFoundReport(report: DbLostFoundReport): Promise<DbLostFoundReport> {
-    this.lostFoundReports.unshift(report);
-    return report;
+    const rows = await executeQuery<LostFoundRow>(
+      `INSERT INTO lost_found_reports (
+         id, report_id, type, category, title, description, location_name,
+         latitude, longitude, location, identifying_features, contact_name,
+         contact_phone, photo_url, status, is_flagged_misuse, created_at, updated_at
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6, $7, $8, $9,
+         CASE WHEN $8::double precision IS NULL OR $9::double precision IS NULL
+           THEN NULL ELSE ST_SetSRID(ST_MakePoint($9, $8), 4326) END,
+         $10, $11, $12, $13, $14, $15, $16, $17
+       )
+       RETURNING id, report_id, type, category, title, description, location_name,
+         latitude, longitude, identifying_features, contact_name, contact_phone,
+         photo_url, status, is_flagged_misuse, created_at, updated_at`,
+      [
+        report.id, report.reportId, report.type, report.category, report.title,
+        report.description, report.locationName, report.latitude ?? null, report.longitude ?? null,
+        report.identifyingFeatures || null, report.contactName, report.contactPhone || null,
+        report.photoUrl || null, report.status, report.isFlaggedMisuse, report.createdAt, report.updatedAt,
+      ]
+    );
+    const row = rows?.[0];
+    if (!row) throw new Error('Database did not return the created lost-and-found report.');
+    return {
+      id: row.id,
+      reportId: row.report_id,
+      type: row.type,
+      category: row.category,
+      title: row.title,
+      description: row.description,
+      locationName: row.location_name || '',
+      latitude: row.latitude === null ? undefined : Number(row.latitude),
+      longitude: row.longitude === null ? undefined : Number(row.longitude),
+      identifyingFeatures: row.identifying_features || undefined,
+      contactName: row.contact_name || '',
+      contactPhone: row.contact_phone || '',
+      photoUrl: row.photo_url || undefined,
+      status: row.status,
+      isFlaggedMisuse: row.is_flagged_misuse,
+      createdAt: new Date(row.created_at).toISOString(),
+      updatedAt: new Date(row.updated_at).toISOString(),
+    };
   }
 
   public async updateLostFoundStatus(
     id: string,
     status: DbLostFoundReport['status']
   ): Promise<DbLostFoundReport | null> {
-    const report = this.lostFoundReports.find((r) => r.id === id);
-    if (!report) return null;
-    report.status = status;
-    report.updatedAt = new Date().toISOString();
-    return report;
+    const rows = await executeQuery<LostFoundRow>(
+      `UPDATE lost_found_reports SET status = $2, updated_at = NOW()
+       WHERE id = $1
+       RETURNING id, report_id, type, category, title, description, location_name,
+         latitude, longitude, identifying_features, contact_name, contact_phone,
+         photo_url, status, is_flagged_misuse, created_at, updated_at`,
+      [id, status]
+    );
+    const row = rows?.[0];
+    if (!row) return null;
+    return {
+      id: row.id,
+      reportId: row.report_id,
+      type: row.type,
+      category: row.category,
+      title: row.title,
+      description: row.description,
+      locationName: row.location_name || '',
+      latitude: row.latitude === null ? undefined : Number(row.latitude),
+      longitude: row.longitude === null ? undefined : Number(row.longitude),
+      identifyingFeatures: row.identifying_features || undefined,
+      contactName: row.contact_name || '',
+      contactPhone: row.contact_phone || '',
+      photoUrl: row.photo_url || undefined,
+      status: row.status,
+      isFlaggedMisuse: row.is_flagged_misuse,
+      createdAt: new Date(row.created_at).toISOString(),
+      updatedAt: new Date(row.updated_at).toISOString(),
+    };
   }
 
   // ================= FAMILY GROUPS =================
@@ -699,9 +1394,20 @@ class DataRepository {
   public async logAudit(log: Omit<DbAuditLog, 'id' | 'createdAt'>): Promise<DbAuditLog> {
     const fullLog: DbAuditLog = {
       ...log,
-      id: `aud-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      id: randomUUID(),
       createdAt: new Date().toISOString(),
     };
+    const databaseLogs = await executeQuery(
+      `INSERT INTO audit_logs (id, user_id, user_name, action, entity, entity_id,
+         old_value_summary, new_value_summary, ip_address, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      [
+        fullLog.id, fullLog.userId || null, fullLog.userName || null, fullLog.action,
+        fullLog.entity, fullLog.entityId || null, fullLog.oldValueSummary || null,
+        fullLog.newValueSummary || null, fullLog.ipAddress || null, fullLog.createdAt,
+      ]
+    );
+    if (databaseLogs !== null) return fullLog;
     this.auditLogs.unshift(fullLog);
     // Keep max 200 logs
     if (this.auditLogs.length > 200) {
@@ -711,13 +1417,40 @@ class DataRepository {
   }
 
   public async getAuditLogs(): Promise<DbAuditLog[]> {
+    const databaseLogs = await executeQuery<{
+      id: string;
+      user_id: string | null;
+      user_name: string | null;
+      action: string;
+      entity: string;
+      entity_id: string | null;
+      old_value_summary: string | null;
+      new_value_summary: string | null;
+      ip_address: string | null;
+      created_at: Date | string;
+    }>(
+      `SELECT id, user_id, user_name, action, entity, entity_id, old_value_summary,
+              new_value_summary, ip_address, created_at
+       FROM audit_logs ORDER BY created_at DESC LIMIT 500`
+    );
+    if (databaseLogs !== null) {
+      return databaseLogs.map((row) => ({
+        id: row.id,
+        userId: row.user_id || undefined,
+        userName: row.user_name || undefined,
+        action: row.action,
+        entity: row.entity,
+        entityId: row.entity_id || undefined,
+        oldValueSummary: row.old_value_summary || undefined,
+        newValueSummary: row.new_value_summary || undefined,
+        ipAddress: row.ip_address || undefined,
+        createdAt: new Date(row.created_at).toISOString(),
+      }));
+    }
     return [...this.auditLogs];
   }
 
   // ================= FESTIVAL CONFIGURATION =================
-  public getFestivalConfig(): DbFestivalConfig {
-    return FESTIVAL_CONFIG;
-  }
 }
 
 export const repository = new DataRepository();

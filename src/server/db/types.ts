@@ -82,6 +82,8 @@ export interface DbVolunteer {
   status: DbVolunteerStatus;
   serviceAreas: string[];
   servicesOffered: string[];
+  languages: string[];
+  availabilityTime?: string;
   currentAssignedZone: string;
   isOnDuty: boolean;
   location?: DbGeoPoint;
@@ -113,8 +115,8 @@ export interface DbParking {
   id: string;
   facilityId: string;
   name: string;
-  totalCapacity: number;
-  availableCapacity: number;
+  totalCapacity?: number;
+  availableCapacity?: number;
   capacityDisplay?: string;
   vehicleTypes: string[];
   status: DbParkingStatus;
@@ -123,6 +125,7 @@ export interface DbParking {
   latitude: number;
   longitude: number;
   address?: string;
+  updatedAt?: string;
 }
 
 export interface DbShuttleRoute {

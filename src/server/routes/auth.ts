@@ -14,11 +14,12 @@ import {
 import { otpService } from '../providers/sms/OtpService';
 import { verifyPassword } from '../auth/password';
 import { randomUUID } from 'node:crypto';
+import { requirePersistentDatabase } from '../middleware/requirePersistentDatabase';
 
 export const authRouter = Router();
 
 // 1. Password Login (Administrative & Officials)
-authRouter.post('/login', async (req, res) => {
+authRouter.post('/login', requirePersistentDatabase, async (req, res) => {
   const { username, password } = req.body;
   if (typeof username !== 'string' || !username.trim() || typeof password !== 'string' || !password) {
     return res.status(400).json({ error: 'Username and password required' });
@@ -116,7 +117,7 @@ authRouter.post('/otp/send', async (req, res) => {
 });
 
 // 3. Verify Mobile OTP
-authRouter.post('/otp/verify', async (req, res) => {
+authRouter.post('/otp/verify', requirePersistentDatabase, async (req, res) => {
   const { mobileNumber, otp } = req.body;
   if (!mobileNumber || !otp) {
     return res.status(400).json({ error: 'मोबाइल नंबर और OTP आवश्यक हैं।' });
@@ -170,7 +171,7 @@ authRouter.post('/otp/verify', async (req, res) => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       lastLoginAt: new Date().toISOString(),
-    });
+});
   } else {
     user.lastLoginAt = new Date().toISOString();
     await repository.saveUser(user);

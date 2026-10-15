@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
 import { VolunteerService } from '../services/VolunteerService';
+import { isValidIndianMobileNumber } from '../utils/indianMobileNumber';
 import {
   HeartHandshake,
   CheckCircle2,
@@ -55,9 +56,9 @@ export const VolunteerRegistrationScreen: React.FC = () => {
   ]);
   const [selectedTime, setSelectedTime] = useState<string>(TIME_SLOTS[0]);
   const [languages, setLanguages] = useState<string[]>(['हिन्दी', 'मगही']);
-  const [emergencyContact, setEmergencyContact] = useState<string>('');
   const [formError, setFormError] = useState<string | null>(null);
   const [successSubmitted, setSuccessSubmitted] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const toggleService = (srv: string) => {
     if (selectedServices.includes(srv)) {
@@ -79,28 +80,34 @@ export const VolunteerRegistrationScreen: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
       setFormError('कृपया अपना पूरा नाम दर्ज करें।');
       return;
     }
-    if (!phone.trim() || phone.trim().length < 10) {
+    if (!isValidIndianMobileNumber(phone)) {
       setFormError('कृपया वैध 10 अंकों का मोबाइल नंबर दर्ज करें।');
       return;
     }
 
-    VolunteerService.registerVolunteer({
-      name: name.trim(),
-      phone: phone.trim(),
-      serviceArea,
-      services: selectedServices,
-      languages,
-      availabilityTime: selectedTime,
-    });
-
-    setSuccessSubmitted(true);
+    setIsSubmitting(true);
     setFormError(null);
+    try {
+      await VolunteerService.registerVolunteer({
+        name: name.trim(),
+        phone: phone.trim(),
+        serviceArea,
+        services: selectedServices,
+        languages,
+        availabilityTime: selectedTime,
+      });
+      setSuccessSubmitted(true);
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'पंजीकरण भेजा नहीं जा सका। कृपया पुनः प्रयास करें।');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -273,20 +280,6 @@ export const VolunteerRegistrationScreen: React.FC = () => {
               </div>
             </div>
 
-            {/* आपातकालीन संपर्क (वैकल्पिक) */}
-            <div className="space-y-1 text-xs">
-              <label className="font-bold text-stone-600 block">
-                आपातकालीन परिजन संपर्क नंबर (वैकल्पिक):
-              </label>
-              <input
-                type="tel"
-                value={emergencyContact}
-                onChange={(e) => setEmergencyContact(e.target.value)}
-                placeholder="घर का मोबाइल नंबर"
-                className="w-full px-3 py-2 rounded-xl border border-stone-300 text-xs font-bold text-stone-900 focus:outline-none"
-              />
-            </div>
-
             {/* Verification Disclaimer */}
             <div className="bg-stone-50 p-3 rounded-2xl border border-stone-200 text-[11px] text-stone-600 leading-relaxed">
               <p>
@@ -297,10 +290,11 @@ export const VolunteerRegistrationScreen: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
+              disabled={isSubmitting}
               className="w-full min-h-[50px] bg-gradient-to-r from-amber-600 via-amber-700 to-orange-700 hover:from-amber-700 hover:to-orange-800 active:scale-98 text-white font-black text-sm rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all border border-amber-500/40"
             >
               <Send className="w-4 h-4" />
-              <span>पंजीकरण भेजें (Submit Application)</span>
+              <span>{isSubmitting ? 'भेजा जा रहा है…' : 'पंजीकरण भेजें (Submit Application)'}</span>
             </button>
           </form>
         )}

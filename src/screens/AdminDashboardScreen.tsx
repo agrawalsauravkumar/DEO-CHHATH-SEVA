@@ -110,14 +110,34 @@ export const AdminDashboardScreen: React.FC = () => {
   const [newFacCategory, setNewFacCategory] = useState<FacilityCategory>('PARKING');
   const [newFacAddress, setNewFacAddress] = useState<string>('');
   const [newFacPhone, setNewFacPhone] = useState<string>('');
+  const [newFacLatitude, setNewFacLatitude] = useState<string>('');
+  const [newFacLongitude, setNewFacLongitude] = useState<string>('');
 
   // New announcement form state
   const [newAnnTitle, setNewAnnTitle] = useState<string>('');
   const [newAnnDesc, setNewAnnDesc] = useState<string>('');
   const [newAnnCategory, setNewAnnCategory] = useState<any>('GENERAL');
   const [newAnnPriority, setNewAnnPriority] = useState<any>('NORMAL');
+  const [newAnnExpiresAt, setNewAnnExpiresAt] = useState<string>('');
 
   const currentAdmin = useMemo(() => AdminService.getCurrentAdmin(), []);
+  const syncOperationalData = async () => {
+    const role = currentAdmin?.role;
+    const syncs: Promise<unknown>[] = [
+      AdminService.syncDashboardData(),
+      FacilityService.syncFacilities(),
+    ];
+    if (role === 'SUPER_ADMIN' || role === 'ADMIN' || role === 'HELP_ADMIN') {
+      syncs.push(HelpService.syncHelpRequests());
+    }
+    if (role === 'SUPER_ADMIN' || role === 'ADMIN' || role === 'CONTENT_ADMIN') {
+      syncs.push(AnnouncementService.syncAnnouncements(true));
+    }
+    if (role === 'SUPER_ADMIN' || role === 'ADMIN' || role === 'FACILITY_ADMIN') {
+      syncs.push(VolunteerService.syncAdminVolunteers());
+    }
+    await Promise.all(syncs);
+  };
   const hasAdminAccess = Boolean(
     isAdminSessionValid &&
     currentAdmin &&
@@ -147,6 +167,23 @@ export const AdminDashboardScreen: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+  useEffect(() => {
+    if (!isAdminSessionValid) return;
+    let isMounted = true;
+    syncOperationalData()
+      .then(() => {
+        if (isMounted) setRefreshTrigger((prev) => prev + 1);
+      })
+      .catch((error: unknown) => {
+        if (isMounted) {
+          showToast(`डेटा लोड नहीं हुआ: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [isAdminSessionValid]);
+
   const handleLogout = () => {
     AdminService.logout();
     localStorage.removeItem('deo_chhath_saved_user_screen');
@@ -157,11 +194,16 @@ export const AdminDashboardScreen: React.FC = () => {
   const handleSyncAll = async () => {
     setIsSyncing(true);
     try {
-      const res = await SyncService.performFullSync();
-      showToast(res.message);
+      await syncOperationalData();
+      let message = 'प्रशासन, सुविधा, सूचना, सहायता और स्वयंसेवक डेटा सिंक हुआ।';
+      if (SyncService.isConfigured()) {
+        const res = await SyncService.performFullSync();
+        message = `${message} ${res.message}`;
+      }
+      showToast(message);
       setRefreshTrigger((prev) => prev + 1);
-    } catch (err: any) {
-      showToast('सिंक त्रुटि: ' + (err?.message || 'असफल'));
+    } catch (error) {
+      showToast('सिंक त्रुटि: ' + (error instanceof Error ? error.message : 'असफल'));
     } finally {
       setIsSyncing(false);
     }
@@ -177,8 +219,9 @@ export const AdminDashboardScreen: React.FC = () => {
   const notifications = useMemo(() => AdminService.getNotifications(), [refreshTrigger]);
   const facilities = useMemo(() => FacilityService.getAllFacilities(), [refreshTrigger]);
   const announcements = useMemo(() => AnnouncementService.getAllAnnouncements(), [refreshTrigger]);
-  const routeAlerts = useMemo(() => AnnouncementService.getActiveRouteAlerts(), [refreshTrigger]);
+  const routeAlerts = useMemo(() => AnnouncementService.getAllRouteAlerts(), [refreshTrigger]);
   const helpRequests = useMemo(() => HelpService.getHelpRequests(), [refreshTrigger]);
+  const volunteers = useMemo(() => VolunteerService.getAllVolunteers(), [refreshTrigger]);
   const lostFoundReports = useMemo(() => LostFoundService.getAllPublicReports(), [refreshTrigger]);
 
   // Sidebar item list
@@ -204,69 +247,74 @@ export const AdminDashboardScreen: React.FC = () => {
     { id: 'settings', label: 'सिस्टम व PostGIS सेटिंग्स', icon: Settings },
   ];
 
-  const handleCreateFacility = (e: React.FormEvent) => {
+  const handleCreateFacility = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFacName.trim()) return;
-
-    FacilityService.addFacility({
-      name: newFacName.trim(),
-      category: newFacCategory,
-      latitude: 24.6545,
-      longitude: 84.4375,
-      address: newFacAddress || 'देव सूर्य मंदिर परिसर',
-      description: 'व्यवस्थापक द्वारा जोड़ा गया',
-      verified: true,
-      active: true,
-      phone: newFacPhone || undefined,
-      source: 'ADMIN_VERIFIED',
-    });
-
-    AdminService.recordAuditLog(
-      'FACILITY_CREATED',
-      'Facility',
-      newFacName,
-      'None',
-      `Category: ${newFacCategory}, Verified: true`
-    );
-
-    setNewFacName('');
-    setNewFacAddress('');
-    setNewFacPhone('');
-    setShowAddFacilityModal(false);
-    setRefreshTrigger((prev) => prev + 1);
-    showToast('नई सुविधा सफलतापूर्वक जोड़ी गई।');
+    const latitude = Number(newFacLatitude);
+    const longitude = Number(newFacLongitude);
+    if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90 ||
+      !Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+      showToast('कृपया सुविधा के सही अक्षांश और देशांतर दर्ज करें।');
+      return;
+    }
+    try {
+      await FacilityService.addFacility({
+        name: newFacName.trim(),
+        category: newFacCategory,
+        latitude,
+        longitude,
+        address: newFacAddress.trim(),
+        description: '',
+        verified: true,
+        active: true,
+        phone: newFacPhone.trim() || undefined,
+        source: 'ADMIN_VERIFIED',
+      });
+      setNewFacName('');
+      setNewFacAddress('');
+      setNewFacPhone('');
+      setNewFacLatitude('');
+      setNewFacLongitude('');
+      setShowAddFacilityModal(false);
+      setRefreshTrigger((prev) => prev + 1);
+      showToast('नई सुविधा सर्वर पर सफलतापूर्वक जोड़ी गई।');
+    } catch (error) {
+      showToast(`सुविधा नहीं जोड़ी गई: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+    }
   };
 
-  const handleCreateAnnouncement = (e: React.FormEvent) => {
+  const handleCreateAnnouncement = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAnnTitle.trim() || !newAnnDesc.trim()) return;
+    const expiryTimestamp = new Date(newAnnExpiresAt).getTime();
+    if (!Number.isFinite(expiryTimestamp) || expiryTimestamp <= Date.now()) {
+      showToast('प्रकाशन से आगे की वैध समाप्ति तिथि चुनें।');
+      return;
+    }
 
-    AnnouncementService.addAnnouncement({
-      title: newAnnTitle.trim(),
-      shortDescription: newAnnDesc.trim(),
-      category: newAnnCategory,
-      priority: newAnnPriority,
-      isVerifiedOfficial: true,
-      publishedTime: 'अभी प्रकाशित',
-      lastUpdatedTime: 'अभी',
-      source: 'NEXTGEN DEVBHOOMI FOUNDATION नियंत्रण कक्ष',
-      badgeText: 'VERIFIED OFFICIAL',
-      isActive: true,
-    });
-
-    AdminService.recordAuditLog(
-      'ANNOUNCEMENT_PUBLISHED',
-      'Announcement',
-      newAnnTitle,
-      'None',
-      `Priority: ${newAnnPriority}, Category: ${newAnnCategory}`
-    );
-
-    setNewAnnTitle('');
-    setNewAnnDesc('');
-    setShowAddAnnouncementModal(false);
-    setRefreshTrigger((prev) => prev + 1);
-    showToast('आधिकारिक सूचना सफलतापूर्वक प्रकाशित हुई।');
+    try {
+      await AnnouncementService.addAnnouncement({
+        title: newAnnTitle.trim(),
+        shortDescription: newAnnDesc.trim(),
+        category: newAnnCategory,
+        priority: newAnnPriority,
+        isVerifiedOfficial: true,
+        publishedTime: 'अभी प्रकाशित',
+        lastUpdatedTime: 'अभी',
+        source: currentAdmin?.fullName || 'मेला नियंत्रण कक्ष',
+        badgeText: 'VERIFIED OFFICIAL',
+        isActive: true,
+        expiresAt: new Date(expiryTimestamp).toISOString(),
+      });
+      setNewAnnTitle('');
+      setNewAnnDesc('');
+      setNewAnnExpiresAt('');
+      setShowAddAnnouncementModal(false);
+      setRefreshTrigger((prev) => prev + 1);
+      showToast('आधिकारिक सूचना सर्वर पर प्रकाशित हुई।');
+    } catch (error) {
+      showToast(`सूचना प्रकाशित नहीं हुई: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+    }
   };
 
   if (isValidatingSession) {
@@ -726,10 +774,14 @@ export const AdminDashboardScreen: React.FC = () => {
                         <td className="py-3">
                           {u.status === 'ACTIVE' ? (
                             <button
-                              onClick={() => {
-                                AdminService.updateUserStatus(u.id, 'SUSPENDED');
-                                setRefreshTrigger((prev) => prev + 1);
-                                showToast(`${u.name} को निलंबित किया गया।`);
+                              onClick={async () => {
+                                try {
+                                  await AdminService.updateUserStatus(u.id, 'SUSPENDED');
+                                  setRefreshTrigger((prev) => prev + 1);
+                                  showToast(`${u.name} को निलंबित किया गया।`);
+                                } catch (error) {
+                                  showToast(`स्थिति अपडेट असफल: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+                                }
                               }}
                               className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg text-xs font-bold border border-rose-200"
                             >
@@ -737,10 +789,14 @@ export const AdminDashboardScreen: React.FC = () => {
                             </button>
                           ) : (
                             <button
-                              onClick={() => {
-                                AdminService.updateUserStatus(u.id, 'ACTIVE');
-                                setRefreshTrigger((prev) => prev + 1);
-                                showToast(`${u.name} को पुनः सक्रिय किया गया।`);
+                              onClick={async () => {
+                                try {
+                                  await AdminService.updateUserStatus(u.id, 'ACTIVE');
+                                  setRefreshTrigger((prev) => prev + 1);
+                                  showToast(`${u.name} को पुनः सक्रिय किया गया।`);
+                                } catch (error) {
+                                  showToast(`स्थिति अपडेट असफल: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+                                }
                               }}
                               className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-xs font-bold border border-emerald-200"
                             >
@@ -767,7 +823,7 @@ export const AdminDashboardScreen: React.FC = () => {
                   </p>
                 </div>
                 <span className="bg-emerald-100 text-emerald-900 font-black text-xs px-3 py-1 rounded-xl">
-                  48 सक्रिय स्वयंसेवक
+                  {volunteers.filter((volunteer) => volunteer.verificationStatus === 'VERIFIED').length} सत्यापित स्वयंसेवक
                 </span>
               </div>
 
@@ -784,51 +840,59 @@ export const AdminDashboardScreen: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-100 font-medium text-stone-700">
-                    {[
-                      { id: 'vol-001', name: 'अमित कुमार', phone: '+91 94310 11223', zone: 'सूर्य मंदिर मुख्य द्वार', status: 'VERIFIED' },
-                      { id: 'vol-002', name: 'सुनील सिंह', phone: '+91 99341 55667', zone: 'रुद्र कुंड घाट #2', status: 'VERIFIED' },
-                      { id: 'vol-003', name: 'मनीष रंजन', phone: '+91 91220 88990', zone: 'P1 पार्किंग चेकपोस्ट', status: 'PENDING' },
-                      { id: 'vol-004', name: 'विकास कुमार', phone: '+91 98350 44332', zone: 'सूर्य कुंड पश्चिमी घाट', status: 'PENDING' },
-                    ].map((v) => (
+                    {volunteers.map((v) => (
                       <tr key={v.id} className="hover:bg-stone-50">
-                        <td className="py-3 pr-3 font-mono text-[11px] text-amber-800 font-bold">{v.id}</td>
+                        <td className="py-3 pr-3 font-mono text-[11px] text-amber-800 font-bold">{v.badge}</td>
                         <td className="py-3 pr-3 font-black text-stone-900">{v.name}</td>
                         <td className="py-3 pr-3 text-stone-600">{v.phone}</td>
-                        <td className="py-3 pr-3 text-stone-700 font-semibold">{v.zone}</td>
+                        <td className="py-3 pr-3 text-stone-700 font-semibold">{v.serviceArea}</td>
                         <td className="py-3 pr-3">
                           <span
                             className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                              v.status === 'VERIFIED'
+                              v.verificationStatus === 'VERIFIED'
                                 ? 'bg-emerald-100 text-emerald-800'
                                 : 'bg-amber-100 text-amber-800'
                             }`}
                           >
-                            {v.status}
+                            {v.verificationStatus}
                           </span>
                         </td>
                         <td className="py-3">
                           <div className="flex items-center gap-1.5">
-                            {v.status === 'PENDING' && (
+                            {v.verificationStatus === 'PENDING' && (
                               <button
-                                onClick={() => {
-                                  AdminService.recordAuditLog('VOLUNTEER_VERIFIED', 'Volunteer', v.id, 'PENDING', 'VERIFIED');
-                                  showToast(`${v.name} को सत्यापित किया गया।`);
-                                  setRefreshTrigger((prev) => prev + 1);
+                                onClick={async () => {
+                                  try {
+                                    await VolunteerService.adminVerifyVolunteer(v.id, 'VERIFIED');
+                                    await VolunteerService.syncAdminVolunteers();
+                                    setRefreshTrigger((prev) => prev + 1);
+                                    showToast(`${v.name} को सर्वर पर सत्यापित किया गया।`);
+                                  } catch (error) {
+                                    showToast(`सत्यापन असफल: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+                                  }
                                 }}
                                 className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold"
                               >
                                 सत्यापित करें
                               </button>
                             )}
-                            <button
-                              onClick={() => {
-                                AdminService.recordAuditLog('VOLUNTEER_SUSPENDED', 'Volunteer', v.id, v.status, 'SUSPENDED');
-                                showToast(`${v.name} निलंबित।`);
-                              }}
-                              className="px-2 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-xs font-bold"
-                            >
-                              निलंबित
-                            </button>
+                            {v.verificationStatus !== 'SUSPENDED' && (
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    await VolunteerService.adminVerifyVolunteer(v.id, 'SUSPENDED');
+                                    await VolunteerService.syncAdminVolunteers();
+                                    setRefreshTrigger((prev) => prev + 1);
+                                    showToast(`${v.name} को सर्वर पर निलंबित किया गया।`);
+                                  } catch (error) {
+                                    showToast(`निलंबन असफल: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+                                  }
+                                }}
+                                className="px-2 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-xs font-bold"
+                              >
+                                निलंबित
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -879,9 +943,14 @@ export const AdminDashboardScreen: React.FC = () => {
                         <td className="py-3">
                           <div className="flex items-center gap-1.5">
                             <button
-                              onClick={() => {
-                                AdminService.recordAuditLog('HELP_REQUEST_RESOLVED', 'HelpRequest', hr.id, hr.status, 'RESOLVED');
-                                showToast(`अनुरोध #${hr.id} समाधान चिन्हित किया गया।`);
+                              onClick={async () => {
+                                try {
+                                  await HelpService.updateHelpRequestStatus(hr.id, 'समाधान किया गया');
+                                  setRefreshTrigger((prev) => prev + 1);
+                                  showToast(`अनुरोध #${hr.id} सर्वर पर समाधान चिन्हित किया गया।`);
+                                } catch (error) {
+                                  showToast(`समाधान अपडेट असफल: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+                                }
                               }}
                               className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold"
                             >
@@ -1023,9 +1092,14 @@ export const AdminDashboardScreen: React.FC = () => {
                           <td className="py-3">
                             <div className="flex items-center gap-1.5">
                               <button
-                                onClick={() => {
-                                  AdminService.recordAuditLog('FACILITY_UPDATED', 'Facility', fac.name, 'Active', 'Archived');
-                                  showToast(`${fac.name} आर्काइव किया गया।`);
+                                onClick={async () => {
+                                  try {
+                                    await FacilityService.archiveFacility(fac.id);
+                                    setRefreshTrigger((prev) => prev + 1);
+                                    showToast(`${fac.name} सर्वर पर आर्काइव किया गया।`);
+                                  } catch (error) {
+                                    showToast(`आर्काइव असफल: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+                                  }
                                 }}
                                 className="p-1 text-stone-500 hover:text-stone-800 rounded"
                                 title="आर्काइव"
@@ -1086,10 +1160,14 @@ export const AdminDashboardScreen: React.FC = () => {
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="text-[11px] text-stone-400 font-bold">{ann.publishedTime}</span>
                       <button
-                        onClick={() => {
-                          AnnouncementService.toggleRouteAlert('ra-001', !ann.isActive);
-                          setRefreshTrigger((prev) => prev + 1);
-                          showToast('सूचना स्थिति अपडेट की गई।');
+                        onClick={async () => {
+                          try {
+                            await AnnouncementService.setAnnouncementActive(ann.id, !ann.isActive);
+                            setRefreshTrigger((prev) => prev + 1);
+                            showToast('सूचना की स्थिति सर्वर पर अपडेट की गई।');
+                          } catch (error) {
+                            showToast(`सूचना अपडेट असफल: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+                          }
                         }}
                         className="px-3 py-1.5 bg-stone-900 text-white font-bold text-xs rounded-xl hover:bg-stone-800"
                       >
@@ -1123,9 +1201,23 @@ export const AdminDashboardScreen: React.FC = () => {
                         <span className="text-lg">{ra.type === 'ROAD_CLOSURE' ? '🚧' : '↪️'}</span>
                         <h4 className="text-sm font-black text-stone-900">{ra.title}</h4>
                       </div>
-                      <span className="bg-emerald-100 text-emerald-900 text-[10px] font-black px-2 py-0.5 rounded-full">
-                        सक्रिय प्रतिबंध
-                      </span>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await AnnouncementService.toggleRouteAlert(ra.id, !ra.isActive);
+                            setRefreshTrigger((prev) => prev + 1);
+                            showToast('मार्ग प्रतिबंध सर्वर पर अपडेट किया गया।');
+                          } catch (error) {
+                            showToast(`मार्ग प्रतिबंध अपडेट असफल: ${error instanceof Error ? error.message : 'सर्वर त्रुटि'}`);
+                          }
+                        }}
+                        className={`text-[10px] font-black px-2 py-1 rounded-full ${ra.isActive
+                          ? 'bg-emerald-100 text-emerald-900'
+                          : 'bg-stone-200 text-stone-700'}`}
+                      >
+                        {ra.isActive ? 'सक्रिय प्रतिबंध' : 'निष्क्रिय'}
+                      </button>
                     </div>
                     <div className="text-xs text-stone-700 space-y-0.5">
                       <p><strong>मार्ग:</strong> {ra.roadName} ({ra.affectedArea})</p>
@@ -1396,6 +1488,34 @@ export const AdminDashboardScreen: React.FC = () => {
               </div>
 
               <div>
+                <label className="font-bold text-stone-700 block mb-1">सटीक GPS निर्देशांक (latitude, longitude)</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="number"
+                    step="any"
+                    min="-90"
+                    max="90"
+                    value={newFacLatitude}
+                    onChange={(e) => setNewFacLatitude(e.target.value)}
+                    placeholder="Latitude"
+                    className="w-full bg-stone-50 border border-stone-300 rounded-xl p-2.5 font-bold"
+                    required
+                  />
+                  <input
+                    type="number"
+                    step="any"
+                    min="-180"
+                    max="180"
+                    value={newFacLongitude}
+                    onChange={(e) => setNewFacLongitude(e.target.value)}
+                    placeholder="Longitude"
+                    className="w-full bg-stone-50 border border-stone-300 rounded-xl p-2.5 font-bold"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
                 <label className="font-bold text-stone-700 block mb-1">हेल्पलाइन फोन (वैकल्पिक)</label>
                 <input
                   type="text"
@@ -1409,7 +1529,8 @@ export const AdminDashboardScreen: React.FC = () => {
               <div className="pt-2 flex items-center gap-2">
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-stone-950 font-black rounded-xl shadow-xs"
+                  disabled={isSyncing}
+                  className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-stone-950 font-black rounded-xl shadow-xs disabled:opacity-60"
                 >
                   सत्यापित करें और जोड़ें
                 </button>
@@ -1460,6 +1581,20 @@ export const AdminDashboardScreen: React.FC = () => {
                   className="w-full bg-stone-50 border border-stone-300 rounded-xl p-2.5 font-bold"
                   required
                 />
+              </div>
+
+              <div>
+                <label className="font-bold text-stone-700 block mb-1">सूचना की समाप्ति तिथि और समय</label>
+                <input
+                  type="datetime-local"
+                  value={newAnnExpiresAt}
+                  onChange={(e) => setNewAnnExpiresAt(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-300 rounded-xl p-2.5 font-bold"
+                  required
+                />
+                <p className="mt-1 text-[11px] text-stone-500">
+                  सूचना केवल इस समय तक सक्रिय रहेगी। समय आपके डिवाइस के स्थानीय समय क्षेत्र में दर्ज होगा।
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-2">

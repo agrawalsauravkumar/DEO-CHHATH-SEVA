@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
 import { VolunteerService } from '../services/VolunteerService';
+import { HelpService } from '../services/HelpService';
 import { LocationService } from '../services/LocationService';
 import { Volunteer, HelpRequest, LocationItem } from '../types';
 import { DeoMap } from '../components/DeoMap';
@@ -43,11 +44,26 @@ export const VolunteerModeScreen: React.FC = () => {
 
   // Refresh volunteer profile
   useEffect(() => {
-    const vol = VolunteerService.getVolunteerProfile();
-    setVolunteer(vol);
+    let isMounted = true;
+    VolunteerService.syncMyVolunteerProfile()
+      .then(async (profile) => {
+        if (!isMounted) return;
+        setVolunteer(profile);
+        if (profile?.verificationStatus === 'VERIFIED') {
+          await HelpService.syncHelpRequests('user');
+        }
+      })
+      .catch((error: unknown) => {
+        if (isMounted) {
+          setToastNotice(error instanceof Error ? error.message : 'डेटा सर्वर से लोड नहीं हुआ।');
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const volunteerId = volunteer?.id || 'vol-rahul-01';
+  const volunteerId = volunteer?.id || '';
   const isAvailable = volunteer?.availability === 'AVAILABLE';
 
   // Open Requests (Unassigned)
@@ -68,16 +84,18 @@ export const VolunteerModeScreen: React.FC = () => {
   }, [volunteerId, toastNotice]);
 
   // Toggle Availability
-  const handleToggleAvailability = () => {
+  const handleToggleAvailability = async () => {
     if (!volunteer) return;
     const nextStatus = isAvailable ? 'UNAVAILABLE' : 'AVAILABLE';
-    VolunteerService.setAvailability(volunteer.id, nextStatus);
-    setVolunteer(VolunteerService.getVolunteerProfile(volunteer.id));
-    setToastNotice(
-      nextStatus === 'AVAILABLE'
+    try {
+      await VolunteerService.setAvailability(volunteer.id, nextStatus);
+      setVolunteer(VolunteerService.getVolunteerProfile(volunteer.id));
+      setToastNotice(nextStatus === 'AVAILABLE'
         ? '🟢 आप अब सहायता के लिए उपलब्ध हैं।'
-        : '🔴 आपकी स्थिति अनुपलब्ध (Unavailable) कर दी गई है।'
-    );
+        : '🔴 आपकी स्थिति अनुपलब्ध (Unavailable) कर दी गई है।');
+    } catch (error) {
+      setToastNotice(error instanceof Error ? error.message : 'ड्यूटी स्थिति अपडेट नहीं हुई।');
+    }
     setTimeout(() => setToastNotice(null), 3500);
   };
 
@@ -90,38 +108,60 @@ export const VolunteerModeScreen: React.FC = () => {
   };
 
   // Accept Request
-  const handleAccept = (reqId: string) => {
-    const ok = VolunteerService.acceptRequest(volunteerId, reqId);
-    if (ok) {
+  const handleAccept = async (reqId: string) => {
+    try {
+      await VolunteerService.acceptRequest(volunteerId, reqId);
+      await HelpService.syncHelpRequests('user');
       setToastNotice('🔵 सहायता अनुरोध स्वीकार कर लिया गया है।');
       setActiveTab('ACTIVE');
       setTimeout(() => setToastNotice(null), 3500);
+    } catch (error) {
+      setToastNotice(error instanceof Error ? error.message : 'अनुरोध स्वीकार नहीं हुआ।');
     }
   };
 
   // Reject Request
-  const handleReject = (reqId: string) => {
-    VolunteerService.rejectRequest(volunteerId, reqId, 'स्वयंसेवक अन्य कार्य में व्यस्त');
-    setToastNotice('अनुरोध अस्वीकार किया गया।');
-    setTimeout(() => setToastNotice(null), 3500);
+  const handleReject = async (reqId: string) => {
+    try {
+      await VolunteerService.rejectRequest(volunteerId, reqId, 'स्वयंसेवक अन्य कार्य में व्यस्त');
+      await HelpService.syncHelpRequests('user');
+      setToastNotice('अनुरोध छोड़ा गया; अब यह दूसरे स्वयंसेवक के लिए उपलब्ध है।');
+      setTimeout(() => setToastNotice(null), 3500);
+    } catch (error) {
+      setToastNotice(error instanceof Error ? error.message : 'अनुरोध छोड़ा नहीं जा सका।');
+    }
   };
 
   // Start Assistance
-  const handleStartAssistance = (reqId: string) => {
-    VolunteerService.startRequest(volunteerId, reqId);
-    setToastNotice('🟠 सहायता शुरू कर दी गई है (IN_PROGRESS)।');
-    setTimeout(() => setToastNotice(null), 3500);
+  const handleStartAssistance = async (reqId: string) => {
+    try {
+      await VolunteerService.startRequest(volunteerId, reqId);
+      await HelpService.syncHelpRequests('user');
+      setToastNotice('🟠 सहायता शुरू कर दी गई है (IN_PROGRESS)।');
+      setTimeout(() => setToastNotice(null), 3500);
+    } catch (error) {
+      setToastNotice(error instanceof Error ? error.message : 'सहायता स्थिति अपडेट नहीं हुई।');
+    }
   };
 
   // Complete Assistance
-  const handleCompleteAssistance = (reqId: string) => {
-    VolunteerService.completeRequest(volunteerId, reqId);
-    setToastNotice('🟢 सहायता सफलतापूर्वक पूरी हुई (RESOLVED)।');
-    setTimeout(() => setToastNotice(null), 3500);
+  const handleCompleteAssistance = async (reqId: string) => {
+    try {
+      await VolunteerService.completeRequest(volunteerId, reqId);
+      await HelpService.syncHelpRequests('user');
+      setToastNotice('🟢 सहायता सफलतापूर्वक पूरी हुई (RESOLVED)।');
+      setTimeout(() => setToastNotice(null), 3500);
+    } catch (error) {
+      setToastNotice(error instanceof Error ? error.message : 'समाधान स्थिति अपडेट नहीं हुई।');
+    }
   };
 
   // Navigate to Help Request Location using existing RouteService
   const handleNavigateToRequester = (req: HelpRequest) => {
+    if (typeof req.latitude !== 'number' || typeof req.longitude !== 'number') {
+      setToastNotice('इस सहायता अनुरोध के साथ स्थान साझा नहीं किया गया है।');
+      return;
+    }
     const distText = deviceLocation
       ? LocationService.formatDistanceHindi(
           { latitude: deviceLocation.latitude, longitude: deviceLocation.longitude },
@@ -152,12 +192,17 @@ export const VolunteerModeScreen: React.FC = () => {
   };
 
   // Escalate to Admin
-  const handleConfirmEscalation = () => {
+  const handleConfirmEscalation = async () => {
     if (!escalateModalReq) return;
-    VolunteerService.escalateRequest(volunteerId, escalateModalReq.id, escalateReason);
-    setEscalateModalReq(null);
-    setToastNotice('🚨 अनुरोध एडमिन को एस्केलेट (Escalate) कर दिया गया है।');
-    setTimeout(() => setToastNotice(null), 4000);
+    try {
+      await VolunteerService.escalateRequest(volunteerId, escalateModalReq.id, escalateReason);
+      await HelpService.syncHelpRequests('user');
+      setEscalateModalReq(null);
+      setToastNotice('🚨 अनुरोध एडमिन को एस्केलेट (Escalate) कर दिया गया है।');
+      setTimeout(() => setToastNotice(null), 4000);
+    } catch (error) {
+      setToastNotice(error instanceof Error ? error.message : 'अनुरोध एस्केलेट नहीं हुआ।');
+    }
   };
 
   return (
@@ -320,17 +365,10 @@ export const VolunteerModeScreen: React.FC = () => {
                     {req.userName && <span>नाम: {req.userName}</span>}
                   </div>
 
-                  {/* Accept / Reject Buttons per Requirement 10 */}
-                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-stone-100">
-                    <button
-                      onClick={() => handleReject(req.id)}
-                      className="min-h-[44px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl"
-                    >
-                      अस्वीकार करें
-                    </button>
+                  <div className="pt-1 border-t border-stone-100">
                     <button
                       onClick={() => handleAccept(req.id)}
-                      className="min-h-[44px] bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5"
+                      className="w-full min-h-[44px] bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5"
                     >
                       <span>स्वीकार करें (Accept)</span>
                     </button>
@@ -404,12 +442,20 @@ export const VolunteerModeScreen: React.FC = () => {
                   {/* Progress Lifecycle Buttons: Start & Complete */}
                   <div className="grid grid-cols-2 gap-2 pt-1 border-t border-stone-100">
                     {req.status === 'स्वयंसेवक assigned' ? (
-                      <button
-                        onClick={() => handleStartAssistance(req.id)}
-                        className="w-full min-h-[46px] bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs"
-                      >
-                        सहायता शुरू करें
-                      </button>
+                      <>
+                        <button
+                          onClick={() => handleStartAssistance(req.id)}
+                          className="w-full min-h-[46px] bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs"
+                        >
+                          सहायता शुरू करें
+                        </button>
+                        <button
+                          onClick={() => handleReject(req.id)}
+                          className="w-full min-h-[46px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl"
+                        >
+                          असाइनमेंट छोड़ें
+                        </button>
+                      </>
                     ) : (
                       <button
                         onClick={() => handleCompleteAssistance(req.id)}

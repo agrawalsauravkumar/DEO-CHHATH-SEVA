@@ -354,8 +354,8 @@ export interface HelpRequest {
   id: string;
   type: string;
   description: string;
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
   userName?: string;
   userPhone?: string;
   status: HelpRequestStatus;
@@ -610,6 +610,7 @@ export interface OfficialAnnouncement {
   isVerifiedOfficial: boolean; // Only admin-approved official content
   publishedTime: string;
   lastUpdatedTime: string;
+  expiresAt?: string;
   source: string;              // e.g. "जिला प्रशासन औरंगाबाद / मेला नियंत्रण कक्ष"
   badgeText?: string;
   routeAlert?: RouteAlert;     // Attached route closure / diversion info

@@ -1,53 +1,10 @@
 import {
-  AnnouncementCategory,
-  AnnouncementPriority,
-} from '../types';
-import {
   CachedAnnouncement,
   OfflineDataService,
 } from './OfflineDataService';
-
+import { apiUrl } from './apiUrl';
+import { normalizeVerifiedAnnouncement } from './VerifiedAnnouncementValidation';
 const API_URL = import.meta.env.VITE_VERIFIED_ANNOUNCEMENTS_API_URL?.trim();
-const CATEGORIES = new Set<AnnouncementCategory>([
-  'EMERGENCY',
-  'ROUTE',
-  'PARKING',
-  'SHUTTLE',
-  'MEDICAL',
-  'HELP',
-  'GENERAL',
-  'CHHATH_INFO',
-  'SAFETY',
-]);
-const PRIORITIES = new Set<AnnouncementPriority>([
-  'NORMAL',
-  'IMPORTANT',
-  'URGENT',
-  'EMERGENCY',
-]);
-
-const isVerifiedRouteAlert = (value: unknown): boolean => {
-  if (value === undefined) return true;
-  if (!value || typeof value !== 'object') return false;
-  const alert = value as Record<string, unknown>;
-  return (
-    typeof alert.id === 'string' &&
-    typeof alert.title === 'string' &&
-    typeof alert.roadName === 'string' &&
-    typeof alert.reason === 'string' &&
-    typeof alert.affectedArea === 'string' &&
-    typeof alert.latitude === 'number' &&
-    Number.isFinite(alert.latitude) &&
-    alert.latitude >= -90 &&
-    alert.latitude <= 90 &&
-    typeof alert.longitude === 'number' &&
-    Number.isFinite(alert.longitude) &&
-    alert.longitude >= -180 &&
-    alert.longitude <= 180 &&
-    alert.isVerified === true &&
-    alert.isActive === true
-  );
-};
 
 export interface VerifiedAnnouncementsResult {
   announcements: CachedAnnouncement[];
@@ -57,32 +14,6 @@ export interface VerifiedAnnouncementsResult {
   warning?: string;
 }
 
-const isCachedAnnouncement = (value: unknown): value is CachedAnnouncement => {
-  if (!value || typeof value !== 'object') return false;
-  const item = value as Partial<CachedAnnouncement>;
-  const expiry = typeof item.expiresAt === 'string' ? Date.parse(item.expiresAt) : NaN;
-  return (
-    typeof item.id === 'string' &&
-    typeof item.title === 'string' &&
-    typeof item.shortDescription === 'string' &&
-    (item.details === undefined || typeof item.details === 'string') &&
-    typeof item.category === 'string' &&
-    CATEGORIES.has(item.category as AnnouncementCategory) &&
-    typeof item.priority === 'string' &&
-    PRIORITIES.has(item.priority as AnnouncementPriority) &&
-    item.isVerifiedOfficial === true &&
-    item.isActive === true &&
-    typeof item.source === 'string' &&
-    item.source.trim().length > 0 &&
-    !/demo|sample|test/i.test(item.source) &&
-    typeof item.publishedTime === 'string' &&
-    typeof item.lastUpdatedTime === 'string' &&
-    isVerifiedRouteAlert(item.routeAlert) &&
-    Number.isFinite(expiry) &&
-    expiry > Date.now()
-  );
-};
-
 const readFeedVersion = (payload: unknown): string =>
   payload && typeof payload === 'object' &&
   'version' in payload &&
@@ -91,13 +22,13 @@ const readFeedVersion = (payload: unknown): string =>
     : '1';
 
 export const VerifiedAnnouncementService = {
-  isConfigured: (): boolean => Boolean(API_URL),
+  isConfigured: (): boolean => true,
 
   async getAnnouncements(signal?: AbortSignal): Promise<VerifiedAnnouncementsResult> {
     let networkError: unknown;
-    if (API_URL && (typeof navigator === 'undefined' || navigator.onLine)) {
+    if (typeof navigator === 'undefined' || navigator.onLine) {
       try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(API_URL || apiUrl('/api/announcements'), {
           headers: { Accept: 'application/json' },
           signal,
         });
@@ -114,10 +45,9 @@ export const VerifiedAnnouncementService = {
           throw new Error('घोषणा डेटा का प्रारूप मान्य नहीं है।');
         }
 
-        const verified = announcements.filter(isCachedAnnouncement);
-        if (announcements.length > 0 && verified.length === 0) {
-          throw new Error('घोषणा फ़ीड में कोई सत्यापित, सक्रिय और समाप्ति-तिथि वाली घोषणा मान्य नहीं है।');
-        }
+        const verified = announcements
+          .map((value) => normalizeVerifiedAnnouncement(value))
+          .filter((value): value is CachedAnnouncement => value !== undefined);
         const version = readFeedVersion(payload);
         let syncedAt: number | undefined;
         try {
@@ -137,7 +67,9 @@ export const VerifiedAnnouncementService = {
       const snapshot = await OfflineDataService.getVerifiedAnnouncements();
       if (snapshot) {
         return {
-          announcements: snapshot.announcements.filter(isCachedAnnouncement),
+          announcements: snapshot.announcements
+            .map((value) => normalizeVerifiedAnnouncement(value))
+            .filter((value): value is CachedAnnouncement => value !== undefined),
           source: 'CACHE',
           version: snapshot.version,
           syncedAt: snapshot.syncedAt,

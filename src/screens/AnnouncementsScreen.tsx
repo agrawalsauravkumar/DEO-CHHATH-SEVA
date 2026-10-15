@@ -69,6 +69,7 @@ export const AnnouncementsScreen: React.FC = () => {
   const [announcementData, setAnnouncementData] = useState<CachedAnnouncement[]>([]);
   const [announcementSource, setAnnouncementSource] = useState<'LOADING' | 'NETWORK' | 'CACHE' | 'NONE' | 'ERROR'>('LOADING');
   const [lastUpdated, setLastUpdated] = useState<string>('उपलब्ध नहीं');
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -77,15 +78,21 @@ export const AnnouncementsScreen: React.FC = () => {
       .then((result) => {
         setAnnouncementData(result.announcements);
         setAnnouncementSource(result.announcements.length ? result.source : 'NONE');
+        setLoadError(null);
         setLastUpdated(
           result.syncedAt
-            ? new Date(result.syncedAt).toLocaleString('hi-IN')
+            ? new Intl.DateTimeFormat('hi-IN', {
+                timeZone: 'Asia/Kolkata',
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              }).format(result.syncedAt)
             : 'उपलब्ध नहीं'
         );
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;
         console.error('Verified announcements could not be loaded:', error);
+        setLoadError(error instanceof Error ? error.message : 'सर्वर त्रुटि');
         setAnnouncementSource('ERROR');
       });
     return () => controller.abort();
@@ -145,24 +152,11 @@ export const AnnouncementsScreen: React.FC = () => {
   };
 
   const handleAlternativeRoute = (alert: RouteAlert) => {
-    showToast(`वैकल्पिक मार्ग सलाह: ${alert.alternativeRouteAdvice || 'बाईपास का उपयोग करें'}`);
-    const locItem: LocationItem = {
-      id: 'route_alert_alt_' + alert.id,
-      name: `वैकल्पिक मार्ग: ${alert.roadName}`,
-      nameEn: 'Alternative Route',
-      category: 'other',
-      latitude: alert.latitude + 0.002,
-      longitude: alert.longitude + 0.002,
-      distance: 'वैकल्पिक',
-      walkingTime: 'सुगम',
-      description: alert.alternativeRouteAdvice || 'सुरक्षित वैकल्पिक मार्ग',
-      landmark: 'बाईपास रूट',
-      x: 50,
-      y: 50,
-      status: 'सक्रिय',
-    };
-    setSelectedMapItem(locItem);
-    navigate('map');
+    showToast(
+      alert.alternativeRouteAdvice
+        ? `वैकल्पिक मार्ग सलाह: ${alert.alternativeRouteAdvice}`
+        : 'इस मार्ग अलर्ट के साथ सत्यापित वैकल्पिक मार्ग उपलब्ध नहीं है।'
+    );
   };
 
   const getPriorityBadge = (priority: AnnouncementPriority) => {
@@ -259,7 +253,8 @@ export const AnnouncementsScreen: React.FC = () => {
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>{announcementSource === 'CACHE' ? 'सहेजा सत्यापित' :
                 announcementSource === 'NETWORK' ? 'सत्यापित' :
-                  announcementSource === 'LOADING' ? 'लोड हो रहा है' : 'फ़ीड अनुपलब्ध'}</span>
+                  announcementSource === 'LOADING' ? 'लोड हो रहा है' :
+                    announcementSource === 'ERROR' ? 'फ़ीड अनुपलब्ध' : 'कोई सक्रिय सूचना नहीं'}</span>
             </span>
           </div>
 
@@ -282,7 +277,7 @@ export const AnnouncementsScreen: React.FC = () => {
               </span>
             ) : (
               <span className="text-amber-200 font-bold">
-                {isOnline ? 'अधिकृत घोषणा फ़ीड उपलब्ध नहीं' : 'ऑफ़लाइन कैश उपलब्ध नहीं'}
+                {isOnline ? 'कोई सक्रिय सत्यापित सूचना उपलब्ध नहीं' : 'ऑफ़लाइन कैश उपलब्ध नहीं'}
               </span>
             )}
           </div>
@@ -344,12 +339,18 @@ export const AnnouncementsScreen: React.FC = () => {
                   : announcementSource === 'ERROR'
                     ? 'घोषणाएँ लोड नहीं हो सकीं'
                     : announcementSource === 'NONE'
-                      ? 'सत्यापित घोषणा उपलब्ध नहीं है'
+                      ? selectedCategory === 'ALL' && selectedPriority === 'ALL'
+                        ? 'अभी कोई सक्रिय सत्यापित सूचना उपलब्ध नहीं है'
+                        : 'चुने गए फ़िल्टर में कोई सक्रिय सूचना उपलब्ध नहीं है'
                       : 'इस श्रेणी में कोई सक्रिय सूचना नहीं है'}
               </h3>
               <p className="text-xs text-stone-500">
                 {announcementSource === 'NONE'
-                  ? 'अधिकृत घोषणा फ़ीड कॉन्फ़िगर होने पर ही सत्यापित सूचना दिखाई जाएगी।'
+                  ? isOnline
+                    ? 'अधिकृत स्रोत से सत्यापित और समय-सीमा वाली सूचना प्रकाशित होने पर यहाँ दिखाई जाएगी।'
+                    : 'इस डिवाइस पर अभी कोई समय-सीमा के भीतर सहेजी गई सत्यापित सूचना उपलब्ध नहीं है।'
+                  : announcementSource === 'ERROR'
+                    ? loadError || 'कृपया कनेक्शन जाँचकर पुनः प्रयास करें।'
                   : 'समाप्त घोषणाएँ नहीं दिखाई जातीं।'}
               </p>
               {announcementSource === 'ERROR' && (
@@ -395,9 +396,19 @@ export const AnnouncementsScreen: React.FC = () => {
                     </div>
 
                     {/* Published time */}
-                    <div className="flex items-center gap-1 text-[11px] text-stone-500 shrink-0">
-                      <Clock className="w-3 h-3 text-stone-400" />
-                      <span>{item.publishedTime}</span>
+                    <div className="flex flex-col items-end gap-0.5 text-[10px] text-stone-500 shrink-0">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-stone-400" />
+                        {item.publishedTime}
+                      </span>
+                      <span>
+                        वैधता समाप्ति:{' '}
+                        {new Intl.DateTimeFormat('hi-IN', {
+                          timeZone: 'Asia/Kolkata',
+                          dateStyle: 'short',
+                          timeStyle: 'short',
+                        }).format(new Date(item.expiresAt))}
+                      </span>
                     </div>
                   </div>
 
@@ -463,8 +474,8 @@ export const AnnouncementsScreen: React.FC = () => {
                             onClick={() => handleAlternativeRoute(item.routeAlert!)}
                             className="flex-1 py-1.5 px-2 bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1 shadow-xs hover:bg-emerald-800 active:scale-95 transition-all"
                           >
-                            <span>↪️</span>
-                            <span>वैकल्पिक रास्ता देखें</span>
+                            <Info className="w-3.5 h-3.5" />
+                            <span>मार्ग सलाह पढ़ें</span>
                           </button>
                         )}
                       </div>
@@ -627,6 +638,15 @@ export const AnnouncementsScreen: React.FC = () => {
               <span>स्रोत: {activeAnnouncementModal.source}</span>
               <span>प्रकाशित: {activeAnnouncementModal.publishedTime}</span>
             </div>
+            {'expiresAt' in activeAnnouncementModal && typeof activeAnnouncementModal.expiresAt === 'string' && (
+              <p className="text-[11px] text-stone-500">
+                समाप्ति: {new Intl.DateTimeFormat('hi-IN', {
+                  timeZone: 'Asia/Kolkata',
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                }).format(new Date(activeAnnouncementModal.expiresAt))}
+              </p>
+            )}
 
             <button
               onClick={() => setActiveAnnouncementModal(null)}

@@ -24,8 +24,14 @@ import { syncRouter } from './sync';
 import { adminRouter } from './admin';
 import { auditRouter } from './audit';
 import { getDatabaseStatus } from '../db/connection';
+import { requirePersistentDatabase } from '../middleware/requirePersistentDatabase';
 
 export const apiRouter = Router();
+
+apiRouter.use((req, res, next) => {
+  if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+  return requirePersistentDatabase(req, res, next);
+});
 
 function getPublicDatabaseStatus() {
   const {
@@ -50,13 +56,16 @@ function getPublicDatabaseStatus() {
 
 // Health & PostGIS Database Status
 apiRouter.get('/health', (req, res) => {
+  const database = getPublicDatabaseStatus();
+  const operationalReady = database.connectionState === 'CONNECTED' && database.hasPostGIS;
   return res.json({
-    status: 'HEALTHY',
+    status: operationalReady ? 'HEALTHY' : 'DEGRADED',
+    operationalReady,
     service: 'DEO CHHATH SEVA Backend',
     organization: 'NEXTGEN DEVBHOOMI FOUNDATION',
     tagline: 'रास्ता भी • सहायता भी • सेवा भी',
     version: '1.4.0',
-    database: getPublicDatabaseStatus(),
+    database,
     timestamp: new Date().toISOString(),
   });
 });
@@ -94,4 +103,10 @@ apiRouter.use((req, res) => {
     path: req.originalUrl,
     timestamp: new Date().toISOString(),
   });
+});
+
+apiRouter.use((error: unknown, req: import('express').Request, res: import('express').Response, next: import('express').NextFunction) => {
+  if (res.headersSent) return next(error);
+  console.error(`[API ERROR] ${req.method} ${req.path}`, error);
+  return res.status(500).json({ error: 'The request could not be completed. Please retry or contact support.' });
 });

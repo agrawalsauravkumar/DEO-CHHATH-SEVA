@@ -37,6 +37,9 @@ const NavigationScreen = React.lazy(() =>
 const ParkingScreen = React.lazy(() =>
   import('./screens/ParkingScreen').then(({ ParkingScreen }) => ({ default: ParkingScreen }))
 );
+const SaveParkingScreen = React.lazy(() =>
+  import('./screens/SaveParkingScreen').then(({ SaveParkingScreen }) => ({ default: SaveParkingScreen }))
+);
 const MyParkingScreen = React.lazy(() =>
   import('./screens/MyParkingScreen').then(({ MyParkingScreen }) => ({ default: MyParkingScreen }))
 );
@@ -174,6 +177,7 @@ const MainRouter: React.FC = () => {
       case 'parking':
         return <ParkingScreen />;
       case 'save-parking':
+        return <SaveParkingScreen />;
       case 'my-parking':
         return <MyParkingScreen />;
       case 'shuttle':
@@ -248,14 +252,14 @@ const MainRouter: React.FC = () => {
                 {!isOnline
                   ? '🟠 आप ऑफलाइन हैं — कुछ सुविधाएँ इंटरनेट के बिना उपलब्ध नहीं हो सकतीं।'
                   : networkStatus === 'SYNCING'
-                    ? 'सत्यापित डेटा सिंक हो रहा है…'
+                    ? 'अधिकृत सूचना और सुविधा स्रोत जाँचे जा रहे हैं…'
                     : networkStatus === 'SYNC_ERROR'
                       ? `सिंक नहीं हुआ${syncError ? `: ${syncError}` : ''}`
                       : networkStatus === 'SYNCED'
-                        ? '🟢 सिंक किया गया'
+                        ? '🟢 अधिकृत डेटा स्रोत जाँचे गए'
                         : '🟢 Internet वापस आ गया है'}
                 {networkStatus === 'SYNCED' && lastSyncTime
-                  ? ` • अंतिम सिंक: ${new Date(lastSyncTime).toLocaleString('hi-IN')}`
+                  ? ` • अंतिम स्रोत जाँच: ${new Date(lastSyncTime).toLocaleString('hi-IN')}`
                   : ''}
               </span>
               {isOnline && networkStatus === 'SYNC_ERROR' && (

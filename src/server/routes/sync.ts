@@ -15,13 +15,10 @@ syncRouter.get(['/bundle', '/package'], async (req, res) => {
   const shuttleRoutes = await repository.getShuttleRoutes();
   const announcements = await repository.getAnnouncements(true);
   const routeAlerts = await repository.getRouteAlerts();
-  const festivalConfig = repository.getFestivalConfig();
-
   return res.json({
     version: '1.4.0',
     generatedAt: new Date().toISOString(),
-    organization: festivalConfig.organization,
-    festivalConfig,
+    organization: 'NEXTGEN DEVBHOOMI FOUNDATION',
     data: {
       facilities,
       parkings,

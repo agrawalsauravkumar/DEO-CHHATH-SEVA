@@ -134,12 +134,14 @@ export const ToiletScreen: React.FC = () => {
                 स्वच्छता एवं जन-सुविधा
               </span>
               <h2 className="text-lg font-black text-white leading-tight">
-                शौचालय व चेंजिंग रूम परिसर
+                शौचालय सुविधा
               </h2>
             </div>
           </div>
           <p className="text-xs text-stone-200 leading-relaxed">
-            सूर्य मंदिर, सूर्य कुंड, रुद्र कुंड एवं पार्किंग स्थलों पर महिला, पुरुष एवं दिव्यांगजनों हेतु स्वच्छ व सुरक्षित व्यवस्था।
+            {toiletsList.length
+              ? 'दिखाए गए स्थल सत्यापित सूची से हैं; स्वच्छता और वर्तमान उपलब्धता की स्थानीय पुष्टि करें।'
+              : 'सत्यापित शौचालय और चेंजिंग सुविधाओं की सूची अभी उपलब्ध नहीं है। यहाँ कोई अनुमानित स्थान नहीं दिखाया जाएगा।'}
           </p>
 
           <div className="pt-1 flex items-center gap-2">

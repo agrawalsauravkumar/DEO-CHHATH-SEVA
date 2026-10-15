@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
 import { DataFreshnessNotice } from '../components/DataFreshnessNotice';
 import { DeoMap } from '../components/DeoMap';
-import { ParkingService, DEO_PARKING_LOCATIONS } from '../services/ParkingService';
+import { ParkingService } from '../services/ParkingService';
 import { LocationService } from '../services/LocationService';
 import { ParkingLocation, LocationItem, SavedParking } from '../types';
 import {
@@ -39,16 +39,44 @@ export const ParkingScreen: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [sortByNearest, setSortByNearest] = useState<boolean>(false);
   const [gpsErrorNotice, setGpsErrorNotice] = useState<string | null>(null);
+  const [parkings, setParkings] = useState<ParkingLocation[]>(() => ParkingService.getAllParkings());
+  const [parkingLoadError, setParkingLoadError] = useState<string | null>(null);
 
   // Parking to save confirmation modal state
   const [parkingToSave, setParkingToSave] = useState<ParkingLocation | null>(null);
   const [optionalNote, setOptionalNote] = useState<string>('');
   const [saveSuccessNotice, setSaveSuccessNotice] = useState<string | null>(null);
 
+  useEffect(() => {
+    let isMounted = true;
+    if (!isOnline) return () => { isMounted = false; };
+    ParkingService.syncParkings()
+      .then((items) => {
+        if (isMounted) {
+          setParkings(items);
+          setParkingLoadError(null);
+        }
+      })
+      .catch((error: unknown) => {
+        if (isMounted) {
+          setParkingLoadError(error instanceof Error ? error.message : 'पार्किंग डेटा लोड नहीं हुआ।');
+        }
+      });
+    return () => { isMounted = false; };
+  }, [isOnline]);
+
   // Filtered and sorted parking list
   const displayParkings = useMemo(() => {
     let list: (ParkingLocation & { distanceMeters?: number; distanceDisplay?: string })[] =
-      ParkingService.searchParkings(searchQuery);
+      parkings.filter((parking) => {
+        const query = searchQuery.trim().toLocaleLowerCase();
+        return !query || [
+          parking.name,
+          parking.nameEn,
+          parking.landmark,
+          parking.description,
+        ].some((value) => value.toLocaleLowerCase().includes(query));
+      });
 
     if (deviceLocation) {
       list = list.map((p) => {
@@ -72,7 +100,7 @@ export const ParkingScreen: React.FC = () => {
     }
 
     return list;
-  }, [searchQuery, sortByNearest, deviceLocation]);
+  }, [parkings, searchQuery, sortByNearest, deviceLocation]);
 
   // Handle "📍 सबसे नजदीक Parking" click
   const handleNearestParkingClick = async () => {
@@ -227,7 +255,7 @@ export const ParkingScreen: React.FC = () => {
             </div>
           </div>
           <p className="text-xs text-stone-600">
-            सूर्य मंदिर व कुंड परिसर के 500 मीटर में वाहन प्रवेश वर्जित है। अधिकृत पार्किंग में ही वाहन खड़ा करें।
+            पार्किंग प्रतिबंध और उपलब्धता के लिए स्थल पर लगे अधिकृत संकेतों या स्थानीय प्रशासन के निर्देशों का पालन करें।
           </p>
         </div>
 
@@ -333,8 +361,27 @@ export const ParkingScreen: React.FC = () => {
                   Parking की जानकारी अभी उपलब्ध नहीं है।
                 </h4>
                 <p className="text-xs text-stone-500">
-                  कृपया दूसरा नाम या क्षेत्र खोजें।
+                  {parkingLoadError
+                    ? `सर्वर से पुष्टि नहीं हो सकी: ${parkingLoadError}`
+                    : isOnline
+                      ? 'अधिकृत प्रशासनिक पार्किंग विवरण प्रकाशित होने पर यहाँ दिखाई देंगे।'
+                      : 'इस डिवाइस पर पहले से सहेजी गई अधिकृत पार्किंग जानकारी उपलब्ध नहीं है।'}
                 </p>
+                {parkingLoadError && isOnline && (
+                  <button
+                    onClick={() => {
+                      setParkingLoadError(null);
+                      ParkingService.syncParkings()
+                        .then(setParkings)
+                        .catch((error: unknown) => setParkingLoadError(
+                          error instanceof Error ? error.message : 'पार्किंग डेटा लोड नहीं हुआ।'
+                        ));
+                    }}
+                    className="mt-2 min-h-11 rounded-xl bg-[#0B5E8E] px-4 text-xs font-bold text-white"
+                  >
+                    फिर से प्रयास करें
+                  </button>
+                )}
               </div>
             ) : (
               displayParkings.map((p) => {

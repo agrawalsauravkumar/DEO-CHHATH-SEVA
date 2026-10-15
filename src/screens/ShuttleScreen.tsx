@@ -125,7 +125,7 @@ export const ShuttleScreen: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
-      <TopBar title="निःशुल्क शटल व ई-रिक्शा" showBack />
+      <TopBar title="शटल सेवा" showBack />
       <DataFreshnessNotice />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
@@ -140,12 +140,14 @@ export const ShuttleScreen: React.FC = () => {
                 NEXTGEN DEVBHOOMI FOUNDATION सेवा
               </span>
               <h2 className="text-lg font-black text-white leading-tight">
-                निःशुल्क ई-रिक्शा शटल सेवा
+                शटल सेवा की जानकारी
               </h2>
             </div>
           </div>
           <p className="text-xs text-amber-100/90 leading-relaxed">
-            पार्किंग स्थलों (P1, P2, P3) से सूर्य मंदिर व सूर्य कुंड तक बुजुर्गों, दिव्यांगों एवं व्रतियों हेतु निःशुल्क सेवा।
+            {shuttlePoints.length
+              ? 'दिखाए गए पड़ाव अधिकृत स्रोत से सत्यापित हैं; समय-सारणी और वर्तमान संचालन की स्थानीय पुष्टि करें।'
+              : 'सत्यापित शटल पड़ावों का डेटा अभी उपलब्ध नहीं है। यहाँ कोई अनुमानित मार्ग या सेवा उपलब्धता नहीं दिखाई जाएगी।'}
           </p>
 
           <div className="pt-1 flex items-center gap-2">
