@@ -97,6 +97,8 @@ export const AdminDashboardScreen: React.FC = () => {
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+  const [isValidatingSession, setIsValidatingSession] = useState<boolean>(true);
+  const [isAdminSessionValid, setIsAdminSessionValid] = useState<boolean>(false);
 
   // Modals
   const [showAddFacilityModal, setShowAddFacilityModal] = useState<boolean>(false);
@@ -117,9 +119,28 @@ export const AdminDashboardScreen: React.FC = () => {
 
   const currentAdmin = useMemo(() => AdminService.getCurrentAdmin(), []);
   const hasAdminAccess = Boolean(
+    isAdminSessionValid &&
     currentAdmin &&
     ['SUPER_ADMIN', 'ADMIN', 'CONTENT_ADMIN', 'FACILITY_ADMIN', 'HELP_ADMIN'].includes(currentAdmin.role)
   );
+
+  useEffect(() => {
+    let isMounted = true;
+    AdminService.validateCurrentSession()
+      .then((isValid) => {
+        if (isMounted) {
+          setIsAdminSessionValid(isValid);
+          setIsValidatingSession(false);
+        }
+      })
+      .catch(() => {
+        AdminService.logout();
+        if (isMounted) setIsValidatingSession(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -128,6 +149,8 @@ export const AdminDashboardScreen: React.FC = () => {
 
   const handleLogout = () => {
     AdminService.logout();
+    localStorage.removeItem('deo_chhath_saved_user_screen');
+    sessionStorage.removeItem('deo_chhath_current_screen');
     navigate('admin-login');
   };
 
@@ -245,6 +268,14 @@ export const AdminDashboardScreen: React.FC = () => {
     setRefreshTrigger((prev) => prev + 1);
     showToast('आधिकारिक सूचना सफलतापूर्वक प्रकाशित हुई।');
   };
+
+  if (isValidatingSession) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-[#FFF8E1] p-6 text-center">
+        <p className="text-sm font-bold text-[#063B5C]">प्रशासनिक सत्र सत्यापित हो रहा है…</p>
+      </main>
+    );
+  }
 
   if (!hasAdminAccess) {
     return (

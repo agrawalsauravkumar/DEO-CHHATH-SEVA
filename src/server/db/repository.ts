@@ -24,34 +24,38 @@ import {
 import { calculateDistanceMeters } from './spatial';
 import { executeQuery } from './connection';
 
+interface UserRow {
+  id: string;
+  email: string | null;
+  phone: string | null;
+  username: string | null;
+  password_hash: string | null;
+  full_name: string;
+  role: DbUser['role'];
+  status: DbUser['status'];
+  avatar_url: string | null;
+  created_at: Date | string;
+  updated_at: Date | string;
+  last_login_at: Date | string | null;
+}
+
+const mapUserRow = (row: UserRow): DbUser => ({
+  id: row.id,
+  email: row.email || undefined,
+  phone: row.phone || undefined,
+  username: row.username || undefined,
+  passwordHash: row.password_hash || undefined,
+  fullName: row.full_name,
+  role: row.role,
+  status: row.status,
+  avatarUrl: row.avatar_url || undefined,
+  createdAt: new Date(row.created_at).toISOString(),
+  updatedAt: new Date(row.updated_at).toISOString(),
+  lastLoginAt: row.last_login_at ? new Date(row.last_login_at).toISOString() : undefined,
+});
+
 // Pre-seeded Official Deo Chhath Puja 2026 Dataset
 const SEED_USERS: DbUser[] = [
-  {
-    id: 'adm-001',
-    email: 'admin@nextgendevbhoomi.org',
-    phone: '+919835100001',
-    username: 'admin@nextgendevbhoomi.org',
-    passwordHash: 'DeoSeva2026@Admin',
-    fullName: 'मुख्य समन्वयक (NextGen Dev Bhoomi Foundation)',
-    role: 'SUPER_ADMIN',
-    status: 'ACTIVE',
-    createdAt: '2026-09-01T00:00:00Z',
-    updatedAt: '2026-10-06T00:00:00Z',
-    lastLoginAt: new Date().toISOString(),
-  },
-  {
-    id: 'adm-002',
-    email: 'controller@aurangabad.gov.in',
-    phone: '+919431200002',
-    username: 'controller@aurangabad.gov.in',
-    passwordHash: 'MelaDeo#2026',
-    fullName: 'मेला नियंत्रण कक्ष अधिकारी (जिला प्रशासन औरंगाबाद)',
-    role: 'CONTENT_ADMIN',
-    status: 'ACTIVE',
-    createdAt: '2026-09-10T00:00:00Z',
-    updatedAt: '2026-10-06T00:00:00Z',
-    lastLoginAt: new Date().toISOString(),
-  },
   {
     id: 'usr-101',
     phone: '9835123456',
@@ -358,21 +362,6 @@ const SEED_ANNOUNCEMENTS: DbAnnouncement[] = [
   },
 ];
 
-const SEED_AUDIT_LOGS: DbAuditLog[] = [
-  {
-    id: 'aud-001',
-    userId: 'adm-001',
-    userName: 'Chief Coordinator',
-    action: 'SYSTEM_BOOT',
-    entity: 'System',
-    entityId: 'srv-01',
-    oldValueSummary: 'None',
-    newValueSummary: 'Backend API Service Initialized with PostgreSQL + PostGIS Schema',
-    ipAddress: '127.0.0.1',
-    createdAt: new Date().toISOString(),
-  },
-];
-
 const FESTIVAL_CONFIG: DbFestivalConfig = {
   festivalName: 'कार्तिक छठ महापर्व 2026 (देव, औरंगाबाद)',
   organization: 'NEXTGEN DEVBHOOMI FOUNDATION',
@@ -405,13 +394,27 @@ class DataRepository {
   private helpRequests: DbHelpRequest[] = [];
   private familyGroups: DbFamilyGroup[] = [];
   private familyMembers: DbFamilyMember[] = [];
-  private auditLogs: DbAuditLog[] = [...SEED_AUDIT_LOGS];
+  private auditLogs: DbAuditLog[] = [];
 
   // ================= USERS & AUTH =================
   public async findUserByPhoneOrUsername(identifier: string): Promise<DbUser | null> {
     const clean = identifier.trim().toLowerCase();
     const digits = clean.replace(/\D/g, '');
     const normalizedPhone = digits.length === 12 && digits.startsWith('91') ? digits.slice(2) : digits;
+    const databaseUsers = await executeQuery<UserRow>(
+      `SELECT id, email, phone, username, password_hash, full_name, role, status,
+              avatar_url, created_at, updated_at, last_login_at
+       FROM users
+       WHERE lower(username) = $1 OR lower(email) = $1
+          OR regexp_replace(phone, '[^0-9]', '', 'g') = $2
+          OR regexp_replace(phone, '[^0-9]', '', 'g') = $3
+       LIMIT 1`,
+      [clean, normalizedPhone, `91${normalizedPhone}`]
+    );
+    if (databaseUsers !== null) {
+      return databaseUsers[0] ? mapUserRow(databaseUsers[0]) : null;
+    }
+
     return this.users.find((u) =>
       (u.phone && u.phone.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '') === normalizedPhone && normalizedPhone.length === 10) ||
       (u.username && u.username.toLowerCase() === clean) ||
@@ -420,10 +423,58 @@ class DataRepository {
   }
 
   public async getUserById(id: string): Promise<DbUser | null> {
+    const databaseUsers = await executeQuery<UserRow>(
+      `SELECT id, email, phone, username, password_hash, full_name, role, status,
+              avatar_url, created_at, updated_at, last_login_at
+       FROM users WHERE id = $1`,
+      [id]
+    );
+    if (databaseUsers !== null) {
+      return databaseUsers[0] ? mapUserRow(databaseUsers[0]) : null;
+    }
+
     return this.users.find((u) => u.id === id) || null;
   }
 
   public async saveUser(user: DbUser): Promise<DbUser> {
+    const databaseUsers = await executeQuery<UserRow>(
+      `INSERT INTO users (
+         id, email, phone, username, password_hash, full_name, role, status,
+         avatar_url, created_at, updated_at, last_login_at
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+       ON CONFLICT (id) DO UPDATE SET
+         email = EXCLUDED.email,
+         phone = EXCLUDED.phone,
+         username = EXCLUDED.username,
+         password_hash = EXCLUDED.password_hash,
+         full_name = EXCLUDED.full_name,
+         role = EXCLUDED.role,
+         status = EXCLUDED.status,
+         avatar_url = EXCLUDED.avatar_url,
+         updated_at = EXCLUDED.updated_at,
+         last_login_at = EXCLUDED.last_login_at
+       RETURNING id, email, phone, username, password_hash, full_name, role, status,
+                 avatar_url, created_at, updated_at, last_login_at`,
+      [
+        user.id,
+        user.email || null,
+        user.phone || null,
+        user.username || null,
+        user.passwordHash || null,
+        user.fullName,
+        user.role,
+        user.status,
+        user.avatarUrl || null,
+        user.createdAt,
+        user.updatedAt,
+        user.lastLoginAt || null,
+      ]
+    );
+    if (databaseUsers !== null) {
+      if (!databaseUsers[0]) throw new Error('Database did not return the saved user.');
+      return mapUserRow(databaseUsers[0]);
+    }
+
     const existingIndex = this.users.findIndex((u) => u.id === user.id);
     if (existingIndex >= 0) {
       this.users[existingIndex] = { ...this.users[existingIndex], ...user, updatedAt: new Date().toISOString() };
@@ -434,7 +485,12 @@ class DataRepository {
   }
 
   public async getAllUsers(): Promise<DbUser[]> {
-    return [...this.users];
+    const databaseUsers = await executeQuery<UserRow>(
+      `SELECT id, email, phone, username, password_hash, full_name, role, status,
+              avatar_url, created_at, updated_at, last_login_at
+       FROM users ORDER BY created_at DESC`
+    );
+    return databaseUsers === null ? [...this.users] : databaseUsers.map(mapUserRow);
   }
 
   // ================= FACILITIES & POSTGIS PROXIMITY =================

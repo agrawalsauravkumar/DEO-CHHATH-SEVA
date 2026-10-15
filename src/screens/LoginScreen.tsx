@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 
 export const LoginScreen: React.FC = () => {
-  const { navigate, setCurrentUser, seniorMode, isOnline } = useApp();
+  const { navigate, goBack, setCurrentUser, seniorMode, isOnline } = useApp();
 
   const [mobileNumber, setMobileNumber] = useState<string>('');
   const [step, setStep] = useState<'PHONE' | 'OTP'>('PHONE');
@@ -136,7 +136,7 @@ export const LoginScreen: React.FC = () => {
             setStep('PHONE');
             setErrorMessage(null);
           } else {
-            navigate('home');
+            goBack();
           }
         }}
       />

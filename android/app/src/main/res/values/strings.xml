@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DEO CHHATH SEVA</string>
+    <string name="title_activity_main">DEO CHHATH SEVA</string>
+    <string name="package_name">org.nextgendevbhoomi.deochhathseva</string>
+    <string name="custom_url_scheme">org.nextgendevbhoomi.deochhathseva</string>
+</resources>

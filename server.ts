@@ -24,6 +24,33 @@ const isProd = process.env.NODE_ENV === 'production';
 // Express Middlewares
 app.use(express.json());
 
+const allowedOrigins = (process.env.CORS_ORIGIN || 'https://localhost')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use('/api', (req, res, next) => {
+  const requestOrigin = req.headers.origin;
+  if (!requestOrigin) return next();
+
+  if (allowedOrigins.includes('*')) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  } else if (allowedOrigins.includes(requestOrigin)) {
+    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+    res.setHeader('Vary', 'Origin');
+  } else if (req.method === 'OPTIONS') {
+    return res.sendStatus(403);
+  }
+
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
 // Request logger for API calls
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) {

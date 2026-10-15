@@ -79,8 +79,7 @@ export const ProfileScreen: React.FC = () => {
   };
 
   const handleLogout = () => {
-    logoutUser();
-    navigate('home');
+    logoutUser('splash');
   };
 
   const getRoleBadge = (role: AppUserRole) => {

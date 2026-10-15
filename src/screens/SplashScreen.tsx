@@ -6,7 +6,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { DeoChhathSevaLogo } from '../components/DeoChhathSevaLogo';
-import { Compass, ShieldCheck, HeartHandshake, ArrowRight, Sun } from 'lucide-react';
+import { Compass, ShieldCheck, HeartHandshake, ArrowRight, Sun, LogIn, Shield } from 'lucide-react';
 
 export const SplashScreen: React.FC = () => {
   const { navigate } = useApp();
@@ -105,14 +105,30 @@ export const SplashScreen: React.FC = () => {
         </div>
       </main>
 
-      {/* 4. Action Button & Foundation Attribution */}
-      <footer className="pb-6 px-6 space-y-3 max-w-sm mx-auto w-full relative z-10">
+      {/* 4. Sign-in and guest entry */}
+      <footer className="pb-4 sm:pb-6 px-6 space-y-2.5 max-w-sm mx-auto w-full relative z-10">
         <button
-          onClick={() => navigate('home')}
+          onClick={() => navigate('login')}
           className="w-full min-h-[52px] bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 hover:from-amber-600 hover:to-orange-700 active:scale-98 text-white font-black text-base rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all border border-amber-300/40"
         >
-          <span>सेवा प्रारंभ करें (आगे बढ़ें)</span>
+          <LogIn className="w-5 h-5" />
+          <span>मोबाइल OTP से लॉगिन करें</span>
           <ArrowRight className="w-5 h-5 text-white" />
+        </button>
+
+        <button
+          onClick={() => navigate('home')}
+          className="w-full min-h-11 rounded-xl border border-white/35 bg-white/10 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
+        >
+          बिना लॉगिन सेवा शुरू करें
+        </button>
+
+        <button
+          onClick={() => navigate('admin-login')}
+          className="mx-auto flex min-h-10 items-center justify-center gap-2 px-3 text-xs font-bold text-amber-200 underline decoration-amber-200/50 underline-offset-4 hover:text-white"
+        >
+          <Shield className="h-4 w-4" />
+          <span>अधिकृत कर्मचारी लॉगिन</span>
         </button>
 
         <p className="text-center text-[11px] text-amber-200/90 font-bold">

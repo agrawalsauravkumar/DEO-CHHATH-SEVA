@@ -5,6 +5,7 @@ import { DataFreshnessNotice } from '../components/DataFreshnessNotice';
 import { HelpService } from '../services/HelpService';
 import { LocationService } from '../services/LocationService';
 import { HelpPoint, LocationItem } from '../types';
+import { apiUrl } from '../services/apiUrl';
 import {
   LifeBuoy,
   PhoneCall,
@@ -93,7 +94,7 @@ export const HelpScreen: React.FC = () => {
 
     setIsSubmittingRequest(true);
     try {
-      const response = await fetch('/api/help/request', {
+      const response = await fetch(apiUrl('/api/help/request'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

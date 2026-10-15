@@ -10,6 +10,7 @@ import {
   LostFoundReport,
   LostFoundType,
 } from '../types';
+import { apiUrl } from '../services/apiUrl';
 import {
   Search,
   UserX,
@@ -138,7 +139,7 @@ export const LostFoundScreen: React.FC = () => {
     const controller = new AbortController();
     setIsLoadingReports(true);
     setReportLoadError(null);
-    fetch('/api/lost-found', { signal: controller.signal })
+    fetch(apiUrl('/api/lost-found'), { signal: controller.signal })
       .then(async (response) => {
         const result: unknown = await response.json();
         if (!response.ok) {
@@ -231,7 +232,7 @@ export const LostFoundScreen: React.FC = () => {
 
     setIsSubmittingReport(true);
     try {
-      const response = await fetch('/api/lost-found', {
+      const response = await fetch(apiUrl('/api/lost-found'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

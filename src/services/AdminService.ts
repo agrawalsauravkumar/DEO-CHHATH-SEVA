@@ -23,6 +23,7 @@ import { AnnouncementService } from './AnnouncementService';
 import { HelpService } from './HelpService';
 import { LostFoundService } from './LostFoundService';
 import { VolunteerService } from './VolunteerService';
+import { apiUrl } from './apiUrl';
 
 const STORAGE_KEYS = {
   ADMIN_SESSION: 'deo_admin_current_session_v1',
@@ -43,82 +44,6 @@ export interface ManagedUser {
   familyGroupCount: number; // Count only - NEVER exposing GPS coordinates
 }
 
-// Initial Admin Users for authorized login
-const SEED_ADMIN_USERS: { user: AdminUser; passwordHash: string }[] = [
-  {
-    user: {
-      id: 'adm-001',
-      username: 'admin@nextgendevbhoomi.org',
-      email: 'admin@nextgendevbhoomi.org',
-      fullName: 'Chief Coordinator (NextGen Dev Bhoomi Foundation)',
-      role: 'SUPER_ADMIN',
-      permissions: ['ALL', 'USERS', 'VOLUNTEERS', 'FACILITIES', 'ANNOUNCEMENTS', 'AUDIT', 'SECURITY'],
-      lastLoginAt: 'आज 09:15 AM',
-      token: 'jwt_mock_super_admin_tok_8892',
-    },
-    // Demonstration/Dev validation credential
-    passwordHash: 'DeoSeva2026@Admin',
-  },
-  {
-    user: {
-      id: 'adm-002',
-      username: 'controller@aurangabad.gov.in',
-      email: 'controller@aurangabad.gov.in',
-      fullName: 'मेला नियंत्रण कक्ष अधिकारी (जिला प्रशासन औरंगाबाद)',
-      role: 'CONTENT_ADMIN',
-      permissions: ['ANNOUNCEMENTS', 'ROUTE_ALERTS', 'FACILITIES'],
-      lastLoginAt: 'आज 08:30 AM',
-      token: 'jwt_mock_controller_tok_3411',
-    },
-    passwordHash: 'MelaDeo#2026',
-  },
-];
-
-const INITIAL_MANAGED_USERS: ManagedUser[] = [
-  {
-    id: 'usr-101',
-    name: 'रंजन कुमार',
-    phone: '+91 98351 XXXXX',
-    email: 'ranjan.deo@example.com',
-    role: 'USER',
-    status: 'ACTIVE',
-    joinedAt: '01 Oct 2026',
-    lastActive: 'अभी सक्रिय',
-    familyGroupCount: 1,
-  },
-  {
-    id: 'usr-102',
-    name: 'प्रिया शर्मा',
-    phone: '+91 94312 XXXXX',
-    email: 'priya.s@example.com',
-    role: 'USER',
-    status: 'ACTIVE',
-    joinedAt: '02 Oct 2026',
-    lastActive: '15 मिनट पहले',
-    familyGroupCount: 1,
-  },
-  {
-    id: 'usr-103',
-    name: 'राजीव रंजन सिंह',
-    phone: '+91 91223 XXXXX',
-    role: 'VOLUNTEER',
-    status: 'ACTIVE',
-    joinedAt: '28 Sep 2026',
-    lastActive: 'ऑन-ड्यूटी (गेट #1)',
-    familyGroupCount: 0,
-  },
-  {
-    id: 'usr-104',
-    name: 'अमित कुमार केसरी',
-    phone: '+91 99340 XXXXX',
-    role: 'USER',
-    status: 'SUSPENDED',
-    joinedAt: '15 Sep 2026',
-    lastActive: 'निलंबित (दुरुपयोग जांच)',
-    familyGroupCount: 0,
-  },
-];
-
 class AdminServiceManager {
   private currentAdmin: AdminUser | null = null;
   private users: ManagedUser[] = [];
@@ -131,110 +56,34 @@ class AdminServiceManager {
 
   private loadState(): void {
     try {
-      const sess = sessionStorage.getItem(STORAGE_KEYS.ADMIN_SESSION);
+      const sess =
+        localStorage.getItem(STORAGE_KEYS.ADMIN_SESSION) ||
+        sessionStorage.getItem(STORAGE_KEYS.ADMIN_SESSION);
       if (sess) {
         this.currentAdmin = JSON.parse(sess);
       }
 
       const storedUsers = localStorage.getItem(STORAGE_KEYS.ADMIN_USERS_LIST);
-      this.users = storedUsers ? JSON.parse(storedUsers) : INITIAL_MANAGED_USERS;
+      this.users = storedUsers ? JSON.parse(storedUsers) : [];
 
       const storedLogs = localStorage.getItem(STORAGE_KEYS.AUDIT_LOGS);
       if (storedLogs) {
         this.auditLogs = JSON.parse(storedLogs);
       } else {
-        this.seedInitialAuditLogs();
+        this.auditLogs = [];
       }
 
       const storedNotifs = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
       if (storedNotifs) {
         this.notifications = JSON.parse(storedNotifs);
       } else {
-        this.seedInitialNotifications();
+        this.notifications = [];
       }
     } catch {
-      this.users = INITIAL_MANAGED_USERS;
-      this.seedInitialAuditLogs();
-      this.seedInitialNotifications();
+      this.users = [];
+      this.auditLogs = [];
+      this.notifications = [];
     }
-  }
-
-  private seedInitialAuditLogs(): void {
-    this.auditLogs = [
-      {
-        id: 'aud-001',
-        userId: 'adm-001',
-        userName: 'Chief Coordinator',
-        action: 'ROUTE_ALERT_CREATED',
-        entity: 'RouteAlert',
-        entityId: 'ra-001',
-        timestamp: 'आज 08:45 AM',
-        oldValueSummary: 'None',
-        newValueSummary: 'देव बाजार मुख्य मार्ग बंद (सड़क बंद घोषित)',
-        ipAddress: '10.0.4.12',
-      },
-      {
-        id: 'aud-002',
-        userId: 'adm-002',
-        userName: 'मेला नियंत्रण कक्ष',
-        action: 'ANNOUNCEMENT_PUBLISHED',
-        entity: 'Announcement',
-        entityId: 'ann-002',
-        timestamp: 'आज 07:30 AM',
-        oldValueSummary: 'DRAFT',
-        newValueSummary: 'सायंकालीन एवं प्रातःकालीन अर्घ्य समय आधिकारिक बुलेटिन प्रकाशित',
-        ipAddress: '10.0.2.88',
-      },
-      {
-        id: 'aud-003',
-        userId: 'adm-001',
-        userName: 'Chief Coordinator',
-        action: 'VOLUNTEER_VERIFIED',
-        entity: 'Volunteer',
-        entityId: 'vol-001',
-        timestamp: 'आज 06:15 AM',
-        oldValueSummary: 'PENDING',
-        newValueSummary: 'सत्यापित (Badge #DEV-042)',
-        ipAddress: '10.0.4.12',
-      },
-    ];
-    this.saveAuditLogs();
-  }
-
-  private seedInitialNotifications(): void {
-    this.notifications = [
-      {
-        id: 'notif-001',
-        type: 'VOLUNTEER',
-        title: 'नया स्वयंसेवक पंजीकरण',
-        message: 'राजीव कुमार ने सूर्य कुंड सेवा क्षेत्र हेतु आवेदन किया है।',
-        entityId: 'vol-reg-01',
-        priority: 'NORMAL',
-        timestamp: '10 मिनट पहले',
-        isRead: false,
-      },
-      {
-        id: 'notif-002',
-        type: 'HELP_REQUEST',
-        title: 'अति आवश्यक सहायता अनुरोध',
-        message: 'रुद्र कुंड घाट नंबर 2 पर व्हीलचेयर सहायता की आवश्यकता दर्ज हुई।',
-        entityId: 'req-002',
-        priority: 'HIGH',
-        timestamp: '25 मिनट पहले',
-        isRead: false,
-      },
-      {
-        id: 'notif-003',
-        type: 'LOST_FOUND',
-        title: 'खोया-पाया मिलान समीक्षा',
-        message: 'खोया बालक (LF-2026-000101) हेतु हेल्प बूथ से संभावित मिलान मिला।',
-        entityId: 'lf-match-01',
-        priority: 'URGENT',
-        timestamp: '40 मिनट पहले',
-        isRead: false,
-      },
-    ];
-    this.saveNotifications();
   }
 
   private saveUsers(): void {
@@ -265,69 +114,67 @@ class AdminServiceManager {
   // 1. AUTHENTICATION & SESSION
   // ============================================================
   public async login(usernameOrEmail: string, passwordPlain: string): Promise<AdminUser> {
-    // Attempt real backend API login first when online
-    if (typeof window !== 'undefined' && navigator.onLine) {
-      try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: usernameOrEmail, password: passwordPlain }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.user) {
-            const adminUser: AdminUser = {
-              id: data.user.id,
-              username: data.user.username,
-              email: data.user.email,
-              fullName: data.user.fullName,
-              role: data.user.role,
-              permissions: data.user.permissions || ['ALL'],
-              lastLoginAt: data.user.lastLoginAt || new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
-              token: data.token,
-            };
-            this.currentAdmin = adminUser;
-            sessionStorage.setItem(STORAGE_KEYS.ADMIN_SESSION, JSON.stringify(adminUser));
-            return adminUser;
-          }
-        }
-      } catch {
-        // Fall back to local validation
-      }
+    if (typeof window === 'undefined' || !navigator.onLine) {
+      throw new Error('अधिकृत लॉगिन के लिए सुरक्षित प्रशासन सर्वर से इंटरनेट द्वारा जुड़ें।');
     }
 
-    const trimmedUser = usernameOrEmail.trim().toLowerCase();
-    const match = SEED_ADMIN_USERS.find(
-      (a) =>
-        a.user.username.toLowerCase() === trimmedUser ||
-        a.user.email.toLowerCase() === trimmedUser
-    );
-
-    if (!match) {
-      throw new Error('अमान्य उपयोगकर्ता नाम या ईमेल दर्ज किया गया है।');
+    let response: Response;
+    try {
+      response = await fetch(apiUrl('/api/auth/login'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: usernameOrEmail.trim(), password: passwordPlain }),
+      });
+    } catch {
+      throw new Error('प्रशासन सर्वर से संपर्क नहीं हो सका। डेमो लॉगिन की अनुमति नहीं है।');
     }
 
-    if (match.passwordHash !== passwordPlain) {
-      throw new Error('गलत पासवर्ड दर्ज किया गया है। कृपया पुनः प्रयास करें।');
+    const data = await response.json().catch(() => null) as {
+      error?: string;
+      user?: {
+        id: string;
+        username?: string;
+        email?: string;
+        fullName: string;
+        role: AdminRole;
+        permissions?: string[];
+        lastLoginAt?: string;
+        token?: string;
+      };
+      token?: string;
+    } | null;
+
+    if (!response.ok || !data?.user || !data.token || data.user.token !== data.token) {
+      throw new Error(data?.error || 'लॉगिन असफल। कृपया अधिकृत क्रेडेंशियल जांचें।');
     }
 
-    const updatedUser: AdminUser = {
-      ...match.user,
-      lastLoginAt: new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
+    const adminRoles: AdminRole[] = [
+      'SUPER_ADMIN',
+      'ADMIN',
+      'CONTENT_ADMIN',
+      'FACILITY_ADMIN',
+      'HELP_ADMIN',
+    ];
+    if (!adminRoles.includes(data.user.role)) {
+      throw new Error('यह खाता प्रशासनिक लॉगिन के लिए अधिकृत नहीं है।');
+    }
+
+    const adminUser: AdminUser = {
+      id: data.user.id,
+      username: data.user.username || data.user.email || usernameOrEmail.trim(),
+      email: data.user.email || '',
+      fullName: data.user.fullName,
+      role: data.user.role,
+      permissions: data.user.permissions || [],
+      lastLoginAt: data.user.lastLoginAt || new Date().toISOString(),
+      token: data.token,
     };
 
-    this.currentAdmin = updatedUser;
-    sessionStorage.setItem(STORAGE_KEYS.ADMIN_SESSION, JSON.stringify(updatedUser));
+    this.currentAdmin = adminUser;
+    localStorage.setItem(STORAGE_KEYS.ADMIN_SESSION, JSON.stringify(adminUser));
+    sessionStorage.setItem(STORAGE_KEYS.ADMIN_SESSION, JSON.stringify(adminUser));
 
-    this.recordAuditLog(
-      'ADMIN_LOGIN',
-      'AdminUser',
-      updatedUser.id,
-      'Logged out',
-      `Logged in successfully as ${updatedUser.role}`
-    );
-
-    return updatedUser;
+    return adminUser;
   }
 
   public logout(): void {
@@ -341,6 +188,7 @@ class AdminServiceManager {
       );
     }
     this.currentAdmin = null;
+    localStorage.removeItem(STORAGE_KEYS.ADMIN_SESSION);
     sessionStorage.removeItem(STORAGE_KEYS.ADMIN_SESSION);
   }
 
@@ -350,6 +198,32 @@ class AdminServiceManager {
 
   public isAuthenticated(): boolean {
     return !!this.currentAdmin;
+  }
+
+  public async validateCurrentSession(): Promise<boolean> {
+    const admin = this.currentAdmin;
+    if (!admin?.token) return false;
+
+    const response = await fetch(apiUrl('/api/auth/session'), {
+      headers: { Authorization: `Bearer ${admin.token}` },
+    });
+    if (!response.ok) {
+      this.logout();
+      return false;
+    }
+
+    const data = await response.json() as {
+      authenticated?: boolean;
+      user?: { id?: string; role?: AdminRole; status?: string };
+    };
+    const isValid = Boolean(
+      data.authenticated &&
+      data.user?.id === admin.id &&
+      data.user.role === admin.role &&
+      data.user.status === 'ACTIVE'
+    );
+    if (!isValid) this.logout();
+    return isValid;
   }
 
   public hasPermission(permission: string): boolean {

@@ -1,5 +1,6 @@
 import { Facility, FacilityCategory, ShuttlePoint, ShuttleRoute } from '../types';
 import { LocationService } from './LocationService';
+import { apiUrl } from './apiUrl';
 
 const STORAGE_OFFLINE_FACILITIES_KEY = 'deo_chhath_offline_facilities_v1';
 
@@ -510,7 +511,7 @@ class FacilityServiceManager {
   public async syncFacilities(): Promise<void> {
     try {
       if (typeof window !== 'undefined' && navigator.onLine) {
-        const res = await fetch('/api/facilities');
+        const res = await fetch(apiUrl('/api/facilities'));
         if (res.ok) {
           const data = await res.json();
           if (data && Array.isArray(data.facilities) && data.facilities.length > 0) {

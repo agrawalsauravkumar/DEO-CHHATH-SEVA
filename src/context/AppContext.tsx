@@ -18,6 +18,7 @@ import {
 import { DEO_LOCATIONS } from '../data/deoData';
 import { OfflineMapService } from '../services/OfflineMapService';
 import { AuthService } from '../services/AuthService';
+import { AdminService } from '../services/AdminService';
 import { NetworkService, NetworkStatus } from '../services/NetworkService';
 import { SyncService } from '../services/SyncService';
 import { OfflineDataService } from '../services/OfflineDataService';
@@ -81,7 +82,7 @@ interface AppContextType {
   setCurrentUser: (user: AppUserProfile | null) => void;
   userRole: AppUserRole;
   isAuthenticated: boolean;
-  logoutUser: () => void;
+  logoutUser: (targetScreen?: ScreenId) => void;
   refreshCurrentUser: () => void;
 }
 
@@ -92,6 +93,7 @@ const STORAGE_KEY_SENIOR = 'deo_chhath_senior_mode';
 const STORAGE_KEY_LANG = 'deo_chhath_lang';
 const STORAGE_KEY_FONT = 'deo_chhath_font_size';
 const STORAGE_KEY_SCREEN = 'deo_chhath_current_screen';
+const STORAGE_KEY_AUTH_SCREEN = 'deo_chhath_saved_user_screen';
 
 const SCREEN_IDS: readonly ScreenId[] = [
   'splash',
@@ -136,8 +138,7 @@ const isScreenId = (screen: unknown): screen is ScreenId =>
   typeof screen === 'string' && SCREEN_IDS.some((screenId) => screenId === screen);
 
 const getInitialScreen = (): ScreenId => {
-  const savedScreen = sessionStorage.getItem(STORAGE_KEY_SCREEN);
-  return isScreenId(savedScreen) ? savedScreen : 'splash';
+  return 'splash';
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -186,9 +187,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const userRole: AppUserRole = currentUser?.role || 'USER';
   const isAuthenticated = !!currentUser && currentUser.status === 'ACTIVE';
 
-  const logoutUser = () => {
+  const logoutUser = (targetScreen: ScreenId = 'splash') => {
     AuthService.logout();
+    AdminService.logout();
     setCurrentUserState(null);
+    localStorage.removeItem(STORAGE_KEY_AUTH_SCREEN);
+    sessionStorage.removeItem(STORAGE_KEY_SCREEN);
+    setHistory([targetScreen]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const watchIdRef = useRef<number | null>(null);
@@ -403,10 +409,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     };
   }, [userLocationGranted, currentScreen]);
-
-  useEffect(() => {
-    sessionStorage.setItem(STORAGE_KEY_SCREEN, currentScreen);
-  }, [currentScreen]);
 
   const [savedParking, setSavedParking] = useState<(SavedParking & Partial<SavedParkingData>) | null>(() => {
     try {

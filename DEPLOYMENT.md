@@ -64,6 +64,28 @@ All sensitive credentials must be managed via production secret management (e.g.
 | `NOTIFICATION_CONFIG`| Optional| `""` | No | Webhook URL for forwarding emergency broadcasts and SOS alerts. |
 | `CORS_ORIGIN` | Yes | `*` | No | Restrict API access to specific domain in production (e.g., `https://deochhathseva.org`). |
 
+### Administrator account provisioning
+
+The application does not create administrator accounts or ship default credentials. After applying `src/server/db/schema.sql`, generate a salted scrypt hash from a hidden terminal prompt:
+
+```bash
+npm run admin:password-hash
+```
+
+Insert the generated hash into the `users.password_hash` column through a trusted database session, replacing the example identity and hash. Never place a plaintext password in SQL, source control, or a deployment variable:
+
+```sql
+INSERT INTO users (email, username, full_name, role, status, password_hash)
+VALUES ('admin@example.org', 'admin@example.org', 'Authorized Administrator',
+        'SUPER_ADMIN', 'ACTIVE', 'scrypt$<salt-hex>$<key-hex>');
+```
+
+The first account's identity and role must be approved by the organization's database/security administrator.
+
+### Release readiness gate
+
+PostgreSQL persistence is currently implemented for user identity/authentication only. Other application and administration workflows still use in-memory or browser-local data, so records may not be shared across devices or survive a server/browser restart. Do not use this build as the live government operations system until those workflows are backed by PostgreSQL and tested against the production deployment.
+
 ---
 
 ## 3. PostgreSQL + PostGIS Migration Guide
@@ -139,6 +161,12 @@ SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'facilities';
 ---
 
 ## 4. Production Deployment Methods
+
+### Native Android App
+
+The Android project in `android/` wraps the Vite web build with Capacitor. Deploy the API on HTTPS first, then create an untracked local `.env.local` containing `VITE_API_BASE_URL=https://<api-host>` (origin only; do not include `/api`). Set the backend's comma-separated `CORS_ORIGIN` to allow `https://localhost` (the Capacitor WebView origin) and any separately hosted web app origins. No production API hostname is embedded in source.
+
+Install Android Studio and the Android SDK, then run `npm run android:sync` and `npm run android:open`. For a local debug package on Windows, run `.\android\gradlew.bat -p android assembleDebug`; the APK is written to `android/app/build/outputs/apk/debug/app-debug.apk`. Debug APKs are for testing only. Generate a signed AAB/APK in Android Studio for release and protect the signing key outside source control. Confirm `applicationId` (`org.nextgendevbhoomi.deochhathseva`) before publishing because changing it later creates a different app listing.
 
 ### Option A: Containerized Deployment (Docker / Google Cloud Run / AWS ECS)
 

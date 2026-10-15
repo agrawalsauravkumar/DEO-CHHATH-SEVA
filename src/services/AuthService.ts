@@ -4,6 +4,7 @@
  */
 
 import { AppUserProfile, AppUserRole, AccountStatus, OtpChallenge, LanguageCode } from '../types';
+import { apiUrl } from './apiUrl';
 
 const STORAGE_KEYS = {
   CURRENT_USER: 'deo_auth_current_user_v1',
@@ -108,7 +109,7 @@ class AuthServiceManager {
     }
 
     try {
-      const response = await fetch('/api/auth/otp/send', {
+      const response = await fetch(apiUrl('/api/auth/otp/send'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mobileNumber: cleanNumber }),
@@ -217,7 +218,7 @@ class AuthServiceManager {
       };
     };
     try {
-      response = await fetch('/api/auth/otp/verify', {
+      response = await fetch(apiUrl('/api/auth/otp/verify'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mobileNumber: cleanNumber, otp: cleanOtp }),

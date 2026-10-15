@@ -12,6 +12,8 @@ import {
   getAuthenticatedUser,
 } from '../middleware/auth';
 import { otpService } from '../providers/sms/OtpService';
+import { verifyPassword } from '../auth/password';
+import { randomUUID } from 'node:crypto';
 
 export const authRouter = Router();
 
@@ -23,7 +25,19 @@ authRouter.post('/login', async (req, res) => {
   }
 
   const user = await repository.findUserByPhoneOrUsername(username);
-  if (!user || user.passwordHash !== password || user.status !== 'ACTIVE') {
+  const adminRoles = [
+    'ADMIN',
+    'SUPER_ADMIN',
+    'CONTENT_ADMIN',
+    'FACILITY_ADMIN',
+    'HELP_ADMIN',
+  ];
+  if (
+    !user ||
+    !adminRoles.includes(user.role) ||
+    user.status !== 'ACTIVE' ||
+    !(await verifyPassword(password, user.passwordHash))
+  ) {
     return res.status(401).json({ error: 'गलत उपयोगकर्ता नाम या पासवर्ड (Invalid credentials)' });
   }
 
@@ -148,7 +162,7 @@ authRouter.post('/otp/verify', async (req, res) => {
   }
   if (!user) {
     user = await repository.saveUser({
-      id: `usr_${clean}`,
+      id: randomUUID(),
       phone: clean,
       fullName: 'देव दर्शनार्थी (Devotee)',
       role: 'USER',

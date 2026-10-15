@@ -11,6 +11,8 @@
 
 The platform provides comprehensive crowd navigation, live facility tracking, emergency medical response, dedicated volunteer coordination, family safety networks, lost & found reporting, and senior citizen assistance with real-time administration and audit compliance.
 
+> **Production status:** This repository is not yet ready to operate a live government event. Most domain records and administration actions are not persisted to PostgreSQL and may be local to one server/browser. See the release-readiness gate in [DEPLOYMENT.md](./DEPLOYMENT.md).
+
 ---
 
 ## 🌟 Key Features
@@ -62,7 +64,7 @@ The platform provides comprehensive crowd navigation, live facility tracking, em
 - **Frontend**: React 19, TypeScript, Tailwind CSS, Vite, Leaflet, Lucide Icons, Vite PWA Workbox.
 - **Backend API**: Node.js, Express, TypeScript (`tsx` dev runner, modular routing architecture).
 - **Spatial Database**: PostgreSQL 15+ with **PostGIS** spatial extension (WGS84 SRID 4326).
-- **State & Sync**: In-memory repository fallback for standalone development; dual-mode PostgreSQL connection pool for production.
+- **State & Sync**: The PostgreSQL schema and connection pool are present; PostgreSQL-backed repository operations currently cover users/authentication only. Most domain workflows still use in-memory or browser-local state and are not production-persistent.
 - **Offline Architecture**: Service Worker caching, IndexedDB / LocalStorage replication, and `/api/sync/bundle` offline sync packaging.
 
 ### Directory Structure
@@ -131,6 +133,8 @@ Generate a private signing secret (for example, with `node -e "console.log(requi
 For local development set `NODE_ENV=development` and `OTP_DEV_MODE=true` to enable the simulated OTP provider. Production requires a configured SMS gateway (`SMS_API_KEY` and `SMS_API_URL`); it will not return test OTP codes or silently fall back to simulated delivery.
 *(Development uses the in-memory spatial repository without requiring an external PostgreSQL instance once the authentication secret is configured.)*
 
+There are no built-in administrator accounts. After applying the database schema, generate a password hash in a real terminal using `npm run admin:password-hash`, then provision an authorized account directly in PostgreSQL using the generated hash and a unique username/email. Never use a demo password or commit the hash.
+
 ### 3. Start Development Server
 ```bash
 npm run dev
@@ -142,6 +146,32 @@ Open your browser at `http://localhost:3000`.
 npm run build
 npm start
 ```
+
+### 5. Build the Android App
+
+The Android app is a native Capacitor shell around the same web app. Install Android Studio with its Android SDK, and deploy the API over HTTPS before building: OTP login, facility sync, help requests, and lost-and-found submissions use the backend.
+
+1. Put the deployed backend origin (without `/api` or a trailing path) in a local `.env.local` file:
+   ```dotenv
+   VITE_API_BASE_URL=https://api.example.org
+   ```
+   Set the deployed backend's comma-separated `CORS_ORIGIN` to include `https://localhost` and any separately hosted web app origins. Never use an HTTP production URL.
+2. Build the web bundle and copy it into Android:
+   ```bash
+   npm run android:sync
+   ```
+3. Open the project in Android Studio:
+   ```bash
+   npm run android:open
+   ```
+4. To build a local debug APK on Windows:
+   ```powershell
+   .\android\gradlew.bat -p android assembleDebug
+   ```
+   Output: `android\app\build\outputs\apk\debug\app-debug.apk`. Install this debug build on a test device; it is not a Play Store release.
+5. For Play Store distribution, use Android Studio's **Generate Signed Bundle / APK** and a privately stored release signing key. Back up the key securely and never commit it. Confirm the application ID and store listing details before publishing.
+
+After changing frontend code or `VITE_API_BASE_URL`, rerun `npm run android:sync` before launching Android Studio. This workspace can generate and sync the Android project, but producing a release APK/AAB also needs Android Studio/SDK, a deployed backend, and a release signing key.
 
 ---
 

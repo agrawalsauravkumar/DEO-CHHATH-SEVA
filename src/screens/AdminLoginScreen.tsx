@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 export const AdminLoginScreen: React.FC = () => {
-  const { navigate } = useApp();
+  const { navigate, goBack } = useApp();
 
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -52,7 +52,7 @@ export const AdminLoginScreen: React.FC = () => {
       {/* Top Header */}
       <div className="max-w-md w-full mx-auto flex items-center justify-between">
         <button
-          onClick={() => navigate('home')}
+          onClick={goBack}
           className="flex items-center gap-1.5 text-xs font-bold text-amber-300 hover:text-amber-200 bg-white/10 hover:bg-white/15 px-3 py-1.5 rounded-xl border border-white/10 transition-all"
         >
           <ArrowLeft className="w-4 h-4" />

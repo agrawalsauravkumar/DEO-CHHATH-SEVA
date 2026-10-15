@@ -627,8 +627,8 @@ export interface OfficialAnnouncement {
 // ==========================================
 export type AdminRole =
   | 'SUPER_ADMIN'
+  | 'ADMIN'
   | 'CONTENT_ADMIN'
-  | 'VOLUNTEER_ADMIN'
   | 'FACILITY_ADMIN'
   | 'HELP_ADMIN';
 
