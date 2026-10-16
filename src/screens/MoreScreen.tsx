@@ -191,6 +191,12 @@ export const MoreScreen: React.FC = () => {
           icon: 'ℹ️',
         },
         {
+          id: 'team',
+          label: 'हमारी टीम',
+          desc: 'प्रकाशित टीम परिचय देखें',
+          icon: '👥',
+        },
+        {
           id: 'settings',
           label: 'ऐप सेटिंग्स',
           desc: 'अक्षर का आकार, भाषा, ऑफलाइन स्टोरेज',

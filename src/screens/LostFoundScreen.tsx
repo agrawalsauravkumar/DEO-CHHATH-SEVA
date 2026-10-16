@@ -607,7 +607,7 @@ export const LostFoundScreen: React.FC = () => {
                   checked={includeLocation}
                   disabled={!deviceLocation}
                   onChange={(e) => setIncludeLocation(e.target.checked)}
-                  className="h-4 w-4 accent-[#0B5E8E]"
+                  className="h-4 w-4 accent-[#075985]"
                 />
                 <span>
                   {deviceLocation
@@ -680,7 +680,7 @@ export const LostFoundScreen: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmittingReport}
-                className="w-full min-h-[50px] bg-[#0B5E8E] hover:bg-[#073B5A] disabled:opacity-60 disabled:cursor-not-allowed active:scale-98 text-white font-black text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full min-h-[50px] bg-[#075985] hover:bg-[#073B5A] disabled:opacity-60 disabled:cursor-not-allowed active:scale-98 text-white font-black text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
               >
                 <span>{isSubmittingReport ? 'रिपोर्ट भेजी जा रही है…' : 'रिपोर्ट दर्ज करें'}</span>
                 <ChevronRight className="w-4 h-4" />

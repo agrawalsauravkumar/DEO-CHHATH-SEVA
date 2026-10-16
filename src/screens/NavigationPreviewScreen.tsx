@@ -120,7 +120,7 @@ export const NavigationPreviewScreen: React.FC = () => {
           <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 text-center space-y-3 shadow-sm">
             <MapPin className="w-8 h-8 text-amber-700 mx-auto" />
             <h4 className="text-base font-black text-stone-900">सत्यापित गंतव्य नहीं चुना गया है।</h4>
-            <button onClick={() => navigate('search')} className="min-h-[44px] rounded-xl bg-[#0B5E8E] px-4 font-bold text-white">
+            <button onClick={() => navigate('search')} className="min-h-[44px] rounded-xl bg-[#075985] px-4 font-bold text-white">
               स्थान खोजें
             </button>
           </div>
@@ -293,7 +293,7 @@ export const NavigationPreviewScreen: React.FC = () => {
             {/* Start Navigation Action */}
             <button
               onClick={handleStartNav}
-              className="w-full min-h-[52px] bg-gradient-to-r from-[#FF8C42] to-[#EA580C] hover:from-[#EA580C] hover:to-[#C2410C] active:scale-98 text-white font-black text-base rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all border border-amber-300/40"
+              className="w-full min-h-[52px] bg-gradient-to-r from-[#F47B20] to-[#EA580C] hover:from-[#EA580C] hover:to-[#C2410C] active:scale-98 text-white font-black text-base rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all border border-amber-300/40"
             >
               <Navigation className="w-5 h-5 fill-white" />
               <span>नेविगेशन प्रारंभ करें (Start Navigation)</span>

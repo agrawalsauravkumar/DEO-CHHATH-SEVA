@@ -130,7 +130,7 @@ export const ShuttleScreen: React.FC = () => {
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Hero Header Banner */}
-        <div className="bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-3">
+        <div className="bg-gradient-to-br from-[#075985] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center font-bold text-2xl shrink-0">
               🛺
@@ -226,7 +226,7 @@ export const ShuttleScreen: React.FC = () => {
                   onClick={() => setFilterType('ALL')}
                   className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
                     filterType === 'ALL'
-                      ? 'bg-[#0B5E8E] text-white shadow-xs'
+                      ? 'bg-[#075985] text-white shadow-xs'
                       : 'bg-stone-200 text-stone-700'
                   }`}
                 >
@@ -236,7 +236,7 @@ export const ShuttleScreen: React.FC = () => {
                   onClick={() => setFilterType('PICKUP')}
                   className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
                     filterType === 'PICKUP'
-                      ? 'bg-[#0B5E8E] text-white shadow-xs'
+                      ? 'bg-[#075985] text-white shadow-xs'
                       : 'bg-stone-200 text-stone-700'
                   }`}
                 >
@@ -246,7 +246,7 @@ export const ShuttleScreen: React.FC = () => {
                   onClick={() => setFilterType('DROP')}
                   className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
                     filterType === 'DROP'
-                      ? 'bg-[#0B5E8E] text-white shadow-xs'
+                      ? 'bg-[#075985] text-white shadow-xs'
                       : 'bg-stone-200 text-stone-700'
                   }`}
                 >

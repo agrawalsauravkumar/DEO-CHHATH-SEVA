@@ -88,6 +88,9 @@ const AnnouncementsScreen = React.lazy(() =>
 const AboutScreen = React.lazy(() =>
   import('./screens/AboutScreen').then(({ AboutScreen }) => ({ default: AboutScreen }))
 );
+const TeamScreen = React.lazy(() =>
+  import('./screens/TeamScreen').then(({ TeamScreen }) => ({ default: TeamScreen }))
+);
 const SettingsScreen = React.lazy(() =>
   import('./screens/SettingsScreen').then(({ SettingsScreen }) => ({ default: SettingsScreen }))
 );
@@ -129,6 +132,7 @@ const ScreenLoadingFallback = () => (
 const MainRouter: React.FC = () => {
   const {
     currentScreen,
+    language,
     isOnline,
     networkStatus,
     lastSyncTime,
@@ -136,6 +140,7 @@ const MainRouter: React.FC = () => {
     networkRecovered,
     retrySync,
   } = useApp();
+  const isEnglish = language === 'en';
 
   // Desktop-First / Full-Width Admin Dashboard (Step 17 Requirement 31)
   if (currentScreen === 'admin-login') {
@@ -210,6 +215,8 @@ const MainRouter: React.FC = () => {
         return <AnnouncementsScreen />;
       case 'about':
         return <AboutScreen />;
+      case 'team':
+        return <TeamScreen />;
       case 'settings':
         return <SettingsScreen />;
       case 'more':
@@ -231,7 +238,7 @@ const MainRouter: React.FC = () => {
 
   return (
     <div className="min-h-[100dvh] flex justify-center px-0 py-0 font-['Mukta',sans-serif]">
-      <div className="app-shell w-full max-w-7xl min-h-[100dvh] relative flex flex-col border-x border-[#FFD54F]/40">
+      <div className="app-shell w-full max-w-7xl min-h-[100dvh] relative flex flex-col border-x border-[#FFB52E]/40">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,213,79,0.18),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.08),transparent_30%)]" />
         <div className="relative z-10 flex min-h-[100dvh] flex-col">
           {(!isOnline || networkStatus === 'SYNCING' || networkStatus === 'SYNC_ERROR' || networkStatus === 'SYNCED' || networkRecovered) && (
@@ -250,16 +257,20 @@ const MainRouter: React.FC = () => {
             >
               <span>
                 {!isOnline
-                  ? '🟠 आप ऑफलाइन हैं — कुछ सुविधाएँ इंटरनेट के बिना उपलब्ध नहीं हो सकतीं।'
+                  ? isEnglish
+                    ? '🟠 You are offline — some features may not be available without an internet connection.'
+                    : '🟠 आप ऑफलाइन हैं — कुछ सुविधाएँ इंटरनेट के बिना उपलब्ध नहीं हो सकतीं।'
                   : networkStatus === 'SYNCING'
-                    ? 'अधिकृत सूचना और सुविधा स्रोत जाँचे जा रहे हैं…'
+                    ? isEnglish
+                      ? 'Checking authorized announcement and facility sources…'
+                      : 'अधिकृत सूचना और सुविधा स्रोत जाँचे जा रहे हैं…'
                     : networkStatus === 'SYNC_ERROR'
-                      ? `सिंक नहीं हुआ${syncError ? `: ${syncError}` : ''}`
+                      ? `${isEnglish ? 'Sync failed' : 'सिंक नहीं हुआ'}${syncError ? `: ${syncError}` : ''}`
                       : networkStatus === 'SYNCED'
-                        ? '🟢 अधिकृत डेटा स्रोत जाँचे गए'
-                        : '🟢 Internet वापस आ गया है'}
+                        ? isEnglish ? '🟢 Authorized data sources checked' : '🟢 अधिकृत डेटा स्रोत जाँचे गए'
+                        : isEnglish ? '🟢 Internet connection restored' : '🟢 Internet वापस आ गया है'}
                 {networkStatus === 'SYNCED' && lastSyncTime
-                  ? ` • अंतिम स्रोत जाँच: ${new Date(lastSyncTime).toLocaleString('hi-IN')}`
+                  ? ` • ${isEnglish ? 'Last source check' : 'अंतिम स्रोत जाँच'}: ${new Date(lastSyncTime).toLocaleString(isEnglish ? 'en-IN' : 'hi-IN')}`
                   : ''}
               </span>
               {isOnline && networkStatus === 'SYNC_ERROR' && (
@@ -267,7 +278,7 @@ const MainRouter: React.FC = () => {
                   onClick={() => void retrySync().catch(() => undefined)}
                   className="min-h-8 rounded-lg border border-current px-2.5 underline"
                 >
-                  फिर से प्रयास करें
+                  {isEnglish ? 'Retry' : 'फिर से प्रयास करें'}
                 </button>
               )}
             </div>

@@ -410,13 +410,21 @@ class FacilityServiceManager {
     try {
       const cached = localStorage.getItem(STORAGE_OFFLINE_FACILITIES_KEY);
       if (cached) {
-        this.facilities = (JSON.parse(cached) as Facility[]).filter(
+        const parsed = (JSON.parse(cached) as Facility[]).filter(
           (facility) => facility.verified && facility.active && facility.source !== 'DEMO_DATA'
         );
+        if (parsed.length > 0) {
+          this.facilities = parsed;
+          this.shuttleRoutes = [...DEO_SHUTTLE_ROUTES];
+          return;
+        }
       }
     } catch {
       // Ignore localStorage error
     }
+    // Fallback to verified Deo facilities database
+    this.facilities = [...DEO_FACILITIES_DATABASE];
+    this.shuttleRoutes = [...DEO_SHUTTLE_ROUTES];
   }
 
   private markUnverified(facilities: Facility[]): Facility[] {

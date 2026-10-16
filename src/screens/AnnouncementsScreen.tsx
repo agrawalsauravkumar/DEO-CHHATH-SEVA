@@ -227,7 +227,7 @@ export const AnnouncementsScreen: React.FC = () => {
 
       <main className="flex-1 max-w-lg mx-auto w-full px-3.5 sm:px-4 py-3.5 space-y-3.5">
         {/* Official Header Banner */}
-        <div className="bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-4 sm:p-5 shadow-md border-2 border-amber-500/40 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#075985] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-4 sm:p-5 shadow-md border-2 border-amber-500/40 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
 
           <div className="flex items-start justify-between gap-3 relative z-10">
@@ -356,7 +356,7 @@ export const AnnouncementsScreen: React.FC = () => {
               {announcementSource === 'ERROR' && (
                 <button
                   onClick={() => setRefreshTrigger((count) => count + 1)}
-                  className="mt-2 min-h-[44px] px-4 bg-[#0B5E8E] text-white text-sm font-bold rounded-xl"
+                  className="mt-2 min-h-[44px] px-4 bg-[#075985] text-white text-sm font-bold rounded-xl"
                 >
                   फिर से प्रयास करें
                 </button>

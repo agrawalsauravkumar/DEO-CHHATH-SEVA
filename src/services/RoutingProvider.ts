@@ -117,9 +117,6 @@ export class OSRMProvider implements RoutingProvider {
       travelMode,
     } = params;
 
-    if (travelMode === 'WALKING') {
-      throw new Error('रूट सेवा अभी उपलब्ध नहीं है। इस OSRM provider में पैदल रूट उपलब्ध नहीं है।');
-    }
     const profile = 'driving';
     const coordinates = `${startLongitude},${startLatitude};${destinationLongitude},${destinationLatitude}`;
     const url = `${this.baseUrl}/route/v1/${profile}/${coordinates}?overview=full&geometries=geojson&steps=true`;
@@ -143,7 +140,10 @@ export class OSRMProvider implements RoutingProvider {
         throw new Error('OSRM से मान्य मार्ग ज्यामिति प्राप्त नहीं हुई।');
       }
       const distanceMeters = Math.round(primaryRoute.distance);
-      const durationSeconds = Math.round(primaryRoute.duration);
+      // For walking mode, calculate duration at human pedestrian speed (1.25 m/s ~ 4.5 km/h)
+      const durationSeconds = travelMode === 'WALKING'
+        ? Math.max(60, Math.round(distanceMeters / 1.25))
+        : Math.round(primaryRoute.duration);
 
       const geometry: [number, number][] = primaryRoute.geometry.coordinates.map(
         (pt: [number, number]) => [pt[1], pt[0]]
@@ -169,7 +169,9 @@ export class OSRMProvider implements RoutingProvider {
             maneuverType: type,
             modifier,
             distanceMeters: Math.round(step.distance),
-            durationSeconds: Math.round(step.duration),
+            durationSeconds: travelMode === 'WALKING'
+              ? Math.max(10, Math.round(step.distance / 1.25))
+              : Math.round(step.duration),
             location,
           });
         });

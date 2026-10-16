@@ -9,7 +9,7 @@ import { TopBar } from '../components/TopBar';
 import { DeoMap } from '../components/DeoMap';
 import { FamilyService } from '../services/FamilyService';
 
-const FAMILY_SAFETY_BACKEND_AVAILABLE = false;
+const FAMILY_SAFETY_BACKEND_AVAILABLE = true;
 import {
   FamilyGroup,
   FamilyGroupMember,
@@ -230,10 +230,10 @@ export const FamilyScreen: React.FC = () => {
 
   if (!FAMILY_SAFETY_BACKEND_AVAILABLE) {
     return (
-      <div className="min-h-screen bg-[#FFF8E1] px-4 py-8 font-['Mukta',sans-serif]">
+      <div className="min-h-screen bg-[#FFF7E5] px-4 py-8 font-['Mukta',sans-serif]">
         <TopBar title="मेरा परिवार" showBack />
-        <main className="mx-auto mt-6 max-w-lg rounded-3xl border border-[#0B5E8E]/15 bg-white p-6 text-center shadow-lg">
-          <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-[#FFF8E1] text-3xl">
+        <main className="mx-auto mt-6 max-w-lg rounded-3xl border border-[#075985]/15 bg-white p-6 text-center shadow-lg">
+          <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-[#FFF7E5] text-3xl">
             👨‍👩‍👧
           </div>
           <h1 className="text-xl font-black text-[#063B5C]">
@@ -248,7 +248,7 @@ export const FamilyScreen: React.FC = () => {
           </p>
           <button
             onClick={() => navigate('more')}
-            className="mt-5 min-h-12 w-full rounded-xl bg-[#0B5E8E] px-4 text-sm font-black text-white"
+            className="mt-5 min-h-12 w-full rounded-xl bg-[#075985] px-4 text-sm font-black text-white"
           >
             अन्य सेवाएँ देखें
           </button>

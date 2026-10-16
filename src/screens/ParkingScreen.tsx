@@ -377,7 +377,7 @@ export const ParkingScreen: React.FC = () => {
                           error instanceof Error ? error.message : 'पार्किंग डेटा लोड नहीं हुआ।'
                         ));
                     }}
-                    className="mt-2 min-h-11 rounded-xl bg-[#0B5E8E] px-4 text-xs font-bold text-white"
+                    className="mt-2 min-h-11 rounded-xl bg-[#075985] px-4 text-xs font-bold text-white"
                   >
                     फिर से प्रयास करें
                   </button>

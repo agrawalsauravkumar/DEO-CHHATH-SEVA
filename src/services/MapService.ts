@@ -1,11 +1,15 @@
 import './leafletSafePatch';
 import L from 'leaflet';
+import { OnlineMapProvider } from './MapProvider';
 import { POICategory, POIItem } from './POIService';
 
+const tileConfig = new OnlineMapProvider().getTileConfig();
+
 export const MapService = {
-  // Tile server URL for standard OpenStreetMap
-  OSM_TILE_URL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-  OSM_ATTRIBUTION: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  TILE_URL: tileConfig.tileUrl,
+  ATTRIBUTION: tileConfig.attribution,
+  MAX_ZOOM: tileConfig.maxZoom,
+  MIN_ZOOM: tileConfig.minZoom,
 
   // Create customized high-contrast HTML icons for Leaflet markers
   createPOIIcon: (category: POICategory, isSelected: boolean = false): L.DivIcon => {

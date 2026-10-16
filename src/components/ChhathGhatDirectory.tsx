@@ -108,7 +108,7 @@ export const ChhathGhatDirectory: React.FC = () => {
             <div className="flex items-start justify-between gap-2 relative z-10">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <h4 className="text-base font-black text-[#0B5E8E] leading-tight">
+                  <h4 className="text-base font-black text-[#075985] leading-tight">
                     {ghat.name}
                   </h4>
                   <span className="inline-flex items-center gap-1 text-[10px] font-black bg-emerald-50 text-emerald-800 border border-emerald-300 px-2 py-0.2 rounded-full">

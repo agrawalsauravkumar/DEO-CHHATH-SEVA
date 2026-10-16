@@ -21,7 +21,8 @@ import {
 } from 'lucide-react';
 
 export const LoginScreen: React.FC = () => {
-  const { navigate, goBack, setCurrentUser, seniorMode, isOnline } = useApp();
+  const { navigate, goBack, setCurrentUser, seniorMode, isOnline, language } = useApp();
+  const isEnglish = language === 'en';
 
   const [mobileNumber, setMobileNumber] = useState<string>('');
   const [step, setStep] = useState<'PHONE' | 'OTP'>('PHONE');
@@ -48,7 +49,11 @@ export const LoginScreen: React.FC = () => {
 
     const cleanNum = mobileNumber.replace(/\D/g, '');
     if (cleanNum.length !== 10) {
-      setErrorMessage('कृपया वैध 10 अंकों का मोबाइल नंबर दर्ज करें।');
+      setErrorMessage(
+        isEnglish
+          ? 'Please enter a valid 10-digit mobile number.'
+          : 'कृपया वैध 10 अंकों का मोबाइल नंबर दर्ज करें।'
+      );
       return;
     }
 
@@ -61,12 +66,19 @@ export const LoginScreen: React.FC = () => {
         setOtpValue('');
         const wait = Math.max(0, Math.ceil((res.challenge.canResendAt - Date.now()) / 1000));
         setResendCooldown(wait);
-        setSuccessMessage('OTP सफलतापूर्वक भेज दिया गया है।');
+        setSuccessMessage(isEnglish ? 'OTP sent successfully.' : 'OTP सफलतापूर्वक भेज दिया गया है।');
       } else {
-        setErrorMessage(res.error || 'OTP भेजने में त्रुटि हुई। कृपया पुनः प्रयास करें।');
+        setErrorMessage(
+          res.error ||
+            (isEnglish ? 'Could not send OTP. Please try again.' : 'OTP भेजने में त्रुटि हुई। कृपया पुनः प्रयास करें।')
+        );
       }
     } catch {
-      setErrorMessage('सर्वर से संपर्क करने में समस्या हुई। कृपया पुनः प्रयास करें।');
+      setErrorMessage(
+        isEnglish
+          ? 'Could not contact the server. Please try again.'
+          : 'सर्वर से संपर्क करने में समस्या हुई। कृपया पुनः प्रयास करें।'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +89,7 @@ export const LoginScreen: React.FC = () => {
     setErrorMessage(null);
 
     if (otpValue.trim().length !== 6) {
-      setErrorMessage('कृपया 6 अंकों का OTP दर्ज करें।');
+      setErrorMessage(isEnglish ? 'Please enter the 6-digit OTP.' : 'कृपया 6 अंकों का OTP दर्ज करें।');
       return;
     }
 
@@ -87,15 +99,15 @@ export const LoginScreen: React.FC = () => {
       const res = await AuthService.verifyOtp(cleanNum, otpValue);
       if (res.success && res.user) {
         setCurrentUser(res.user);
-        setSuccessMessage('सफलतापूर्वक लॉगिन हो गया!');
+        setSuccessMessage(isEnglish ? 'Login successful!' : 'सफलतापूर्वक लॉगिन हो गया!');
         setTimeout(() => {
           navigate('profile');
         }, 800);
       } else {
-        setErrorMessage(res.error || 'OTP सत्यापन असफल।');
+        setErrorMessage(res.error || (isEnglish ? 'OTP verification failed.' : 'OTP सत्यापन असफल।'));
       }
     } catch {
-      setErrorMessage('सत्यापन के दौरान त्रुटि हुई।');
+      setErrorMessage(isEnglish ? 'An error occurred during verification.' : 'सत्यापन के दौरान त्रुटि हुई।');
     } finally {
       setIsLoading(false);
     }
@@ -110,10 +122,18 @@ export const LoginScreen: React.FC = () => {
     const result = AuthService.getOfflineAccessStatus();
     if (!result.available) {
       const messages = {
-        NO_SESSION: 'ऑफ़लाइन OTP उपलब्ध नहीं है। पहले इंटरनेट से OTP सत्यापित करें, या बिना खाते के ऐप खोलें।',
-        EXPIRED: 'आपका लॉगिन सत्र समाप्त हो गया है। फिर से OTP सत्यापित करने के लिए इंटरनेट से जुड़ें।',
-        PRIVILEGED: 'सुरक्षा के लिए प्रशासक/विशेषाधिकार वाले खाते ऑफलाइन लॉगिन नहीं कर सकते। इंटरनेट से जुड़ें।',
-        INVALID_SESSION: 'पहले का लॉगिन सत्र मान्य नहीं है। कृपया इंटरनेट से OTP सत्यापित करें।',
+        NO_SESSION: isEnglish
+          ? 'Offline OTP is unavailable. Verify an OTP online first, or continue without an account.'
+          : 'ऑफ़लाइन OTP उपलब्ध नहीं है। पहले इंटरनेट से OTP सत्यापित करें, या बिना खाते के ऐप खोलें।',
+        EXPIRED: isEnglish
+          ? 'Your login session has expired. Connect to the internet to verify an OTP again.'
+          : 'आपका लॉगिन सत्र समाप्त हो गया है। फिर से OTP सत्यापित करने के लिए इंटरनेट से जुड़ें।',
+        PRIVILEGED: isEnglish
+          ? 'For security, administrator and privileged accounts cannot log in offline. Connect to the internet.'
+          : 'सुरक्षा के लिए प्रशासक/विशेषाधिकार वाले खाते ऑफलाइन लॉगिन नहीं कर सकते। इंटरनेट से जुड़ें।',
+        INVALID_SESSION: isEnglish
+          ? 'The previous login session is invalid. Please verify an OTP online.'
+          : 'पहले का लॉगिन सत्र मान्य नहीं है। कृपया इंटरनेट से OTP सत्यापित करें।',
       };
       setErrorMessage(messages[result.reason]);
       setSuccessMessage(null);
@@ -122,14 +142,22 @@ export const LoginScreen: React.FC = () => {
 
     setCurrentUser(result.user);
     setErrorMessage(null);
-    setSuccessMessage('पहले से सत्यापित खाते का 24 घंटे वाला सत्र जारी है; नया OTP जारी नहीं किया गया।');
+    setSuccessMessage(
+      isEnglish
+        ? 'The 24-hour session for your previously verified account is active; no new OTP was issued.'
+        : 'पहले से सत्यापित खाते का 24 घंटे वाला सत्र जारी है; नया OTP जारी नहीं किया गया।'
+    );
     window.setTimeout(() => navigate('profile'), 500);
   };
 
   return (
-    <div className="min-h-screen bg-[#FFF8E1] pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[#FFF7E5] pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar
-        title={step === 'PHONE' ? 'लॉगिन / प्रवेश' : 'OTP सत्यापन'}
+        title={
+          step === 'PHONE'
+            ? isEnglish ? 'Login' : 'लॉगिन / प्रवेश'
+            : isEnglish ? 'OTP verification' : 'OTP सत्यापन'
+        }
         showBack
         onBack={() => {
           if (step === 'OTP') {
@@ -143,15 +171,19 @@ export const LoginScreen: React.FC = () => {
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {/* Brand & Organization Title Card */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-[#FFD54F]/70 shadow-xl space-y-2 text-center">
-          <div aria-hidden="true" className="absolute -top-12 -right-10 h-36 w-36 rounded-full border border-[#FFD54F]/25 bg-[radial-gradient(circle,#FFD54F55,transparent_68%)]" />
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#075985] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-[#FFB52E]/70 shadow-xl space-y-2 text-center">
+          <div aria-hidden="true" className="absolute -top-12 -right-10 h-36 w-36 rounded-full border border-[#FFB52E]/25 bg-[radial-gradient(circle,#FFB52E55,transparent_68%)]" />
           <DeoChhathSevaLogo size={68} className="mx-auto drop-shadow-lg" />
           <h2 className="text-xl font-black tracking-tight text-white">DEO CHHATH SEVA</h2>
-          <p className="text-xs font-black text-[#FFD54F]">
-            NEXTGEN DEVBHOOMI FOUNDATION — “रास्ता भी • सहायता भी • सेवा भी”
+          <p className="text-xs font-black text-[#FFB52E]">
+            {isEnglish
+              ? 'NEXTGEN DEVBHOOMI FOUNDATION — Navigation • Assistance • Service'
+              : 'NEXTGEN DEVBHOOMI FOUNDATION — “रास्ता भी • सहायता भी • सेवा भी”'}
           </p>
-          <p className="text-[12px] text-[#FFF8E1] pt-1">
-            छठ महापर्व में सुरक्षित सेवा, स्वयंसेवक पहचान एवं परिवार समन्वय हेतु लॉगिन करें।
+          <p className="text-[12px] text-[#FFF7E5] pt-1">
+            {isEnglish
+              ? 'Log in for safe festival services, volunteer identification, and family coordination.'
+              : 'छठ महापर्व में सुरक्षित सेवा, स्वयंसेवक पहचान एवं परिवार समन्वय हेतु लॉगिन करें।'}
           </p>
         </div>
 
@@ -172,17 +204,19 @@ export const LoginScreen: React.FC = () => {
 
         {/* STEP 1: PHONE NUMBER INPUT */}
         {step === 'PHONE' && (
-          <div className="bg-white border-2 border-[#0B5E8E]/20 rounded-3xl p-5 shadow-lg shadow-[#0B5E8E]/10 space-y-4">
+          <div className="bg-white border-2 border-[#075985]/20 rounded-3xl p-5 shadow-lg shadow-[#075985]/10 space-y-4">
             <div className="flex items-start gap-3">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0B5E8E] text-[#FFD54F]">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#075985] text-[#FFB52E]">
                 <Smartphone className="h-5 w-5" />
               </span>
               <div className="space-y-1">
                 <label className={`block font-black text-[#063B5C] ${seniorMode ? 'text-lg' : 'text-base'}`}>
-                  मोबाइल नंबर से लॉगिन करें
+                  {isEnglish ? 'Log in with your mobile number' : 'मोबाइल नंबर से लॉगिन करें'}
                 </label>
                 <p className="text-xs text-stone-600">
-                  OTP पाने के लिए अपना 10 अंकों का भारतीय मोबाइल नंबर दर्ज करें।
+                  {isEnglish
+                    ? 'Enter your 10-digit Indian mobile number to receive an OTP.'
+                    : 'OTP पाने के लिए अपना 10 अंकों का भारतीय मोबाइल नंबर दर्ज करें।'}
                 </p>
               </div>
             </div>
@@ -198,8 +232,8 @@ export const LoginScreen: React.FC = () => {
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
                   placeholder="98XXXXXXXX"
-                  aria-label="10 अंकों का मोबाइल नंबर"
-                  className={`w-full pl-13 pr-4 py-3.5 rounded-2xl border-2 border-[#0B5E8E]/30 focus:border-[#0B5E8E] focus:ring-4 focus:ring-[#FFD54F]/40 outline-none font-bold text-stone-900 tracking-wider ${
+                  aria-label={isEnglish ? '10-digit mobile number' : '10 अंकों का मोबाइल नंबर'}
+                  className={`w-full pl-13 pr-4 py-3.5 rounded-2xl border-2 border-[#075985]/30 focus:border-[#075985] focus:ring-4 focus:ring-[#FFB52E]/40 outline-none font-bold text-stone-900 tracking-wider ${
                     seniorMode ? 'text-2xl min-h-[56px]' : 'text-xl'
                   }`}
                   autoFocus
@@ -210,7 +244,7 @@ export const LoginScreen: React.FC = () => {
               <button
                 type="submit"
                 disabled={isLoading || mobileNumber.length !== 10}
-                className={`w-full border-2 border-[#FFD54F] bg-gradient-to-r from-[#0B5E8E] to-[#063B5C] hover:from-[#084B72] hover:to-[#042E46] active:scale-[0.99] disabled:opacity-50 text-white font-black rounded-2xl shadow-lg shadow-[#0B5E8E]/25 transition-all flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#FF8C42] ${
+                className={`w-full border-2 border-[#FFB52E] bg-gradient-to-r from-[#075985] to-[#063B5C] hover:from-[#084B72] hover:to-[#042E46] active:scale-[0.99] disabled:opacity-50 text-white font-black rounded-2xl shadow-lg shadow-[#075985]/25 transition-all flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#F47B20] ${
                   seniorMode ? 'min-h-[56px] text-lg' : 'min-h-[48px] text-base'
                 }`}
               >
@@ -218,7 +252,7 @@ export const LoginScreen: React.FC = () => {
                   <RefreshCw className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    <span>OTP भेजें</span>
+                    <span>{isEnglish ? 'Send OTP' : 'OTP भेजें'}</span>
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
@@ -227,21 +261,25 @@ export const LoginScreen: React.FC = () => {
 
             <p className="flex items-center justify-center gap-2 border-t border-stone-100 pt-3 text-center text-xs font-semibold text-stone-600">
               <Shield className="h-4 w-4 shrink-0 text-[#2E7D32]" />
-              सत्यापन कोड केवल आपके मोबाइल नंबर पर भेजा जाएगा।
+              {isEnglish
+                ? 'The verification code will only be sent to your mobile number.'
+                : 'सत्यापन कोड केवल आपके मोबाइल नंबर पर भेजा जाएगा।'}
             </p>
           </div>
         )}
 
         {/* STEP 2: OTP VERIFICATION */}
         {step === 'OTP' && (
-          <div className="bg-white border-2 border-[#0B5E8E]/20 rounded-3xl p-5 shadow-lg shadow-[#0B5E8E]/10 space-y-4">
+          <div className="bg-white border-2 border-[#075985]/20 rounded-3xl p-5 shadow-lg shadow-[#075985]/10 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <label className={`block font-black text-[#063B5C] ${seniorMode ? 'text-lg' : 'text-base'}`}>
-                  OTP दर्ज करें
+                  {isEnglish ? 'Enter OTP' : 'OTP दर्ज करें'}
                 </label>
                 <p className="text-xs text-stone-500">
-                  {challenge?.maskedMobile || mobileNumber} पर 6 अंकों का कोड भेजा गया है।
+                  {isEnglish
+                    ? `A 6-digit code was sent to ${challenge?.maskedMobile || mobileNumber}.`
+                    : `${challenge?.maskedMobile || mobileNumber} पर 6 अंकों का कोड भेजा गया है।`}
                 </p>
               </div>
               <button
@@ -249,7 +287,7 @@ export const LoginScreen: React.FC = () => {
                 onClick={() => setStep('PHONE')}
                 className="text-xs text-amber-800 font-bold underline hover:text-amber-900"
               >
-                नंबर बदलें
+                {isEnglish ? 'Change number' : 'नंबर बदलें'}
               </button>
             </div>
 
@@ -263,14 +301,16 @@ export const LoginScreen: React.FC = () => {
                   {challenge.devOtpHint}
                 </span>
                 <p className="text-[10px] text-amber-700">
-                  (यह कोड केवल विकास/परीक्षण मोड में दिख रहा है)
+                  {isEnglish
+                    ? '(This code is shown only in development/testing mode.)'
+                    : '(यह कोड केवल विकास/परीक्षण मोड में दिख रहा है)'}
                 </p>
                 <button
                   type="button"
                   onClick={() => setOtpValue(challenge.devOtpHint!)}
                   className="text-xs font-black text-amber-900 bg-amber-200 hover:bg-amber-300 px-3 py-1 rounded-xl mt-1 inline-block"
                 >
-                  स्वचालित दर्ज करें (Auto Fill)
+                  {isEnglish ? 'Auto-fill code' : 'स्वचालित दर्ज करें (Auto Fill)'}
                 </button>
               </div>
             )}
@@ -283,7 +323,7 @@ export const LoginScreen: React.FC = () => {
                 value={otpValue}
                 onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ''))}
                 placeholder="• • • • • •"
-                className={`w-full py-3.5 px-4 rounded-2xl border-2 border-[#0B5E8E]/30 focus:border-[#0B5E8E] focus:ring-4 focus:ring-[#FFD54F]/40 outline-none font-bold text-center text-stone-900 tracking-widest font-mono ${
+                className={`w-full py-3.5 px-4 rounded-2xl border-2 border-[#075985]/30 focus:border-[#075985] focus:ring-4 focus:ring-[#FFB52E]/40 outline-none font-bold text-center text-stone-900 tracking-widest font-mono ${
                   seniorMode ? 'text-3xl min-h-[56px]' : 'text-2xl'
                 }`}
                 autoFocus
@@ -293,7 +333,7 @@ export const LoginScreen: React.FC = () => {
               <button
                 type="submit"
                 disabled={isLoading || otpValue.trim().length !== 6}
-                className={`w-full border-2 border-[#FFD54F] bg-[#2E7D32] hover:bg-[#256629] active:scale-[0.99] disabled:opacity-50 text-white font-black rounded-2xl shadow-lg shadow-[#2E7D32]/20 transition-all flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#FF8C42] ${
+                className={`w-full border-2 border-[#FFB52E] bg-[#2E7D32] hover:bg-[#256629] active:scale-[0.99] disabled:opacity-50 text-white font-black rounded-2xl shadow-lg shadow-[#2E7D32]/20 transition-all flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#F47B20] ${
                   seniorMode ? 'min-h-[56px] text-lg' : 'min-h-[48px] text-base'
                 }`}
               >
@@ -302,7 +342,7 @@ export const LoginScreen: React.FC = () => {
                 ) : (
                   <>
                     <CheckCircle2 className="w-5 h-5" />
-                    <span>OTP सत्यापित करें (लॉगिन करें)</span>
+                    <span>{isEnglish ? 'Verify OTP and log in' : 'OTP सत्यापित करें (लॉगिन करें)'}</span>
                   </>
                 )}
               </button>
@@ -310,7 +350,9 @@ export const LoginScreen: React.FC = () => {
 
             {/* Resend OTP Section */}
             <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
-              <span className="text-stone-500 font-semibold">OTP प्राप्त नहीं हुआ?</span>
+              <span className="text-stone-500 font-semibold">
+                {isEnglish ? "Didn't receive the OTP?" : 'OTP प्राप्त नहीं हुआ?'}
+              </span>
               <button
                 type="button"
                 onClick={handleResendOtp}
@@ -321,46 +363,58 @@ export const LoginScreen: React.FC = () => {
                     : 'text-amber-800 hover:text-amber-900 underline'
                 }`}
               >
-                {resendCooldown > 0 ? `दोबारा OTP भेजें (${resendCooldown}s)` : 'दोबारा OTP भेजें'}
+                {resendCooldown > 0
+                  ? isEnglish
+                    ? `Resend OTP (${resendCooldown}s)`
+                    : `दोबारा OTP भेजें (${resendCooldown}s)`
+                  : isEnglish ? 'Resend OTP' : 'दोबारा OTP भेजें'}
               </button>
             </div>
           </div>
         )}
 
         {!isOnline && (
-          <section className="rounded-2xl border-2 border-[#FF8C42]/50 bg-gradient-to-br from-[#FFF8E1] to-white p-4 shadow-sm">
+          <section className="rounded-2xl border-2 border-[#F47B20]/50 bg-gradient-to-br from-[#FFF7E5] to-white p-4 shadow-sm">
             <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FF8C42]/15 text-[#8D4A1F]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F47B20]/15 text-[#8D4A1F]">
                 <WifiOff className="h-5 w-5" />
               </span>
               <div>
-                <h2 className="font-black text-[#063B5C]">पहले सत्यापित खाते से ऑफलाइन प्रवेश</h2>
+                <h2 className="font-black text-[#063B5C]">
+                  {isEnglish ? 'Offline access with a previously verified account' : 'पहले सत्यापित खाते से ऑफलाइन प्रवेश'}
+                </h2>
                 <p className="mt-1 text-xs leading-relaxed text-stone-700">
-                  यह नया OTP नहीं है। केवल पिछले ऑनलाइन OTP से सत्यापित, सक्रिय सामान्य-यूज़र सत्र (अधिकतम 24 घंटे) जारी हो सकता है। प्रशासक खाते स्वीकार नहीं होंगे।
+                  {isEnglish
+                    ? 'This does not issue a new OTP. Only an active standard-user session verified online within the last 24 hours can continue. Administrator accounts are not eligible.'
+                    : 'यह नया OTP नहीं है। केवल पिछले ऑनलाइन OTP से सत्यापित, सक्रिय सामान्य-यूज़र सत्र (अधिकतम 24 घंटे) जारी हो सकता है। प्रशासक खाते स्वीकार नहीं होंगे।'}
                 </p>
               </div>
             </div>
             <button
               type="button"
               onClick={handleOfflineAccess}
-              className="mt-3 min-h-[48px] w-full rounded-xl border-2 border-[#FFD54F] bg-[#0B5E8E] px-4 font-black text-white shadow-sm transition-colors hover:bg-[#063B5C] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#FF8C42]"
+              className="mt-3 min-h-[48px] w-full rounded-xl border-2 border-[#FFB52E] bg-[#075985] px-4 font-black text-white shadow-sm transition-colors hover:bg-[#063B5C] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#F47B20]"
             >
-              पहले से सत्यापित खाते से आगे बढ़ें
+              {isEnglish ? 'Continue with verified account' : 'पहले से सत्यापित खाते से आगे बढ़ें'}
             </button>
             <p className="mt-2 text-center text-[11px] text-stone-600">
-              नया OTP भेजना/जाँचना और ऑनलाइन सेवाएँ चलाने के लिए इंटरनेट आवश्यक है।
+              {isEnglish
+                ? 'Internet access is required to send or verify a new OTP and use online services.'
+                : 'नया OTP भेजना/जाँचना और ऑनलाइन सेवाएँ चलाने के लिए इंटरनेट आवश्यक है।'}
             </p>
           </section>
         )}
 
         {/* Security & Privacy Commitment */}
-        <div className="bg-[#0B5E8E]/[0.06] rounded-2xl p-4 border border-[#0B5E8E]/15 text-xs text-stone-700 space-y-1">
+        <div className="bg-[#075985]/[0.06] rounded-2xl p-4 border border-[#075985]/15 text-xs text-stone-700 space-y-1">
           <div className="flex items-center gap-1.5 font-bold text-[#063B5C]">
             <Lock className="w-3.5 h-3.5 text-[#2E7D32]" />
-            <span>आपकी गोपनीयता और सुरक्षा</span>
+            <span>{isEnglish ? 'Your privacy and security' : 'आपकी गोपनीयता और सुरक्षा'}</span>
           </div>
           <p className="text-[11px] leading-relaxed text-stone-600">
-            आपका मोबाइल नंबर केवल छठ महापर्व में आवश्यक सहायता व सुरक्षा हेतु सुरक्षित रखा जाता है। कोई भी निजी डेटा व्यावसायिक उद्देश्यों के लिए साझा नहीं किया जाता।
+            {isEnglish
+              ? 'Your mobile number is retained only to provide necessary assistance and safety services during Chhath. Private data is not shared for commercial purposes.'
+              : 'आपका मोबाइल नंबर केवल छठ महापर्व में आवश्यक सहायता व सुरक्षा हेतु सुरक्षित रखा जाता है। कोई भी निजी डेटा व्यावसायिक उद्देश्यों के लिए साझा नहीं किया जाता।'}
           </p>
         </div>
       </main>

@@ -32,15 +32,14 @@ export class OnlineMapProvider implements MapProvider {
   private attribution: string;
 
   constructor(customTileUrl?: string, customAttribution?: string) {
-    // Allows environment-driven override without hardcoding secrets
     this.tileUrl =
       customTileUrl ||
-      (typeof process !== 'undefined' && process.env?.MAP_TILE_URL) ||
+      import.meta.env.VITE_MAP_TILE_URL?.trim() ||
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
     this.attribution =
       customAttribution ||
-      (typeof process !== 'undefined' && process.env?.MAP_ATTRIBUTION) ||
+      import.meta.env.VITE_MAP_ATTRIBUTION?.trim() ||
       '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors | NextGen Dev Bhoomi Foundation';
   }
 

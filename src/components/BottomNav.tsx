@@ -4,17 +4,18 @@ import { ScreenId } from '../types';
 import { HandHeart, House, Map, Menu } from 'lucide-react';
 
 export const BottomNav: React.FC = () => {
-  const { currentScreen, navigate, seniorMode } = useApp();
+  const { currentScreen, navigate, seniorMode, language } = useApp();
+  const isEnglish = language === 'en';
 
   const navItems: {
     id: ScreenId;
     label: string;
     icon: React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
   }[] = [
-    { id: 'home', label: 'होम', icon: House },
-    { id: 'map', label: 'नक्शा', icon: Map },
-    { id: 'help', label: 'सहायता', icon: HandHeart },
-    { id: 'more', label: 'सेवाएँ', icon: Menu },
+    { id: 'home', label: isEnglish ? 'Home' : 'होम', icon: House },
+    { id: 'map', label: isEnglish ? 'Map' : 'नक्शा', icon: Map },
+    { id: 'help', label: isEnglish ? 'Help' : 'सहायता', icon: HandHeart },
+    { id: 'more', label: isEnglish ? 'Services' : 'सेवाएँ', icon: Menu },
   ];
 
   // Hidden on splash or full-screen navigation HUD
@@ -29,8 +30,8 @@ export const BottomNav: React.FC = () => {
 
   return (
     <nav
-      aria-label="मुख्य नेविगेशन"
-      className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md bg-white border-t-2 border-[#FFD54F] shadow-[0_-8px_24px_rgba(6,59,92,0.12)] pb-[env(safe-area-inset-bottom)] select-none font-['Mukta',sans-serif]"
+      aria-label={isEnglish ? 'Main navigation' : 'मुख्य नेविगेशन'}
+      className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md bg-white border-t-2 border-[#FFB52E] shadow-[0_-8px_24px_rgba(6,59,92,0.12)] pb-[env(safe-area-inset-bottom)] select-none font-['Mukta',sans-serif]"
     >
       <div className="grid grid-cols-4 items-center min-h-16 px-1">
         {navItems.map((item) => {
@@ -38,7 +39,7 @@ export const BottomNav: React.FC = () => {
             currentScreen === item.id ||
             (item.id === 'help' && (currentScreen === 'emergency' || currentScreen === 'volunteer-request')) ||
             (item.id === 'more' &&
-              ['announcements', 'about', 'settings', 'volunteer', 'family', 'lost-found'].includes(
+              ['announcements', 'about', 'team', 'settings', 'volunteer', 'family', 'lost-found'].includes(
                 currentScreen
               ));
 
@@ -50,7 +51,7 @@ export const BottomNav: React.FC = () => {
               className={`min-h-[56px] w-full flex flex-col items-center justify-center transition-all active:scale-95 relative py-1 rounded-xl focus-visible:outline-offset-[-2px] ${
                 isActive
                   ? 'text-[#F57C00] font-black'
-                  : 'text-[#063B5C] hover:text-[#0B5E8E] font-medium'
+                  : 'text-[#063B5C] hover:text-[#075985] font-medium'
               }`}
             >
               {isActive && (

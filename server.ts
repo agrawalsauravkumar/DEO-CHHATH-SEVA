@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { apiRouter } from './src/server/routes';
 import { initializeDatabase } from './src/server/db/connection';
+import { repository } from './src/server/db/repository';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,7 +43,7 @@ app.use('/api', (req, res, next) => {
 
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Photo-Permission-Confirmed');
     return res.sendStatus(204);
   }
 
@@ -72,6 +73,10 @@ app.use('/api', apiRouter);
 async function startServer() {
   // 1. Initialize PostgreSQL + PostGIS before accepting requests.
   await initializeDatabase();
+  if (process.env.NODE_ENV === 'development' && process.env.DEMO_TEAM_SEED === 'true') {
+    await repository.seedDemoTeamMembers();
+    console.log('Development-only demo team profiles are enabled.');
+  }
 
   if (!isProd) {
     // Development: Create Vite server in middleware mode

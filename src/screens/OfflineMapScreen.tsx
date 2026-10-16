@@ -12,7 +12,7 @@ export const OfflineMapScreen: React.FC = () => {
       <TopBar title="ऑफलाइन मैप" showBack />
       <main className="mx-auto flex max-w-lg flex-col gap-4 p-4 sm:p-5">
         <section className="rounded-3xl border border-stone-200 bg-white p-5 text-center shadow-sm">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-[#FFF8E1] text-[#0B5E8E]">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-[#FFF7E5] text-[#075985]">
             {!isOnline ? <WifiOff className="h-8 w-8" /> : <MapPin className="h-8 w-8" />}
           </div>
           <h1 className="mt-3 text-xl font-black text-[#063B5C]">{OfflineMapService.getStatusMessage()}</h1>
@@ -21,7 +21,7 @@ export const OfflineMapScreen: React.FC = () => {
           </p>
         </section>
 
-        <section className="rounded-2xl border border-[#0B5E8E]/20 bg-[#FFF8E1] p-4 text-sm text-[#063B5C]">
+        <section className="rounded-2xl border border-[#075985]/20 bg-[#FFF7E5] p-4 text-sm text-[#063B5C]">
           <h2 className="font-black">GPS अलग से काम करता है</h2>
           <p className="mt-1">
             इंटरनेट बंद होने पर भी डिवाइस GPS स्थान अनुरोध किया जा सकता है। GPS स्थिति देखने के लिए मानचित्र खोलें और “मेरा स्थान” दबाएँ।
@@ -37,7 +37,7 @@ export const OfflineMapScreen: React.FC = () => {
 
         <button
           onClick={() => navigate('map')}
-          className="min-h-[48px] rounded-xl bg-[#0B5E8E] px-4 font-bold text-white"
+          className="min-h-[48px] rounded-xl bg-[#075985] px-4 font-bold text-white"
         >
           मानचित्र खोलें
         </button>

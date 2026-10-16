@@ -266,6 +266,18 @@ export interface DbAuditLog {
   createdAt: string;
 }
 
+export interface DbTeamMember {
+  id: string;
+  fullName: string;
+  designation: string;
+  photoPath?: string;
+  photoPermissionConfirmed: boolean;
+  isDemo: boolean;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface DbFestivalConfig {
   festivalName: string;
   organization: string;

@@ -30,22 +30,22 @@ export const CHHATH_THEME = {
 
   // Part 10 Official Color Tokens
   tokens: {
-    riverBlue: '#0B5E8E',
+    riverBlue: '#075985',
     deepRiverBlue: '#063B5C',
-    sunriseSaffron: '#FF8C42',
+    sunriseSaffron: '#F47B20',
     chhathOrange: '#F57C00',
-    marigoldGold: '#FFD54F',
+    marigoldGold: '#FFB52E',
     leafGreen: '#2E7D32',
     earthBrown: '#8D6E63',
-    cream: '#FFF8E1',
+    cream: '#FFF7E5',
     white: '#FFFFFF',
-    emergencyRed: '#E53935',
+    emergencyRed: '#A61B29',
   },
 
   colors: {
     // Primary - Deep River Blue & Navy
     primary: {
-      DEFAULT: '#0B5E8E',
+      DEFAULT: '#075985',
       light: '#063B5C',
       dark: '#041E2F',
       contrast: '#FFFFFF',
@@ -54,18 +54,18 @@ export const CHHATH_THEME = {
     // Secondary - Sunrise Orange / Saffron
     secondary: {
       DEFAULT: '#F57C00',
-      light: '#FF8C42',
+      light: '#F47B20',
       dark: '#C2410C',
       contrast: '#FFFFFF',
     },
 
     // Accent - Golden / Marigold
     accent: {
-      DEFAULT: '#FFD54F',
+      DEFAULT: '#FFB52E',
       light: '#FBBF24',
       dark: '#D97706',
       gold: '#EAB308',
-      amber50: '#FFF8E1',
+      amber50: '#FFF7E5',
       amber100: '#FEF3C7',
       amber200: '#FDE68A',
       amber500: '#F59E0B',
@@ -77,7 +77,7 @@ export const CHHATH_THEME = {
     },
 
     // Surfaces & Backgrounds (Ivory / Warm Stone)
-    background: '#FFF8E1', // Warm Ivory / Cream Chhath Paper Tone
+    background: '#FFF7E5', // Warm Ivory / Cream Chhath Paper Tone
     surface: '#FFFFFF',
     surfaceSubtle: '#FAF8F5',
 
@@ -111,7 +111,7 @@ export const CHHATH_THEME = {
     },
     // RED is reserved exclusively for Emergency / SOS / Critical warnings
     emergency: {
-      DEFAULT: '#E53935',
+      DEFAULT: '#A61B29',
       light: '#FEE2E2',
       dark: '#991B1B',
       contrast: '#FFFFFF',

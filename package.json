@@ -15,7 +15,7 @@
     "postinstall": "node scripts/patch-leaflet.js",
     "lint": "tsc --noEmit",
     "test": "npm run test:announcements && npm run test:app",
-    "test:app": "tsx --test src/screens/homeActions.test.ts src/services/MapFacilityValidation.test.ts src/utils/indianMobileNumber.test.ts",
+    "test:app": "tsx --test src/screens/homeActions.test.ts src/services/MapFacilityValidation.test.ts src/utils/indianMobileNumber.test.ts src/utils/languageSupport.test.ts src/locales/about.test.ts src/server/teamPhoto.test.ts src/server/teamValidation.test.ts src/server/routes/team.test.ts src/server/db/teamSeed.test.ts",
     "test:announcements": "tsx --test src/services/VerifiedAnnouncementValidation.test.ts"
   },
   "dependencies": {

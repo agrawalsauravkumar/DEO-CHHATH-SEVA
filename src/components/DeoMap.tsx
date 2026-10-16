@@ -164,10 +164,10 @@ export const DeoMap: React.FC<Props> = ({
       attributionControl: true,
     });
 
-    // Add standard OpenStreetMap Tile Layer
-    const tileLayer = L.tileLayer(MapService.OSM_TILE_URL, {
-      maxZoom: 19,
-      attribution: MapService.OSM_ATTRIBUTION,
+    const tileLayer = L.tileLayer(MapService.TILE_URL, {
+      maxZoom: MapService.MAX_ZOOM,
+      minZoom: MapService.MIN_ZOOM,
+      attribution: MapService.ATTRIBUTION,
     });
 
     tileLayer.on('tileerror', () => setTileError(true));
@@ -318,8 +318,8 @@ export const DeoMap: React.FC<Props> = ({
       // Accuracy radius circle
       const accuracyCircle = L.circle(userLatLng, {
         radius: Math.max(1, deviceLocation.accuracy),
-        color: '#0B5E8E',
-        fillColor: '#0B5E8E',
+        color: '#075985',
+        fillColor: '#075985',
         fillOpacity: 0.12,
         weight: 1.5,
         dashArray: '4, 4',
@@ -361,7 +361,7 @@ export const DeoMap: React.FC<Props> = ({
 
     if (showRouteLine && routeGeometry && routeGeometry.length > 1) {
       const polyline = L.polyline(routeGeometry, {
-        color: '#0B5E8E',
+        color: '#075985',
         weight: 5,
         opacity: 0.9,
         lineCap: 'round',
@@ -528,7 +528,7 @@ export const DeoMap: React.FC<Props> = ({
         {locationErrorMessage && (
           <button
             onClick={() => void requestDeviceLocation()}
-            className="pointer-events-auto min-h-[40px] rounded-lg bg-white px-3 text-xs font-black text-[#0B5E8E] shadow-sm"
+            className="pointer-events-auto min-h-[40px] rounded-lg bg-white px-3 text-xs font-black text-[#075985] shadow-sm"
           >
             GPS फिर से प्रयास करें
           </button>
@@ -655,7 +655,7 @@ export const DeoMap: React.FC<Props> = ({
             onClick={handleMyLocationPress}
             aria-label="मेरा स्थान"
             disabled={locationStatus === 'loading'}
-            className="min-h-[46px] px-3.5 rounded-2xl bg-white shadow-lg flex items-center justify-center gap-1.5 text-[#0B5E8E] hover:bg-stone-50 active:scale-95 border border-stone-300 text-xs font-black transition-all"
+            className="min-h-[46px] px-3.5 rounded-2xl bg-white shadow-lg flex items-center justify-center gap-1.5 text-[#075985] hover:bg-stone-50 active:scale-95 border border-stone-300 text-xs font-black transition-all"
             title="मेरा स्थान दिखाएँ"
           >
             {locationStatus === 'loading' ? (
@@ -703,7 +703,7 @@ export const DeoMap: React.FC<Props> = ({
           <div className="flex items-center gap-2 pt-1">
             <button
               onClick={handleNavigateClick}
-              className="flex-1 min-h-[48px] bg-gradient-to-r from-[#0B5E8E] to-[#123052] hover:from-[#08182B] hover:to-[#0B5E8E] active:scale-95 text-white font-black text-sm rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all border border-[#0B5E8E]/40"
+              className="flex-1 min-h-[48px] bg-gradient-to-r from-[#075985] to-[#123052] hover:from-[#08182B] hover:to-[#075985] active:scale-95 text-white font-black text-sm rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all border border-[#075985]/40"
             >
               <Navigation className="w-4 h-4 fill-white" />
               <span>🧭 रास्ता दिखाएँ</span>
@@ -745,7 +745,7 @@ export const DeoMap: React.FC<Props> = ({
           {facilityLoadStatus === 'error' && (
             <button
               onClick={() => setFacilityReload((count) => count + 1)}
-              className="mt-3 min-h-[44px] rounded-xl bg-[#0B5E8E] px-4 text-sm font-bold text-white"
+              className="mt-3 min-h-[44px] rounded-xl bg-[#075985] px-4 text-sm font-bold text-white"
             >
               सुविधाएँ फिर से लोड करें
             </button>
@@ -797,7 +797,7 @@ export const DeoMap: React.FC<Props> = ({
                 setInfoModalOpen(false);
                 handleNavigateClick();
               }}
-              className="w-full min-h-[44px] bg-gradient-to-r from-[#FF8C42] to-[#EA580C] hover:from-[#EA580C] hover:to-[#C2410C] text-white font-bold text-xs rounded-xl shadow-xs"
+              className="w-full min-h-[44px] bg-gradient-to-r from-[#F47B20] to-[#EA580C] hover:from-[#EA580C] hover:to-[#C2410C] text-white font-bold text-xs rounded-xl shadow-xs"
             >
               🧭 यहाँ का रास्ता दिखाएँ
             </button>

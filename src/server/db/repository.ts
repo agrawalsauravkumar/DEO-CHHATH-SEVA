@@ -19,6 +19,7 @@ import {
   DbAnnouncement,
   DbRouteAlert,
   DbAuditLog,
+  DbTeamMember,
 } from './types';
 import { randomUUID } from 'node:crypto';
 import { calculateDistanceMeters } from './spatial';
@@ -149,6 +150,30 @@ interface AnnouncementRow {
   created_by: string | null;
   route_alert: DbRouteAlert | null;
 }
+
+interface TeamMemberRow {
+  id: string;
+  full_name: string;
+  designation: string;
+  photo_path: string | null;
+  photo_permission_confirmed: boolean;
+  is_demo: boolean;
+  is_published: boolean;
+  created_at: Date | string;
+  updated_at: Date | string;
+}
+
+const mapTeamMemberRow = (row: TeamMemberRow): DbTeamMember => ({
+  id: row.id,
+  fullName: row.full_name,
+  designation: row.designation,
+  photoPath: row.photo_path || undefined,
+  photoPermissionConfirmed: row.photo_permission_confirmed,
+  isDemo: row.is_demo,
+  isPublished: row.is_published,
+  createdAt: new Date(row.created_at).toISOString(),
+  updatedAt: new Date(row.updated_at).toISOString(),
+});
 
 const mapFacilityRow = (row: FacilityRow): DbFacility => ({
   id: row.id,
@@ -564,6 +589,8 @@ class DataRepository {
   private familyGroups: DbFamilyGroup[] = [];
   private familyMembers: DbFamilyMember[] = [];
   private auditLogs: DbAuditLog[] = [];
+  private teamMembers: DbTeamMember[] = [];
+  private demoTeamSeeded = false;
 
   // ================= USERS & AUTH =================
   public async findUserByPhoneOrUsername(identifier: string): Promise<DbUser | null> {
@@ -1448,6 +1475,186 @@ class DataRepository {
       }));
     }
     return [...this.auditLogs];
+  }
+
+  // ================= TEAM =================
+  public async getTeamMembers(publishedOnly = false): Promise<DbTeamMember[]> {
+    const databaseMembers = await executeQuery<TeamMemberRow>(
+      `SELECT id, full_name, designation, photo_path, photo_permission_confirmed,
+              is_demo, is_published, created_at, updated_at
+       FROM team_members
+       WHERE ($1::boolean = false OR is_published = true)
+       ORDER BY created_at DESC, id`,
+      [publishedOnly]
+    );
+    if (databaseMembers !== null) return databaseMembers.map(mapTeamMemberRow);
+    return this.teamMembers
+      .filter((member) => !publishedOnly || member.isPublished)
+      .map((member) => ({ ...member }));
+  }
+
+  public async getTeamMemberById(id: string): Promise<DbTeamMember | null> {
+    const databaseMembers = await executeQuery<TeamMemberRow>(
+      `SELECT id, full_name, designation, photo_path, photo_permission_confirmed,
+              is_demo, is_published, created_at, updated_at
+       FROM team_members WHERE id = $1`,
+      [id]
+    );
+    if (databaseMembers !== null) {
+      return databaseMembers[0] ? mapTeamMemberRow(databaseMembers[0]) : null;
+    }
+    return this.teamMembers.find((member) => member.id === id) || null;
+  }
+
+  public async createTeamMember(
+    member: DbTeamMember,
+    createdBy?: string
+  ): Promise<DbTeamMember> {
+    const databaseMembers = await executeQuery<TeamMemberRow>(
+      `INSERT INTO team_members (
+         id, full_name, designation, photo_path, photo_permission_confirmed, is_demo,
+         is_published, created_by, created_at, updated_at
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING id, full_name, designation, photo_path, photo_permission_confirmed,
+                 is_demo, is_published, created_at, updated_at`,
+      [
+        member.id,
+        member.fullName,
+        member.designation,
+        member.photoPath || null,
+        member.photoPermissionConfirmed,
+        member.isDemo,
+        member.isPublished,
+        createdBy || null,
+        member.createdAt,
+        member.updatedAt,
+      ]
+    );
+    if (databaseMembers !== null) {
+      if (!databaseMembers[0]) throw new Error('Database did not return the created team member.');
+      return mapTeamMemberRow(databaseMembers[0]);
+    }
+    this.teamMembers.push(member);
+    return member;
+  }
+
+  public async updateTeamMember(
+    id: string,
+    updates: Partial<Pick<DbTeamMember, 'fullName' | 'designation' | 'photoPath' | 'photoPermissionConfirmed' | 'isPublished' | 'isDemo'>>
+  ): Promise<DbTeamMember | null> {
+    const databaseMembers = await executeQuery<TeamMemberRow>(
+      `UPDATE team_members
+       SET full_name = COALESCE($2, full_name),
+           designation = COALESCE($3, designation),
+           is_published = COALESCE($4, is_published),
+           is_demo = COALESCE($5, is_demo),
+           photo_permission_confirmed = COALESCE($6, photo_permission_confirmed),
+           photo_path = CASE WHEN $7 THEN $8 ELSE photo_path END,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING id, full_name, designation, photo_path, photo_permission_confirmed,
+                 is_demo, is_published, created_at, updated_at`,
+      [
+        id,
+        updates.fullName ?? null,
+        updates.designation ?? null,
+        updates.isPublished ?? null,
+        updates.isDemo ?? null,
+        updates.photoPermissionConfirmed ?? null,
+        updates.photoPath !== undefined,
+        updates.photoPath || null,
+      ]
+    );
+    if (databaseMembers !== null) {
+      return databaseMembers[0] ? mapTeamMemberRow(databaseMembers[0]) : null;
+    }
+
+    const member = this.teamMembers.find((item) => item.id === id);
+    if (!member) return null;
+    Object.assign(member, updates, { updatedAt: new Date().toISOString() });
+    return member;
+  }
+
+  public async deleteTeamMember(id: string): Promise<DbTeamMember | null> {
+    const databaseMembers = await executeQuery<TeamMemberRow>(
+      `DELETE FROM team_members
+       WHERE id = $1
+       RETURNING id, full_name, designation, photo_path, photo_permission_confirmed,
+                 is_demo, is_published, created_at, updated_at`,
+      [id]
+    );
+    if (databaseMembers !== null) {
+      return databaseMembers[0] ? mapTeamMemberRow(databaseMembers[0]) : null;
+    }
+
+    const index = this.teamMembers.findIndex((member) => member.id === id);
+    return index < 0 ? null : this.teamMembers.splice(index, 1)[0];
+  }
+
+  public async seedDemoTeamMembers(): Promise<void> {
+    if (this.demoTeamSeeded) return;
+    const now = new Date().toISOString();
+    const demoMembers: DbTeamMember[] = [
+      ['00000000-0000-4000-8000-000000000001', 'Demo Member 1', 'Founder (Demo)'],
+      ['00000000-0000-4000-8000-000000000002', 'Demo Member 2', 'President (Demo)'],
+      ['00000000-0000-4000-8000-000000000003', 'Demo Member 3', 'Secretary (Demo)'],
+      ['00000000-0000-4000-8000-000000000004', 'Demo Member 4', 'Coordinator (Demo)'],
+      ['00000000-0000-4000-8000-000000000005', 'Demo Member 5', 'Volunteer (Demo)'],
+    ].map(([id, fullName, designation]) => ({
+      id,
+      fullName,
+      designation,
+      photoPath: 'demo-placeholder.svg',
+      photoPermissionConfirmed: false,
+      isDemo: true,
+      isPublished: true,
+      createdAt: now,
+      updatedAt: now,
+    }));
+    const valuesSql = demoMembers.map((_, index) => {
+      const offset = index * 9;
+      return `($${offset + 1}::uuid, $${offset + 2}::varchar(150), $${offset + 3}::varchar(120), $${offset + 4}::varchar(255), $${offset + 5}::boolean, $${offset + 6}::boolean, $${offset + 7}::boolean, $${offset + 8}::timestamptz, $${offset + 9}::timestamptz)`;
+    }).join(', ');
+    const params = demoMembers.flatMap((member) => [
+        member.id,
+        member.fullName,
+        member.designation,
+        member.photoPath,
+        member.photoPermissionConfirmed,
+        member.isDemo,
+        member.isPublished,
+        member.createdAt,
+        member.updatedAt,
+      ]);
+    const databaseMembers = await executeQuery<TeamMemberRow>(
+      `WITH seed_marker AS (
+         INSERT INTO team_demo_seed_state (seed_key)
+         VALUES ('demo-team-v1')
+         ON CONFLICT (seed_key) DO NOTHING
+         RETURNING seed_key
+       )
+       INSERT INTO team_members (
+         id, full_name, designation, photo_path, photo_permission_confirmed, is_demo,
+         is_published, created_at, updated_at
+       )
+       SELECT demos.id, demos.full_name, demos.designation, demos.photo_path,
+              demos.photo_permission_confirmed, demos.is_demo, demos.is_published,
+              demos.created_at, demos.updated_at
+       FROM (VALUES ${valuesSql}) AS demos (
+         id, full_name, designation, photo_path, photo_permission_confirmed, is_demo,
+         is_published, created_at, updated_at
+       )
+       WHERE EXISTS (SELECT 1 FROM seed_marker)
+         AND NOT EXISTS (SELECT 1 FROM team_members)
+       ON CONFLICT (id) DO NOTHING
+       RETURNING id, full_name, designation, photo_path, photo_permission_confirmed,
+                 is_demo, is_published, created_at, updated_at`,
+      params
+    );
+    if (databaseMembers === null) {
+      if (this.teamMembers.length === 0) this.teamMembers.push(...demoMembers);
+    }
+    this.demoTeamSeeded = true;
   }
 
   // ================= FESTIVAL CONFIGURATION =================

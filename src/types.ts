@@ -26,6 +26,7 @@ export type ScreenId =
   | 'senior-mode'
   | 'announcements'
   | 'about'
+  | 'team'
   | 'settings'
   | 'more'
   | 'login'

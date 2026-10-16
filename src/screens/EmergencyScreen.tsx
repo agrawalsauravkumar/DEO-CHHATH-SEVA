@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { TopBar } from '../components/TopBar';
 import { startEmergencySiren, stopEmergencySiren } from '../utils/audioBuzzer';
+import { ChhathSafetyBadgeModal } from '../components/ChhathSafetyBadgeModal';
 import {
   PhoneCall,
   Volume2,
@@ -26,6 +27,7 @@ export const EmergencyScreen: React.FC = () => {
   const [sirenOn, setSirenOn] = useState<boolean>(false);
   const [callModalContact, setCallModalContact] = useState<ContactToCall | null>(null);
   const [locationSharedNotice, setLocationSharedNotice] = useState<string | null>(null);
+  const [showSafetyBadgeModal, setShowSafetyBadgeModal] = useState<boolean>(false);
 
   useEffect(() => {
     return () => {
@@ -262,7 +264,35 @@ export const EmergencyScreen: React.FC = () => {
             <span>📍 मेरा स्थान साझा करें (Share Location)</span>
           </button>
         </div>
+
+        {/* Child & Senior Digital QR Safety Badge */}
+        <div className="bg-gradient-to-r from-emerald-950 via-teal-950 to-stone-900 border border-emerald-500/40 rounded-3xl p-4 shadow-lg flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shrink-0 font-bold border border-emerald-400/30">
+              🛡️
+            </div>
+            <div>
+              <h4 className="text-sm font-black text-white leading-tight">
+                बालक व वृद्ध डिजिटल सुरक्षा बैज
+              </h4>
+              <p className="text-[11px] text-emerald-200/80">
+                भीड़ में खोने से सुरक्षा हेतु आपातकालीन QR कार्ड
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowSafetyBadgeModal(true)}
+            className="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-stone-950 font-black text-xs rounded-xl shadow-xs shrink-0 transition-all"
+          >
+            बैज खोलें
+          </button>
+        </div>
       </main>
+
+      <ChhathSafetyBadgeModal
+        isOpen={showSafetyBadgeModal}
+        onClose={() => setShowSafetyBadgeModal(false)}
+      />
 
       {/* Emergency Call Confirmation Modal */}
       {callModalContact && (

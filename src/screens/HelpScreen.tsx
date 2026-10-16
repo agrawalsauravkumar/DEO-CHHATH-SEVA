@@ -547,7 +547,7 @@ export const HelpScreen: React.FC = () => {
                   </button>
                   <button
                     onClick={() => navigate('volunteer')}
-                    className="min-h-[44px] p-2 bg-[#0B5E8E] hover:bg-[#073B5A] text-white font-bold text-xs rounded-xl text-center flex items-center justify-center transition-colors active:scale-95"
+                    className="min-h-[44px] p-2 bg-[#075985] hover:bg-[#073B5A] text-white font-bold text-xs rounded-xl text-center flex items-center justify-center transition-colors active:scale-95"
                   >
                     <span>Volunteer Mode</span>
                   </button>
@@ -801,7 +801,7 @@ export const HelpScreen: React.FC = () => {
                 onClick={() => setSelectedPointCategory('ALL')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap ${
                   selectedPointCategory === 'ALL'
-                    ? 'bg-[#0B5E8E] text-white shadow-xs'
+                    ? 'bg-[#075985] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >
@@ -811,7 +811,7 @@ export const HelpScreen: React.FC = () => {
                 onClick={() => setSelectedPointCategory('POLICE')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap ${
                   selectedPointCategory === 'POLICE'
-                    ? 'bg-[#0B5E8E] text-white shadow-xs'
+                    ? 'bg-[#075985] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >
@@ -821,7 +821,7 @@ export const HelpScreen: React.FC = () => {
                 onClick={() => setSelectedPointCategory('WOMEN_HELP')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap ${
                   selectedPointCategory === 'WOMEN_HELP'
-                    ? 'bg-[#0B5E8E] text-white shadow-xs'
+                    ? 'bg-[#075985] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >
@@ -831,7 +831,7 @@ export const HelpScreen: React.FC = () => {
                 onClick={() => setSelectedPointCategory('SENIOR_HELP')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap ${
                   selectedPointCategory === 'SENIOR_HELP'
-                    ? 'bg-[#0B5E8E] text-white shadow-xs'
+                    ? 'bg-[#075985] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >

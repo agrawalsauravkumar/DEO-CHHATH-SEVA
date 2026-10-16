@@ -170,10 +170,10 @@ export const NavigationScreen: React.FC = () => {
 
   if (!destination || !destinationCoordinates) {
     return (
-      <main className="min-h-screen bg-[#FFF8E1] p-6 text-center">
+      <main className="min-h-screen bg-[#FFF7E5] p-6 text-center">
         <h1 className="text-xl font-black text-[#063B5C]">गंतव्य उपलब्ध नहीं है</h1>
         <p className="mt-2 text-sm text-stone-700">सत्यापित स्थान खोजकर फिर से मार्ग चुनें।</p>
-        <button onClick={() => navigate('search')} className="mt-4 min-h-[48px] rounded-xl bg-[#0B5E8E] px-5 font-bold text-white">
+        <button onClick={() => navigate('search')} className="mt-4 min-h-[48px] rounded-xl bg-[#075985] px-5 font-bold text-white">
           स्थान खोजें
         </button>
       </main>

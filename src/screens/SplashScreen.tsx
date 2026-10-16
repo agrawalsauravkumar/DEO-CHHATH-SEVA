@@ -6,13 +6,15 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { DeoChhathSevaLogo } from '../components/DeoChhathSevaLogo';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { Compass, ShieldCheck, HeartHandshake, ArrowRight, Sun, LogIn, Shield } from 'lucide-react';
 
 export const SplashScreen: React.FC = () => {
-  const { navigate } = useApp();
+  const { navigate, language } = useApp();
+  const isEnglish = language === 'en';
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-b from-[#042E46] via-[#075078] to-[#0B5E8E] text-white flex flex-col justify-between select-none font-['Mukta',sans-serif] relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-gradient-to-b from-[#042E46] via-[#075078] to-[#075985] text-white flex flex-col justify-between select-none font-['Mukta',sans-serif] relative overflow-hidden">
       {/* 1. Atmospheric Chhath Puja Sunrise & River Ghat Visuals */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Radiating Surya Dev Rays */}
@@ -56,7 +58,7 @@ export const SplashScreen: React.FC = () => {
           </span>
         </div>
         <p className="text-[10px] sm:text-[11px] text-amber-200/90 tracking-wider uppercase font-semibold">
-          PUBLIC SERVICE INITIATIVE • निःशुल्क जनसेवा पहल
+          {isEnglish ? 'PUBLIC SERVICE INITIATIVE' : 'निःशुल्क जनसेवा पहल'}
         </p>
       </header>
 
@@ -74,14 +76,17 @@ export const SplashScreen: React.FC = () => {
           <h1 className="sr-only">DEO CHHATH SEVA — देव छठ सेवा</h1>
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-white/10 backdrop-blur-sm rounded-full border border-amber-400/40 text-xs font-bold text-amber-200 mt-1">
             <Sun className="h-4 w-4 text-amber-300" aria-hidden />
-            <span>देव • औरंगाबाद • बिहार</span>
+            <span>{isEnglish ? 'Deo • Aurangabad • Bihar' : 'देव • औरंगाबाद • बिहार'}</span>
           </div>
         </div>
 
         {/* Official Tagline */}
         <div className="py-2.5 px-6 rounded-2xl bg-white/10 backdrop-blur-md border border-amber-400/30 shadow-inner max-w-xs">
           <p className="text-base sm:text-lg font-black text-amber-100">
-            “रास्ता भी • सहायता भी • सेवा भी”
+            {isEnglish ? 'Navigation • Assistance • Service' : '“रास्ता भी • सहायता भी • सेवा भी”'}
+          </p>
+          <p className="mt-1 text-xs font-bold text-amber-200">
+            {isEnglish ? 'Service • Safety • Support' : 'सेवा भी • सुरक्षा भी • सहयोग भी'}
           </p>
         </div>
 
@@ -89,38 +94,41 @@ export const SplashScreen: React.FC = () => {
         <div className="grid grid-cols-3 gap-2.5 w-full max-w-xs text-center text-xs text-amber-100 pt-1">
           <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-white/8 backdrop-blur-xs border border-white/15">
             <Compass className="w-4 h-4 text-amber-400" />
-            <span className="font-black text-[11px]">सरल रास्ता</span>
-            <span className="text-[9px] text-amber-200/80">घाटाभिमुख मार्ग</span>
+            <span className="font-black text-[11px]">{isEnglish ? 'Easy routes' : 'सरल रास्ता'}</span>
+            <span className="text-[9px] text-amber-200/80">{isEnglish ? 'Ghat directions' : 'घाटाभिमुख मार्ग'}</span>
           </div>
           <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-white/8 backdrop-blur-xs border border-white/15">
             <ShieldCheck className="w-4 h-4 text-amber-400" />
-            <span className="font-black text-[11px]">त्वरित सहायता</span>
-            <span className="text-[9px] text-amber-200/80">सहायता विकल्प</span>
+            <span className="font-black text-[11px]">{isEnglish ? 'Quick help' : 'त्वरित सहायता'}</span>
+            <span className="text-[9px] text-amber-200/80">{isEnglish ? 'Help options' : 'सहायता विकल्प'}</span>
           </div>
           <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-white/8 backdrop-blur-xs border border-white/15">
             <HeartHandshake className="w-4 h-4 text-amber-400" />
-            <span className="font-black text-[11px]">निःस्वार्थ सेवा</span>
-            <span className="text-[9px] text-amber-200/80">श्रद्धालु सहायता</span>
+            <span className="font-black text-[11px]">{isEnglish ? 'Dedicated service' : 'निःस्वार्थ सेवा'}</span>
+            <span className="text-[9px] text-amber-200/80">{isEnglish ? 'Pilgrim assistance' : 'श्रद्धालु सहायता'}</span>
           </div>
         </div>
       </main>
 
       {/* 4. Sign-in and guest entry */}
       <footer className="pb-4 sm:pb-6 px-6 space-y-2.5 max-w-sm mx-auto w-full relative z-10">
-        <button
-          onClick={() => navigate('login')}
-          className="w-full min-h-[52px] bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 hover:from-amber-600 hover:to-orange-700 active:scale-98 text-white font-black text-base rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all border border-amber-300/40"
-        >
-          <LogIn className="w-5 h-5" />
-          <span>मोबाइल OTP से लॉगिन करें</span>
-          <ArrowRight className="w-5 h-5 text-white" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate('login')}
+            className="min-h-[52px] min-w-0 flex-1 bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 hover:from-amber-600 hover:to-orange-700 active:scale-98 text-white font-black text-sm sm:text-base rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all border border-amber-300/40"
+          >
+            <LogIn className="h-5 w-5 shrink-0" />
+            <span>{isEnglish ? 'Login with mobile OTP' : 'मोबाइल OTP से लॉगिन करें'}</span>
+            <ArrowRight className="h-5 w-5 shrink-0 text-white" />
+          </button>
+          <LanguageSwitcher compact />
+        </div>
 
         <button
           onClick={() => navigate('home')}
           className="w-full min-h-11 rounded-xl border border-white/35 bg-white/10 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
         >
-          बिना लॉगिन सेवा शुरू करें
+          {isEnglish ? 'Continue without login' : 'बिना लॉगिन सेवा शुरू करें'}
         </button>
 
         <button
@@ -128,11 +136,12 @@ export const SplashScreen: React.FC = () => {
           className="mx-auto flex min-h-10 items-center justify-center gap-2 px-3 text-xs font-bold text-amber-200 underline decoration-amber-200/50 underline-offset-4 hover:text-white"
         >
           <Shield className="h-4 w-4" />
-          <span>अधिकृत कर्मचारी लॉगिन</span>
+          <span>{isEnglish ? 'Authorized staff login' : 'अधिकृत कर्मचारी लॉगिन'}</span>
         </button>
 
         <p className="text-center text-[11px] text-amber-200/90 font-bold">
-          A service initiative by <span className="text-white font-black">NEXTGEN DEVBHOOMI FOUNDATION</span>
+          {isEnglish ? 'A service initiative by ' : 'की सेवा पहल — '}
+          <span className="text-white font-black">NEXTGEN DEVBHOOMI FOUNDATION</span>
         </p>
       </footer>
     </div>

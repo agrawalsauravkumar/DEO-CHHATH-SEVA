@@ -12,6 +12,14 @@ import {
   Info,
 } from 'lucide-react';
 import { LanguageCode } from '../types';
+import { isLanguageAvailable } from '../utils/languageSupport';
+
+const languageOptions: { code: LanguageCode; label: string }[] = [
+  { code: 'hi', label: 'हिन्दी (Hindi)' },
+  { code: 'bho', label: 'भोजपुरी (Bhojpuri)' },
+  { code: 'mag', label: 'मगही (Magahi)' },
+  { code: 'en', label: 'English' },
+];
 
 export const SettingsScreen: React.FC = () => {
   const {
@@ -135,25 +143,30 @@ export const SettingsScreen: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            {[
-              { code: 'hi', label: 'हिन्दी (Hindi)' },
-              { code: 'bho', label: 'भोजपुरी (Bhojpuri)' },
-              { code: 'mag', label: 'मगही (Magahi)' },
-              { code: 'en', label: 'English' },
-            ].map((l) => (
-              <button
-                key={l.code}
-                onClick={() => setLanguage(l.code as LanguageCode)}
-                className={`min-h-[44px] px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
-                  language === l.code
-                    ? 'bg-amber-50 border-amber-600 text-amber-900'
-                    : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
-                }`}
-              >
-                <span>{l.label}</span>
-                {language === l.code && <CheckCircle className="w-4 h-4 text-amber-700" />}
-              </button>
-            ))}
+            {languageOptions.map((l) => {
+              const available = isLanguageAvailable(l.code);
+              return (
+                <button
+                  key={l.code}
+                  type="button"
+                  disabled={!available}
+                  aria-label={available ? l.label : `${l.label}, जल्द उपलब्ध`}
+                  onClick={() => {
+                    if (available) setLanguage(l.code);
+                  }}
+                  className={`min-h-[44px] px-3 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
+                    language === l.code
+                      ? 'bg-amber-50 border-amber-600 text-amber-900'
+                      : available
+                        ? 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
+                        : 'bg-stone-100 border-stone-200 text-stone-500 cursor-not-allowed'
+                  }`}
+                >
+                  <span>{l.label}{available ? '' : ' · जल्द उपलब्ध'}</span>
+                  {language === l.code && <CheckCircle className="w-4 h-4 text-amber-700" />}
+                </button>
+              );
+            })}
           </div>
         </div>
 

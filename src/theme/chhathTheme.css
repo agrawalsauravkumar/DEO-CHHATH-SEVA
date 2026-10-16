@@ -10,17 +10,17 @@
    ======================================================== */
 
 :root {
-  --chhath-river-blue: #0B5E8E;
+  --chhath-river-blue: #075985;
   --chhath-deep-river-blue: #063B5C;
-  --chhath-sunrise-saffron: #FF8C42;
-  --chhath-orange: #F57C00;
-  --chhath-gold: #FFD54F;
+  --chhath-sunrise-saffron: #F47B20;
+  --chhath-orange: #F47B20;
+  --chhath-gold: #FFB52E;
   --chhath-marigold-gold: var(--chhath-gold);
   --chhath-leaf-green: #2E7D32;
   --chhath-earth-brown: #8D6E63;
-  --chhath-cream: #FFF8E1;
+  --chhath-cream: #FFF7E5;
   --chhath-white: #FFFFFF;
-  --chhath-emergency-red: #E53935;
+  --chhath-emergency-red: #A61B29;
   --chhath-blue: var(--chhath-river-blue);
   --chhath-saffron: var(--chhath-sunrise-saffron);
   --chhath-green: var(--chhath-leaf-green);
@@ -33,8 +33,8 @@
   --chhath-muted: #5F6B70;
   --chhath-border: rgba(6, 59, 92, 0.12);
   --app-shell-bg:
-    radial-gradient(ellipse at 10% 95%, rgba(255, 140, 66, 0.045), transparent 28rem),
-    linear-gradient(180deg, #fffaf1 0%, #fffdf7 100%);
+    radial-gradient(ellipse at 10% 95%, rgba(244, 123, 32, 0.045), transparent 28rem),
+    linear-gradient(180deg, #fff7e5 0%, #fffdf7 100%);
   --app-shell-shadow: 0 22px 60px rgba(7, 52, 82, 0.12);
 }
 

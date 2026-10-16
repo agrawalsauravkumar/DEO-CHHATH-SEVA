@@ -22,6 +22,7 @@ import { AdminService } from '../services/AdminService';
 import { NetworkService, NetworkStatus } from '../services/NetworkService';
 import { SyncService } from '../services/SyncService';
 import { OfflineDataService } from '../services/OfflineDataService';
+import { getAvailableLanguage, isLanguageAvailable } from '../utils/languageSupport';
 
 interface AppContextType {
   currentScreen: ScreenId;
@@ -123,6 +124,7 @@ const SCREEN_IDS: readonly ScreenId[] = [
   'senior-mode',
   'announcements',
   'about',
+  'team',
   'settings',
   'more',
   'login',
@@ -145,7 +147,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [history, setHistory] = useState<ScreenId[]>(() => [getInitialScreen()]);
   const currentScreen = history[history.length - 1] || 'home';
 
-  const [language, setLanguageState] = useState<LanguageCode>('hi');
+  const [language, setLanguageState] = useState<LanguageCode>(() =>
+    getAvailableLanguage(localStorage.getItem(STORAGE_KEY_LANG))
+  );
 
   const [seniorMode, setSeniorModeState] = useState<boolean>(() => {
     return localStorage.getItem(STORAGE_KEY_SENIOR) === 'true';
@@ -607,6 +611,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const setLanguage = (lang: LanguageCode) => {
+    if (!isLanguageAvailable(lang)) return;
     setLanguageState(lang);
     localStorage.setItem(STORAGE_KEY_LANG, lang);
   };

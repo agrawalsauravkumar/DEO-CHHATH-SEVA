@@ -176,7 +176,7 @@ export const SearchScreen: React.FC = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="जैसे सूर्य मंदिर, छठ घाट, Parking…"
-              className="w-full min-h-[52px] pl-11 pr-11 bg-white border-2 border-stone-300 rounded-2xl text-stone-900 text-base font-semibold focus:outline-none focus:border-[#0B5E8E] focus:ring-2 focus:ring-[#0B5E8E]/20 shadow-xs"
+              className="w-full min-h-[52px] pl-11 pr-11 bg-white border-2 border-stone-300 rounded-2xl text-stone-900 text-base font-semibold focus:outline-none focus:border-[#075985] focus:ring-2 focus:ring-[#075985]/20 shadow-xs"
               autoFocus
             />
             {query && (
@@ -263,7 +263,7 @@ export const SearchScreen: React.FC = () => {
               {facilityStatus === 'error' && (
                 <button
                   onClick={() => window.location.reload()}
-                  className="mt-2 min-h-[44px] px-4 bg-[#0B5E8E] text-white text-sm font-bold rounded-xl"
+                  className="mt-2 min-h-[44px] px-4 bg-[#075985] text-white text-sm font-bold rounded-xl"
                 >
                   फिर से प्रयास करें
                 </button>

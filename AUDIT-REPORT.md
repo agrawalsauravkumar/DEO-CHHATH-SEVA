@@ -68,3 +68,32 @@ Browser smoke-check confirmed the splash-to-home navigation, branding, primary s
 4. Address the existing Vite config compatibility and large-chunk warnings; run accessibility and keyboard audits before release.
 
 This report records the inspected modules and verification actually performed; it does not claim a complete behavioral or production-service verification.
+
+## Verification addendum — 2026-10-16
+
+### Map, online/offline, and responsive checks
+
+- In the browser preview, 15/15 OpenStreetMap tiles loaded. A real zoom-control click changed the tile zoom from 15 to 16, and a mouse drag changed the visible tile coordinates. OpenStreetMap attribution remained visible.
+- The configured authoritative facility feed was unavailable in the preview, so no real ghat, parking, help-desk, or other facility records/markers could be checked. Search correctly showed no verified places rather than substituting demo locations. Routing and selection against an authorized facility record remain unverified.
+- A mocked permission-denied result displayed the Hindi denial message without drawing a device marker. This does not substitute for a real browser permission prompt, GPS accuracy test, emulator, or device test.
+- When the browser context was switched offline while the app was open, the app displayed its offline state, removed the online tile layer, disabled tile retry, and restored the online state when connectivity returned. No offline tile package or road-routing data is configured. Previously cached verified facility records may be read from IndexedDB, but none were available to validate in this preview. A cold-start offline launch was not verified.
+- Home, map, and About screens were checked at 320, 345, 375, 390, 768, and 1280 CSS-pixel viewport widths. No horizontal overflow was measured. Map controls remained visible; the map bottom stayed just above the bottom navigation.
+
+### Language, theme, Foundation content, and development configuration
+
+- Hindi is the only currently translated interface. Bhojpuri, Magahi, and English remain listed but are now marked unavailable in both language surfaces; unsupported stored preferences fall back to Hindi. Translation coverage for those three languages is therefore incomplete.
+- Legacy hard-coded colors were aligned to the current shared Chhath palette. Browser computed styles confirmed the river-blue token on the About and map screens. This does not constitute a full visual, keyboard, or accessibility audit of every screen.
+- The official Foundation website timed out during retrieval. The supplied LinkedIn company profile was accessible and publishes the organization’s Deo/Aurangabad location, mission/vision, focus areas, and `nextgendevbhoomi@gmail.com`; the About page now attributes this summary to that profile. Instagram exposed only a brief profile summary and a LinkedIn link. Registration details, achievements, photographs, and member identities were not independently verified.
+- The browser preview used Vite without the Express API. Its `/api/announcements` and operational-data requests returned 404/invalid JSON; this demonstrates the preview’s missing API server and is not evidence that production API endpoints were tested.
+- The Vite config uses ESM-compatible `fileURLToPath` path handling and explicitly sets `server.hmr: false`. No repository reference to port `24678` was found, and no such WebSocket error occurred in this preview. The prior port-specific error could not be reproduced. The latest production build emitted no `__dirname` or large-chunk warning.
+
+### Current automated verification
+
+| Check | Result |
+|---|---|
+| `npm run lint` | Passed (`tsc --noEmit`). |
+| `npm run test` | Passed: 19/19 tests (5 announcement tests and 14 app/backend tests). |
+| `npm run build` | Passed; 112 PWA precache entries generated; no Vite warning in this run. |
+| `git diff --check` and `git diff --cached --check` | Passed; Git reported only a line-ending warning for the pre-existing `dev-dist/sw.js` change. |
+
+The 14-screen manual audit, live PostgreSQL/API and admin CRUD verification, authoritative location-data review, real GPS/device permissions, cold-start offline launch, full translation work, Android build/device tests, and production deployment checks remain incomplete. Do not treat this addendum as release approval.

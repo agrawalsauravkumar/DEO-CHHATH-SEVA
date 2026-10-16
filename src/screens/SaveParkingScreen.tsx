@@ -14,9 +14,9 @@ export const SaveParkingScreen: React.FC = () => {
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
         {savedParking ? (
-          <section className="rounded-2xl border border-[#0B5E8E]/25 bg-white p-4 shadow-xs">
+          <section className="rounded-2xl border border-[#075985]/25 bg-white p-4 shadow-xs">
             <div className="flex items-start gap-3">
-              <MapPin className="mt-1 h-5 w-5 shrink-0 text-[#0B5E8E]" aria-hidden />
+              <MapPin className="mt-1 h-5 w-5 shrink-0 text-[#075985]" aria-hidden />
               <div className="min-w-0">
                 <h2 className="font-black text-stone-900">{savedParking.parkingName}</h2>
                 <p className="mt-1 text-sm text-stone-700">
@@ -30,7 +30,7 @@ export const SaveParkingScreen: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate('my-parking')}
-              className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#0B5E8E] px-4 font-bold text-white"
+              className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#075985] px-4 font-bold text-white"
             >
               सहेजी जगह देखें
               <ArrowRight className="h-4 w-4" aria-hidden />
@@ -48,7 +48,7 @@ export const SaveParkingScreen: React.FC = () => {
         <button
           type="button"
           onClick={() => navigate('parking')}
-          className="min-h-12 w-full rounded-xl bg-[#0B5E8E] px-4 font-bold text-white"
+          className="min-h-12 w-full rounded-xl bg-[#075985] px-4 font-bold text-white"
         >
           सत्यापित पार्किंग जानकारी देखें
         </button>

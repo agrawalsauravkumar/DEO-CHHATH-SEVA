@@ -56,7 +56,7 @@ export const VolunteerScreen: React.FC = () => {
         )}
 
         {/* Hero Header */}
-        <div className="bg-gradient-to-br from-[#0B5E8E] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-3">
+        <div className="bg-gradient-to-br from-[#075985] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center font-bold text-2xl shrink-0">
               🙋

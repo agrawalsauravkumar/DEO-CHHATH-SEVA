@@ -231,7 +231,7 @@ export const MedicalScreen: React.FC = () => {
                 onClick={() => setFilterType('ALL')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors ${
                   filterType === 'ALL'
-                    ? 'bg-[#0B5E8E] text-white shadow-xs'
+                    ? 'bg-[#075985] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >
@@ -241,7 +241,7 @@ export const MedicalScreen: React.FC = () => {
                 onClick={() => setFilterType('HOSPITAL')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors ${
                   filterType === 'HOSPITAL'
-                    ? 'bg-[#0B5E8E] text-white shadow-xs'
+                    ? 'bg-[#075985] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >
@@ -251,7 +251,7 @@ export const MedicalScreen: React.FC = () => {
                 onClick={() => setFilterType('FIRST_AID')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors ${
                   filterType === 'FIRST_AID'
-                    ? 'bg-[#0B5E8E] text-white shadow-xs'
+                    ? 'bg-[#075985] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >
@@ -261,7 +261,7 @@ export const MedicalScreen: React.FC = () => {
                 onClick={() => setFilterType('AMBULANCE_POINT')}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors ${
                   filterType === 'AMBULANCE_POINT'
-                    ? 'bg-[#0B5E8E] text-white shadow-xs'
+                    ? 'bg-[#075985] text-white shadow-xs'
                     : 'bg-stone-200 text-stone-700'
                 }`}
               >

@@ -48,7 +48,7 @@ export const AdminLoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#041E2F] via-[#073B5A] to-[#0B5E8E] text-stone-100 flex flex-col justify-between font-['Mukta',sans-serif] p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#041E2F] via-[#073B5A] to-[#075985] text-stone-100 flex flex-col justify-between font-['Mukta',sans-serif] p-4 sm:p-6">
       {/* Top Header */}
       <div className="max-w-md w-full mx-auto flex items-center justify-between">
         <button
@@ -66,14 +66,14 @@ export const AdminLoginScreen: React.FC = () => {
 
       {/* Main Login Card */}
       <div className="max-w-md w-full mx-auto my-auto py-6">
-        <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl text-stone-900 border-2 border-[#FFD54F] space-y-5">
+        <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl text-stone-900 border-2 border-[#FFB52E] space-y-5">
           {/* Brand & Organization Title */}
           <div className="text-center space-y-1.5">
             <DeoChhathSevaLogo size={68} className="mx-auto drop-shadow-md" />
             <h1 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight">
               DEO CHHATH SEVA
             </h1>
-            <p className="text-xs font-black uppercase tracking-wider text-[#0B5E8E]">
+            <p className="text-xs font-black uppercase tracking-wider text-[#075985]">
               Admin Portal • व्यवस्थापक पोर्टल
             </p>
             <p className="text-[11px] text-stone-500 font-bold">
@@ -102,7 +102,7 @@ export const AdminLoginScreen: React.FC = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="अधिकृत ईमेल / यूज़रनेम"
-                  className="w-full bg-stone-50 border border-[#0B5E8E]/30 rounded-xl py-2.5 pl-10 pr-3 text-xs font-bold text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-[#FF8C42] focus:bg-white transition-all"
+                  className="w-full bg-stone-50 border border-[#075985]/30 rounded-xl py-2.5 pl-10 pr-3 text-xs font-bold text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-[#F47B20] focus:bg-white transition-all"
                   required
                 />
               </div>
@@ -119,7 +119,7 @@ export const AdminLoginScreen: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-stone-50 border border-[#0B5E8E]/30 rounded-xl py-2.5 pl-10 pr-10 text-xs font-bold text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-[#FF8C42] focus:bg-white transition-all"
+                  className="w-full bg-stone-50 border border-[#075985]/30 rounded-xl py-2.5 pl-10 pr-10 text-xs font-bold text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-[#F47B20] focus:bg-white transition-all"
                   required
                 />
                 <button
@@ -135,7 +135,7 @@ export const AdminLoginScreen: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full min-h-[52px] border-2 border-[#FFD54F] bg-gradient-to-r from-[#0B5E8E] to-[#063B5C] hover:from-[#084B72] hover:to-[#042E46] text-white font-black text-sm rounded-xl shadow-lg shadow-[#0B5E8E]/25 flex items-center justify-center gap-2 active:scale-[0.99] transition-all disabled:opacity-50 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#FF8C42]"
+              className="w-full min-h-[52px] border-2 border-[#FFB52E] bg-gradient-to-r from-[#075985] to-[#063B5C] hover:from-[#084B72] hover:to-[#042E46] text-white font-black text-sm rounded-xl shadow-lg shadow-[#075985]/25 flex items-center justify-center gap-2 active:scale-[0.99] transition-all disabled:opacity-50 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#F47B20]"
             >
               {isLoading ? (
                 <>

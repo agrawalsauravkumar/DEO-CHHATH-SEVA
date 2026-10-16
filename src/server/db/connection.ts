@@ -107,6 +107,25 @@ export async function initializeDatabase(): Promise<DatabaseStatus> {
         ALTER TABLE volunteers ADD COLUMN IF NOT EXISTS availability_time VARCHAR(150);
         CREATE UNIQUE INDEX IF NOT EXISTS idx_volunteers_user_id_unique
           ON volunteers (user_id) WHERE user_id IS NOT NULL;
+        CREATE TABLE IF NOT EXISTS team_members (
+          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+          full_name VARCHAR(150) NOT NULL,
+          designation VARCHAR(120) NOT NULL,
+          photo_path VARCHAR(255),
+          photo_permission_confirmed BOOLEAN NOT NULL DEFAULT false,
+          is_demo BOOLEAN NOT NULL DEFAULT false,
+          is_published BOOLEAN NOT NULL DEFAULT false,
+          created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+          created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE INDEX IF NOT EXISTS idx_team_members_public
+          ON team_members (is_published, created_at DESC);
+        ALTER TABLE team_members ADD COLUMN IF NOT EXISTS photo_permission_confirmed BOOLEAN NOT NULL DEFAULT false;
+        CREATE TABLE IF NOT EXISTS team_demo_seed_state (
+          seed_key VARCHAR(100) PRIMARY KEY,
+          seeded_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
       `);
 
       isConnected = true;

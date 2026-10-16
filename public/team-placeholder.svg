@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" role="img" aria-labelledby="title">
+  <title id="title">नमूना प्रोफ़ाइल चित्र</title>
+  <rect width="400" height="500" fill="#fff7e5"/>
+  <circle cx="200" cy="170" r="86" fill="#ffb52e" opacity=".55"/>
+  <circle cx="200" cy="164" r="54" fill="#075985" opacity=".72"/>
+  <path d="M91 420c8-96 48-146 109-146s101 50 109 146" fill="#075985" opacity=".72"/>
+  <path d="M0 448c78-24 140-20 200 0s122 24 200 0v52H0z" fill="#f47b20" opacity=".28"/>
+</svg>

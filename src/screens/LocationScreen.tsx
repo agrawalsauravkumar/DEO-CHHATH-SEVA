@@ -25,8 +25,8 @@ export const LocationScreen: React.FC = () => {
       <main className="flex-1 max-w-lg mx-auto w-full p-4 sm:p-5 flex flex-col justify-center space-y-6">
         <div className="text-center space-y-3">
           <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full bg-[#FFD54F]/30 animate-ping" />
-            <div className="w-16 h-16 rounded-2xl bg-[#0B5E8E] text-[#FFD54F] border-2 border-[#FFD54F]/50 flex items-center justify-center shadow-lg relative">
+            <div className="absolute inset-0 rounded-full bg-[#FFB52E]/30 animate-ping" />
+            <div className="w-16 h-16 rounded-2xl bg-[#075985] text-[#FFB52E] border-2 border-[#FFB52E]/50 flex items-center justify-center shadow-lg relative">
               <MapPin className="w-8 h-8" />
             </div>
           </div>
@@ -90,7 +90,7 @@ export const LocationScreen: React.FC = () => {
           <button
             onClick={handleGrant}
             disabled={requesting}
-            className="w-full min-h-[52px] bg-gradient-to-r from-[#FF8C42] to-[#EA580C] hover:from-[#EA580C] hover:to-[#C2410C] active:scale-98 text-white font-black text-base rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all border border-amber-300/40"
+            className="w-full min-h-[52px] bg-gradient-to-r from-[#F47B20] to-[#EA580C] hover:from-[#EA580C] hover:to-[#C2410C] active:scale-98 text-white font-black text-base rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all border border-amber-300/40"
           >
             <MapPin className="w-5 h-5" />
             <span>{requesting ? 'अनुमति जांची जा रही है...' : 'लोकेशन अनुमति दें (Allow)'}</span>

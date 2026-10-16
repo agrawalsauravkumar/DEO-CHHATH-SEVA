@@ -14,6 +14,7 @@ import { LostFoundService } from '../services/LostFoundService';
 import { VolunteerService } from '../services/VolunteerService';
 import { DeoMap } from '../components/DeoMap';
 import { DeoChhathSevaLogo } from '../components/DeoChhathSevaLogo';
+import { TeamManagementPanel } from '../components/TeamManagementPanel';
 import {
   AdminRole,
   AdminDashboardStats,
@@ -82,6 +83,7 @@ type AdminTab =
   | 'map'
   | 'audit'
   | 'settings'
+  | 'team'
   | 'notifications'
   | 'analytics';
 
@@ -240,6 +242,9 @@ export const AdminDashboardScreen: React.FC = () => {
     { id: 'announcements', label: 'आधिकारिक सूचनाएं (Announcements)', icon: Megaphone },
     { id: 'route-alerts', label: 'मार्ग प्रतिबंध (Route Alerts)', icon: AlertTriangle },
     { id: 'family', label: 'परिवार / सुरक्षा रिपोर्ट', icon: Users },
+    ...(currentAdmin && ['SUPER_ADMIN', 'ADMIN', 'CONTENT_ADMIN'].includes(currentAdmin.role)
+      ? [{ id: 'team' as const, label: 'हमारी टीम प्रबंधन', icon: Users2 }]
+      : []),
     { id: 'notifications', label: 'सूचनाएँ (Notifications)', icon: Bell },
     { id: 'analytics', label: 'विश्लेषण (Analytics)', icon: LayoutDashboard },
     { id: 'map', label: 'एडमिन मैप पैनल (Admin Map)', icon: MapIcon },
@@ -319,7 +324,7 @@ export const AdminDashboardScreen: React.FC = () => {
 
   if (isValidatingSession) {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#FFF8E1] p-6 text-center">
+      <main className="grid min-h-screen place-items-center bg-[#FFF7E5] p-6 text-center">
         <p className="text-sm font-bold text-[#063B5C]">प्रशासनिक सत्र सत्यापित हो रहा है…</p>
       </main>
     );
@@ -327,8 +332,8 @@ export const AdminDashboardScreen: React.FC = () => {
 
   if (!hasAdminAccess) {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#FFF8E1] p-6 text-center">
-        <section className="max-w-md rounded-3xl border border-[#0B5E8E]/15 bg-white p-7 shadow-xl">
+      <main className="grid min-h-screen place-items-center bg-[#FFF7E5] p-6 text-center">
+        <section className="max-w-md rounded-3xl border border-[#075985]/15 bg-white p-7 shadow-xl">
           <DeoChhathSevaLogo size={72} className="mx-auto mb-4" />
           <h1 className="text-xl font-black text-[#063B5C]">व्यवस्थापक प्रवेश आवश्यक</h1>
           <p className="mt-2 text-sm text-stone-700">
@@ -337,7 +342,7 @@ export const AdminDashboardScreen: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate('admin-login')}
-            className="mt-5 min-h-[48px] rounded-xl bg-[#0B5E8E] px-5 font-bold text-white"
+            className="mt-5 min-h-[48px] rounded-xl bg-[#075985] px-5 font-bold text-white"
           >
             व्यवस्थापक लॉगिन
           </button>
@@ -362,7 +367,7 @@ export const AdminDashboardScreen: React.FC = () => {
       <aside
         className={`${
           sidebarOpen ? 'w-64' : 'w-20'
-        } shrink-0 bg-[#063B5C] text-[#FFF8E1] flex flex-col justify-between border-r border-[#0B5E8E] transition-all duration-200 z-30 min-h-screen sticky top-0`}
+        } shrink-0 bg-[#063B5C] text-[#FFF7E5] flex flex-col justify-between border-r border-[#075985] transition-all duration-200 z-30 min-h-screen sticky top-0`}
       >
         <div className="flex flex-col h-full">
           {/* Brand Header */}
@@ -402,7 +407,7 @@ export const AdminDashboardScreen: React.FC = () => {
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold transition-all text-left group ${
                     active
                       ? 'bg-amber-500 text-stone-950 shadow-sm'
-                      : 'text-[#FFF8E1]/90 hover:bg-white/10 hover:text-white'
+                      : 'text-[#FFF7E5]/90 hover:bg-white/10 hover:text-white'
                   }`}
                   title={item.label}
                 >
@@ -417,7 +422,7 @@ export const AdminDashboardScreen: React.FC = () => {
                       ) : item.count !== undefined ? (
                         <span
                           className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${
-                            active ? 'bg-stone-950/20 text-stone-950' : 'bg-white/10 text-[#FFF8E1]/80'
+                            active ? 'bg-stone-950/20 text-stone-950' : 'bg-white/10 text-[#FFF7E5]/80'
                           }`}
                         >
                           {item.count}
@@ -493,7 +498,7 @@ export const AdminDashboardScreen: React.FC = () => {
       {/* ============================================================ */}
       <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         {/* Top Header Bar */}
-        <header className="bg-gradient-to-r from-[#FFF8E1] via-white to-[#FFF8E1] border-b-2 border-[#FFD54F] px-4 sm:px-6 py-3 sticky top-0 z-20 shadow-xs flex items-center justify-between gap-3">
+        <header className="bg-gradient-to-r from-[#FFF7E5] via-white to-[#FFF7E5] border-b-2 border-[#FFB52E] px-4 sm:px-6 py-3 sticky top-0 z-20 shadow-xs flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="min-w-0">
               <h1 className="text-base sm:text-lg font-black text-[#063B5C] tracking-tight truncate">
@@ -600,7 +605,7 @@ export const AdminDashboardScreen: React.FC = () => {
                 ].map((c, idx) => (
                   <div
                     key={idx}
-                    className="space-y-2 rounded-2xl border border-[#0B5E8E]/15 bg-[#FFF8E1] p-3.5 shadow-sm"
+                    className="space-y-2 rounded-2xl border border-[#075985]/15 bg-[#FFF7E5] p-3.5 shadow-sm"
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-xl">{c.icon}</span>
@@ -1337,7 +1342,7 @@ export const AdminDashboardScreen: React.FC = () => {
                   <p className="text-xs text-stone-600">
                     ब्राउज़र से production database connection और PostGIS उपलब्धता सत्यापित नहीं की जा सकती। API health endpoint से जुड़ाव की जाँच आवश्यक है।
                   </p>
-                  <div className="rounded-xl border border-[#8D6E63]/30 bg-[#FFF8E1] p-2.5 text-xs font-bold text-[#063B5C]">
+                  <div className="rounded-xl border border-[#8D6E63]/30 bg-[#FFF7E5] p-2.5 text-xs font-bold text-[#063B5C]">
                     Data unavailable — production database status सत्यापित नहीं
                   </div>
                 </div>
@@ -1360,10 +1365,14 @@ export const AdminDashboardScreen: React.FC = () => {
             </div>
           )}
 
+          {activeTab === 'team' && (
+            <TeamManagementPanel notify={showToast} />
+          )}
+
           {(activeTab === 'analytics' || activeTab === 'notifications') && (
-            <section className="rounded-3xl border border-[#0B5E8E]/15 bg-white p-6 shadow-sm">
+            <section className="rounded-3xl border border-[#075985]/15 bg-white p-6 shadow-sm">
               <div className="flex items-start gap-3">
-                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#FFF8E1] text-2xl">
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#FFF7E5] text-2xl">
                   {activeTab === 'analytics' ? '📊' : '🔔'}
                 </div>
                 <div>
@@ -1373,7 +1382,7 @@ export const AdminDashboardScreen: React.FC = () => {
                   <p className="mt-1 text-sm leading-relaxed text-stone-700">
                     अधिकृत उत्पादन डेटा स्रोत उपलब्ध नहीं है। इस पृष्ठ पर कोई लाइव आंकड़ा या सूचना प्रदर्शित नहीं की जा रही है।
                   </p>
-                  <span className="mt-3 inline-flex rounded-full border border-[#8D6E63]/30 bg-[#FFF8E1] px-3 py-1 text-xs font-black text-[#063B5C]">
+                  <span className="mt-3 inline-flex rounded-full border border-[#8D6E63]/30 bg-[#FFF7E5] px-3 py-1 text-xs font-black text-[#063B5C]">
                     Data unavailable
                   </span>
                 </div>

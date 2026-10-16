@@ -70,3 +70,25 @@ export async function apiRequest<T>(
   }
   return payload as T;
 }
+
+export async function apiBlobRequest(
+  path: `/api/${string}`,
+  sessionType: ApiSession = 'admin'
+): Promise<Blob> {
+  const headers = new Headers();
+  const token = getStoredToken(sessionType);
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+  if (!token) throw new Error('प्रमाणित फोटो देखने के लिए कृपया दोबारा लॉगिन करें।');
+
+  let response: Response;
+  try {
+    response = await fetch(apiUrl(path), { headers, cache: 'no-store' });
+  } catch {
+    throw new Error('सर्वर से संपर्क नहीं हो सका। इंटरनेट कनेक्शन जाँचकर पुनः प्रयास करें।');
+  }
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null) as { error?: string } | null;
+    throw new Error(payload?.error || `फोटो प्राप्त नहीं हुआ (${response.status})`);
+  }
+  return response.blob();
+}

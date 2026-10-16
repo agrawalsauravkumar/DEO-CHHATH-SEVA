@@ -51,10 +51,8 @@ All sensitive credentials must be managed via production secret management (e.g.
 | `NODE_ENV` | Yes | `production` | No | Node execution mode (`development` vs `production`). |
 | `DATABASE_URL` | Yes in production | `""` | No | PostgreSQL connection URI including user, password, host, port, and database name. Production refuses to start if PostgreSQL/PostGIS is unavailable. |
 | `AUTH_SECRET` | Yes | `""` | No | High-entropy cryptographic string (min 32 bytes) for signing and verifying JWT tokens. |
-| `MAP_PROVIDER` | No | `osm` | Yes | Map tile provider identifier (`osm`, `carto`, `mapbox`). |
-| `MAP_TILE_URL` | No | `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png` | Yes | Standard Slippy Map XYZ tile server URL. |
-| `MAP_ATTRIBUTION`| No | `OpenStreetMap contributors` | Yes | Public attribution text displayed on the map canvas. |
-| `MAP_PROVIDER_KEY`| Optional | `""` | No | API key if utilizing a commercial tile host (e.g., Stadia, Mapbox). |
+| `VITE_MAP_TILE_URL` | No | `https://tile.openstreetmap.org/{z}/{x}/{y}.png` | Yes | Public tile URL baked into the client build. Use only a provider whose tile terms permit the app's usage. |
+| `VITE_MAP_ATTRIBUTION` | No | `OpenStreetMap contributors` | Yes | Required provider attribution displayed on the map canvas. |
 | `ROUTING_ENGINE_URL`| No | `https://router.project-osrm.org` | No | OSRM or GraphHopper server endpoint for route calculations. |
 | `SMS_PROVIDER` | Optional | `fast2sms` | No | SMS provider adapter (`fast2sms`, `twilio`, `msg91`). |
 | `SMS_API_KEY` | Optional | `""` | No | Private API key for dispatching official volunteer & OTP SMS messages. |
@@ -63,6 +61,8 @@ All sensitive credentials must be managed via production secret management (e.g.
 | `OTP_DEV_MODE` | No | `false` | No | Enables simulated OTP only outside production; production always requires a configured SMS gateway. |
 | `NOTIFICATION_CONFIG`| Optional| `""` | No | Webhook URL for forwarding emergency broadcasts and SOS alerts. |
 | `CORS_ORIGIN` | Yes | `*` | No | Restrict API access to specific domain in production (e.g., `https://deochhathseva.org`). |
+| `TEAM_IMAGE_DIR` | Required for production team-photo uploads | `data/team-images` in development | No | Persistent server-side directory for validated team profile photos. Mount durable storage here; do not expose the directory as a static web root. |
+| `DEMO_TEAM_SEED` | No | `false` | No | Set to `true` together with `NODE_ENV=development` only to insert five fictional, clearly marked team examples once. Never enable in production. |
 
 ### Administrator account provisioning
 
@@ -84,13 +84,35 @@ The first account's identity and role must be approved by the organization's dat
 
 ### Release readiness gate
 
-The code includes PostgreSQL-backed paths for facilities, parking, volunteers, help requests, announcements, lost-and-found reports, users, and audit logs. These paths have **not** been verified against a live database. When PostgreSQL is unavailable, public operational lists do not expose in-memory seed records, and configured mutation routes fail with HTTP 503 instead of claiming a volatile write succeeded. Do not treat development fallback data as operational.
+The code includes PostgreSQL-backed paths for facilities, parking, volunteers, help requests, announcements, lost-and-found reports, users, audit logs, and team profiles. These paths have **not** been verified against a live database. When PostgreSQL is unavailable, public operational lists do not expose in-memory seed records, and configured mutation routes fail with HTTP 503 instead of claiming a volatile write succeeded. Do not treat development fallback data as operational.
 
 Public announcements require an authorized publisher, a verified source, an explicit timezone-aware expiry later than publication, and an active published status. No expiry is synthesized. Expired, malformed, future-dated, unverified, and demo-source records are filtered out. Family safety is deliberately disabled until a persistent, consent-based backend exists. Lost-and-found API writes now use UUID-backed PostgreSQL rows and public responses omit report descriptions, names, contact data, and coordinates; the complete client moderation/contact workflow still needs end-to-end verification. Notification delivery and Android APK/device tests are also unverified.
 
 This is **not yet cleared for live government operations**. No provisioned PostgreSQL/PostGIS database, SMS gateway, approved administrator account, or authoritative live facility/announcement dataset was available for end-to-end verification. Map tiles/data are not confirmed available offline, and the map, emergency contacts, SMS/OTP delivery, data retention, and backup/restore procedures require operational validation. Android SDK/JDK and device testing were unavailable.
 
 Before deployment, provision the production secrets and services, apply/verify the schema migration, verify role-based access with approved accounts, test every mutation across separate clients and a server restart, validate SMS/OTP delivery and incident procedures, and obtain current operational data from the responsible authorities. Do not deploy the development in-memory fallback as a public operations system.
+
+---
+
+## Team profiles and member-photo storage
+
+The existing startup migration idempotently creates `team_members` and `team_demo_seed_state`; it preserves existing rows and never seeds demo profiles in production. Existing PostgreSQL installations apply this additive migration on the next application start. Back up the database before upgrading and verify that the new tables and index exist before using team management.
+
+Admin access to the team API is limited server-side to `SUPER_ADMIN`, `ADMIN`, and `CONTENT_ADMIN`. Public clients can list only published members and retrieve only their published photos. Draft photos are served through an authenticated admin endpoint. Image uploads accept only structurally checked JPEG, PNG, or WebP files up to 5 MB; files get random server-generated names and are not served from a static directory. Admins must explicitly attest that the subject/organization granted permission before each photo upload; publishing a real member also requires this server-recorded confirmation. Demo silhouettes are exempt. Deletion and replacement attempt to remove prior files and return a warning if cleanup fails.
+
+In production, set `TEAM_IMAGE_DIR` to a dedicated persistent volume path writable by the application user, for example `/var/lib/deo-chhath-seva/team-images`. Include this volume in encrypted backup and restore procedures. If storage is not configured in production, photo uploads fail closed. The app does not currently use cloud object storage, so multi-instance deployments must provide shared durable storage before enabling team-photo changes.
+
+Five fictional demo profiles can be inserted once in a development database only:
+
+```powershell
+$env:NODE_ENV = 'development'
+$env:DEMO_TEAM_SEED = 'true'
+npm run dev
+```
+
+The seed is idempotent and tracked separately so deleting a sample profile does not cause it to reappear on a later restart. These names and silhouette images are not real Foundation members. Never enable this setting in production. The public team page displays a notice whenever demo records are published.
+
+The migration is additive. To roll back application code while preserving data, deploy the previous application version and leave the new tables in place. To remove the feature data entirely, first export/backup the team rows and photo volume, stop all writers, and obtain database-owner approval before dropping the tables and deleting the photo directory. No rollback or production database operation was performed as part of this change.
 
 ---
 

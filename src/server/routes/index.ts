@@ -23,6 +23,7 @@ import { notificationsRouter } from './notifications';
 import { syncRouter } from './sync';
 import { adminRouter } from './admin';
 import { auditRouter } from './audit';
+import { teamRouter } from './team';
 import { getDatabaseStatus } from '../db/connection';
 import { requirePersistentDatabase } from '../middleware/requirePersistentDatabase';
 
@@ -94,6 +95,7 @@ apiRouter.use('/notifications', notificationsRouter);
 apiRouter.use('/sync', syncRouter);
 apiRouter.use('/admin', adminRouter);
 apiRouter.use('/audit', auditRouter);
+apiRouter.use('/team', teamRouter);
 apiRouter.use('/', rolesRouter); // mounts /roles and /permissions
 
 // 404 handler for undefined API endpoints (prevents falling through to HTML index)
@@ -108,5 +110,15 @@ apiRouter.use((req, res) => {
 apiRouter.use((error: unknown, req: import('express').Request, res: import('express').Response, next: import('express').NextFunction) => {
   if (res.headersSent) return next(error);
   console.error(`[API ERROR] ${req.method} ${req.path}`, error);
-  return res.status(500).json({ error: 'The request could not be completed. Please retry or contact support.' });
+  const candidateStatus =
+    typeof error === 'object' && error !== null && 'status' in error &&
+    typeof error.status === 'number'
+      ? error.status
+      : 500;
+  const statusCode = candidateStatus >= 400 && candidateStatus < 500 ? candidateStatus : 500;
+  return res.status(statusCode).json({
+    error: statusCode === 413
+      ? 'Uploaded content exceeds the allowed size limit.'
+      : 'The request could not be completed. Please retry or contact support.',
+  });
 });

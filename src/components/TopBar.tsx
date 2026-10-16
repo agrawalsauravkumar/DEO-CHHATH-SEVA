@@ -3,6 +3,7 @@ import { ArrowLeft, PhoneCall, Accessibility, Bell, DownloadCloud } from 'lucide
 import { useApp } from '../context/AppContext';
 import { ScreenId } from '../types';
 import { DeoChhathSevaLogo } from './DeoChhathSevaLogo';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface Props {
   title?: string;
@@ -34,11 +35,48 @@ const SCREEN_TITLES: Partial<Record<ScreenId, string>> = {
   'senior-mode': 'वरिष्ठ नागरिक एवं दिव्यांग मोड',
   announcements: 'आधिकारिक सूचनाएं व अर्घ्य समय',
   about: 'NextGen Devbhoomi Foundation',
+  team: 'हमारी टीम',
   settings: 'ऐप सेटिंग्स',
   more: 'सभी सेवाएँ',
   language: 'भाषा चुनें',
   'location-permission': 'लोकेशन अनुमति',
   'offline-map': 'ऑफलाइन नक्शा डाउनलोड',
+};
+
+const ENGLISH_SCREEN_TITLES: Partial<Record<ScreenId, string>> = {
+  home: 'DEO CHHATH SEVA',
+  search: 'Find a place',
+  map: 'Deo service map',
+  navigation: 'Directions',
+  parking: 'Parking',
+  'save-parking': 'Save my parking',
+  'my-parking': 'My parking',
+  shuttle: 'Shuttle service',
+  medical: 'Medical and first aid',
+  toilet: 'Nearby toilets',
+  water: 'Drinking water',
+  help: 'Help center',
+  emergency: 'Emergency assistance (SOS)',
+  family: 'Family safety group',
+  'lost-found': 'Lost and found',
+  volunteer: 'NextGen volunteers',
+  'volunteer-register': 'Volunteer registration',
+  'volunteer-mode': 'Volunteer dashboard',
+  'volunteer-request': 'Request help',
+  'senior-mode': 'Senior and accessibility mode',
+  announcements: 'Official announcements',
+  about: 'About Us',
+  team: 'Our team',
+  settings: 'App settings',
+  more: 'All services',
+  language: 'Choose language',
+  login: 'Login',
+  'location-permission': 'Location permission',
+  'offline-map': 'Offline map status',
+  profile: 'User profile',
+  'session-expired': 'Session expired',
+  offline: 'Offline status',
+  error: 'Error',
 };
 
 export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) => {
@@ -50,20 +88,28 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
     seniorMode,
     toggleSeniorMode,
     isOnline,
+    language,
   } = useApp();
 
   const isHome = currentScreen === 'home';
-  const displayTitle = title || SCREEN_TITLES[currentScreen] || 'देव छठ सेवा';
+  const isEnglish = language === 'en';
+  const displayTitle = isEnglish
+    ? (currentScreen === 'login' ? title : undefined) ||
+      ENGLISH_SCREEN_TITLES[currentScreen] ||
+      title ||
+      SCREEN_TITLES[currentScreen] ||
+      'DEO CHHATH SEVA'
+    : title || SCREEN_TITLES[currentScreen] || 'देव छठ सेवा';
 
   return (
-    <header className="sticky top-0 z-40 bg-gradient-to-r from-[#063B5C] via-[#0B5E8E] to-[#063B5C] text-white border-b-[3px] border-[#FFD54F] shadow-md px-3 sm:px-4 py-2 font-['Mukta',sans-serif]">
+    <header className="sticky top-0 z-40 bg-gradient-to-r from-[#063B5C] via-[#075985] to-[#063B5C] text-white border-b-[3px] border-[#FFB52E] shadow-md px-3 sm:px-4 py-2 font-['Mukta',sans-serif]">
       <div className="max-w-lg mx-auto flex items-center justify-between min-h-[46px]">
         {/* Left Slot: Back or Official NGO Seal Logo */}
         <div className="flex min-w-0 flex-1 items-center gap-2.5">
           {showBack || canGoBack ? (
             <button
               onClick={onBack ? onBack : goBack}
-              aria-label="पीछे जाएं"
+              aria-label={isEnglish ? 'Go back' : 'पीछे जाएं'}
               className="min-h-[44px] min-w-[44px] -ml-1 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors active:scale-95 border border-white/10"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
@@ -88,26 +134,27 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
             </h1>
             {isHome ? (
               <>
-                <span className="text-[10px] font-semibold text-[#FFF8E1]/90 tracking-wide truncate">
-                  रास्ता भी • सहायता भी • सेवा भी
+                <span className="text-[10px] font-semibold text-[#FFF7E5]/90 tracking-wide truncate">
+                  {isEnglish ? 'Navigation • Assistance • Service' : 'रास्ता भी • सहायता भी • सेवा भी'}
                 </span>
-                <span className="text-[9px] font-black text-[#FFD54F] tracking-wider truncate uppercase">
+                <span className="text-[9px] font-black text-[#FFB52E] tracking-wider truncate uppercase">
                   NEXTGEN DEVBHOOMI FOUNDATION
                 </span>
               </>
             ) : subtitle ? (
-              <span className="text-[11px] text-[#FFF8E1]/90 truncate">{subtitle}</span>
+              <span className="text-[11px] text-[#FFF7E5]/90 truncate">{subtitle}</span>
             ) : null}
           </div>
         </div>
 
         {/* Right Slot: Senior Mode, Emergency SOS, or Offline Status */}
         <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
+          <LanguageSwitcher compact />
           {!isOnline && (
             <button
               onClick={() => navigate('offline')}
-              title="ऑफ़लाइन स्थिति"
-              aria-label="ऑफ़लाइन स्थिति"
+              title={isEnglish ? 'Offline status' : 'ऑफ़लाइन स्थिति'}
+              aria-label={isEnglish ? 'Offline status' : 'ऑफ़लाइन स्थिति'}
               className="min-h-[44px] rounded-xl bg-amber-400 px-2 text-stone-950 flex items-center gap-1 font-black text-[10px]"
             >
               <DownloadCloud className="w-4 h-4" />
@@ -117,31 +164,39 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
 
           <button
             onClick={() => navigate('announcements')}
-            title="सूचनाएं"
-            aria-label="सूचनाएं"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[#FFD54F] hover:text-amber-100 active:scale-95 relative"
+            title={isEnglish ? 'Announcements' : 'सूचनाएं'}
+            aria-label={isEnglish ? 'Announcements' : 'सूचनाएं'}
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[#FFB52E] hover:text-amber-100 active:scale-95 relative"
           >
             <Bell className="w-5 h-5" />
           </button>
 
           <button
             onClick={toggleSeniorMode}
-            title={seniorMode ? 'सामान्य मोड में जाएं' : 'वरिष्ठ नागरिक मोड'}
-            aria-label="वरिष्ठ नागरिक मोड"
+            title={
+              seniorMode
+                ? isEnglish
+                  ? 'Switch to standard mode'
+                  : 'सामान्य मोड में जाएं'
+                : isEnglish
+                  ? 'Senior mode'
+                  : 'वरिष्ठ नागरिक मोड'
+            }
+            aria-label={isEnglish ? 'Senior mode' : 'वरिष्ठ नागरिक मोड'}
             className={`min-h-[44px] min-w-[44px] px-2.5 flex items-center gap-1 rounded-xl text-xs font-bold transition-all active:scale-95 border ${
               seniorMode
-                ? 'bg-[#FFD54F] text-stone-950 border-amber-300 shadow-sm'
-                : 'bg-white/10 text-[#FFD54F] hover:bg-white/20 border-white/10'
+                ? 'bg-[#FFB52E] text-stone-950 border-amber-300 shadow-sm'
+                : 'bg-white/10 text-[#FFB52E] hover:bg-white/20 border-white/10'
             }`}
           >
             <Accessibility className="w-4 h-4" />
-            <span className="hidden xs:inline">वरिष्ठ</span>
+            <span className="hidden xs:inline">{isEnglish ? 'Senior' : 'वरिष्ठ'}</span>
           </button>
 
           <button
             onClick={() => navigate('emergency')}
-            aria-label="आपातकालीन SOS सहायता"
-            className="min-h-[44px] px-3 bg-[#E53935] hover:bg-[#C62828] active:scale-95 text-white font-black rounded-xl text-xs flex items-center gap-1 shadow-md transition-colors border border-[#E53935]"
+            aria-label={isEnglish ? 'Emergency SOS assistance' : 'आपातकालीन SOS सहायता'}
+            className="min-h-[44px] px-3 bg-[#A61B29] hover:bg-[#C62828] active:scale-95 text-white font-black rounded-xl text-xs flex items-center gap-1 shadow-md transition-colors border border-[#A61B29]"
           >
             <PhoneCall className="w-3.5 h-3.5 fill-white" />
             <span>SOS</span>

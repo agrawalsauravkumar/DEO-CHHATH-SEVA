@@ -8,6 +8,7 @@ import React from 'react';
 interface Props {
   className?: string;
   height?: number;
+  label?: string;
 }
 
 /**
@@ -17,12 +18,15 @@ interface Props {
 export const ChhathSunriseBackdrop: React.FC<Props> = ({
   className = '',
   height = 140,
+  label,
 }) => {
   return (
     <div
       className={`relative w-full overflow-hidden select-none pointer-events-none ${className}`}
       style={{ height }}
-      aria-hidden="true"
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : 'true'}
     >
       <svg
         viewBox="0 0 600 160"

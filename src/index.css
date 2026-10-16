@@ -2,15 +2,15 @@
 @import "./theme/chhathTheme.css";
 
 @theme {
-  --color-chhath-river-blue: #0B5E8E;
+  --color-chhath-river-blue: #075985;
   --color-chhath-deep-river-blue: #063B5C;
-  --color-chhath-sunrise: #FF8C42;
-  --color-chhath-orange: #F57C00;
-  --color-chhath-gold: #FFD54F;
+  --color-chhath-sunrise: #F47B20;
+  --color-chhath-orange: #F47B20;
+  --color-chhath-gold: #FFB52E;
   --color-chhath-green: #2E7D32;
   --color-chhath-earth: #8D6E63;
-  --color-chhath-cream: #FFF8E1;
-  --color-chhath-red: #E53935;
+  --color-chhath-cream: #FFF7E5;
+  --color-chhath-red: #A61B29;
 }
 
 :root {
@@ -551,7 +551,7 @@ img {
 
 .home-secondary-actions {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.55rem;
   margin-top: 0.85rem;
 }

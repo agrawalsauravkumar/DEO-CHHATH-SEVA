@@ -6,12 +6,17 @@
 import React from 'react';
 import { DeoChhathSevaLogo } from './DeoChhathSevaLogo';
 import { CheckCircle2, ShieldCheck, Wifi, WifiOff } from 'lucide-react';
+import type { LanguageCode } from '../types';
 
 /**
  * REUSABLE BRANDING FOOTER (Step 20 Requirement 6 & 27)
  * EXACT SPELLING: NEXTGEN DEVBHOOMI FOUNDATION
  */
-export const BrandFooter: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const BrandFooter: React.FC<{
+  className?: string;
+  language?: LanguageCode;
+}> = ({ className = '', language = 'hi' }) => {
+  const isEnglish = language === 'en';
   return (
     <footer className={`pt-6 pb-4 text-center space-y-1.5 select-none font-['Mukta',sans-serif] ${className}`}>
       <DeoChhathSevaLogo size={44} className="mx-auto" />
@@ -24,19 +29,21 @@ export const BrandFooter: React.FC<{ className?: string }> = ({ className = '' }
       </div>
 
       <p className="text-[12px] font-bold text-stone-700">
-        “रास्ता भी • सहायता भी • सेवा भी”
+        {isEnglish ? 'Navigation • Assistance • Service' : '“रास्ता भी • सहायता भी • सेवा भी”'}
       </p>
 
       <p className="text-[11px] font-bold text-stone-500 pt-0.5">
-        A public-service initiative by
+        {isEnglish ? 'A public-service initiative by' : 'की एक सार्वजनिक सेवा पहल'}
       </p>
 
-      <p className="text-xs font-black tracking-wide text-[#0B5E8E]">
+      <p className="text-xs font-black tracking-wide text-[#075985]">
         NEXTGEN DEVBHOOMI FOUNDATION
       </p>
 
       <p className="text-[10px] text-stone-400 pt-0.5">
-        देव सूर्य मंदिर व सूर्य कुंड महापर्व सेवा • निःशुल्क जनसेवा
+        {isEnglish
+          ? 'Deo Surya Mandir and Surya Kund festival service • Free public service'
+          : 'देव सूर्य मंदिर व सूर्य कुंड महापर्व सेवा • निःशुल्क जनसेवा'}
       </p>
     </footer>
   );
@@ -173,7 +180,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   const getVariantStyles = () => {
     switch (variant) {
       case 'primary':
-        return 'bg-gradient-to-br from-[#0B5E8E] to-[#073B5A] text-white border-[#0B5E8E] shadow-sm';
+        return 'bg-gradient-to-br from-[#075985] to-[#073B5A] text-white border-[#075985] shadow-sm';
       case 'secondary':
         return 'bg-gradient-to-br from-amber-50 to-orange-50 text-stone-900 border-amber-200 hover:border-amber-400 shadow-2xs';
       case 'emergency':
