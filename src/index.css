@@ -102,7 +102,7 @@ img {
 .home-brand-header {
   position: relative;
   overflow: hidden;
-  padding: 1rem max(1rem, calc((100vw - 34rem) / 2)) 0.75rem;
+  padding: 0.875rem 1rem 0.75rem;
   color: var(--chhath-white);
   background:
     radial-gradient(circle at 88% 0%, rgba(255, 213, 79, 0.22), transparent 9rem),
@@ -126,6 +126,7 @@ img {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  width: 100%;
   max-width: 64rem;
   margin: 0 auto;
 }
@@ -150,55 +151,61 @@ img {
 
 .home-brand-header__identity {
   min-width: 0;
-  flex: 1;
+  flex: 1 1 auto;
 }
 
 .home-brand-header__identity h1 {
   margin: 0;
-  font-size: clamp(1rem, 4vw, 1.35rem);
+  font-size: clamp(1.1rem, 2.5vw, 1.45rem);
   font-weight: 900;
-  line-height: 1.15;
-  letter-spacing: 0.015em;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .home-brand-header__identity p {
   margin: 0.16rem 0 0;
   color: var(--chhath-cream);
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 1.8vw, 0.88rem);
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .home-brand-header__identity span {
   display: block;
   margin-top: 0.12rem;
   color: var(--chhath-marigold-gold);
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .home-account-button {
   min-height: 44px;
   flex: 0 0 auto;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 0.85rem;
   color: var(--chhath-deep-river-blue);
   background: var(--chhath-marigold-gold);
   border: 1px solid rgba(255, 248, 225, 0.55);
-  border-radius: 0.9rem;
-  font-size: 0.78rem;
+  border-radius: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 900;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .home-brand-header__status {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  width: 100%;
   max-width: 64rem;
-  min-height: 38px;
-  margin: 0.5rem auto 0;
+  min-height: 34px;
+  margin: 0.4rem auto 0;
   color: var(--chhath-cream);
   font-size: 0.75rem;
   font-weight: 700;
@@ -207,12 +214,15 @@ img {
 .home-brand-header__location {
   display: flex;
   min-width: 0;
-  flex: 1;
-  align-items: flex-start;
+  flex: 1 1 auto;
+  align-items: center;
   justify-content: flex-end;
-  gap: 0.3rem;
+  gap: 0.35rem;
   text-align: right;
-  overflow-wrap: anywhere;
+  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .home-content {
@@ -651,34 +661,49 @@ img {
   }
 }
 
-/* Desktop Experience: Maintain Sleek Mobile Phone Frame Centered with Holy Backdrop */
+/* Desktop & Wide Viewport Experience: Spacious, elegant layout utilizing available width */
 @media (min-width: 1024px) {
   .app-shell {
-    max-width: 440px;
+    width: 100%;
+    max-width: 72rem;
     margin-inline: auto;
     border-inline: 1px solid rgba(255, 181, 46, 0.35);
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(245, 158, 11, 0.15);
+    box-shadow: 0 4px 30px rgba(6, 59, 92, 0.08);
   }
 
   .app-shell main {
     width: 100%;
-    max-width: 440px;
+    max-width: 100%;
     margin-inline: auto;
   }
 
   .app-shell nav[aria-label="मुख्य नेविगेशन"] {
-    max-width: 440px;
+    max-width: 38rem;
     margin-inline: auto;
+    border-radius: 1.25rem 1.25rem 0 0;
+    box-shadow: 0 -8px 30px rgba(6, 59, 92, 0.15);
   }
 
   .home-brand-header__top,
   .home-brand-header__status {
-    max-width: 100%;
+    max-width: 68rem;
+    padding-inline: 0.5rem;
   }
 
   .home-content {
     width: 100%;
-    max-width: 440px;
+    max-width: 68rem;
+    padding-inline: 1.5rem;
+  }
+
+  .home-service-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .home-secondary-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
   }
 }
 

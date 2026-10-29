@@ -247,8 +247,8 @@ const MainRouter: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#020B14] flex justify-center px-0 py-0 font-['Mukta',sans-serif]">
-      <div className="app-shell w-full max-w-[440px] min-h-[100dvh] relative flex flex-col border-x border-[#FFB52E]/30 shadow-[0_0_60px_rgba(0,0,0,0.6)] ring-1 ring-amber-400/20">
+    <div className="min-h-[100dvh] bg-[var(--chhath-cream)] flex justify-center px-0 py-0 font-['Mukta',sans-serif]">
+      <div className="app-shell w-full max-w-6xl min-h-[100dvh] relative flex flex-col bg-[var(--chhath-cream)] border-x border-[#FFB52E]/30 shadow-md">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,213,79,0.18),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.08),transparent_30%)]" />
         <div className="relative z-10 flex min-h-[100dvh] flex-col">
           {(!isOnline || networkStatus === 'SYNCING' || networkStatus === 'SYNC_ERROR' || networkStatus === 'SYNCED' || networkRecovered) && (

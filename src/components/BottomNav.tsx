@@ -31,7 +31,7 @@ export const BottomNav: React.FC = () => {
   return (
     <nav
       aria-label={isEnglish ? 'Main navigation' : 'मुख्य नेविगेशन'}
-      className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md bg-white border-t-2 border-[#FFB52E] shadow-[0_-8px_24px_rgba(6,59,92,0.12)] pb-[env(safe-area-inset-bottom)] select-none font-['Mukta',sans-serif]"
+      className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md md:max-w-xl bg-white border-t-2 md:border-x-2 md:rounded-t-2xl border-[#FFB52E] shadow-[0_-8px_24px_rgba(6,59,92,0.12)] pb-[env(safe-area-inset-bottom)] select-none font-['Mukta',sans-serif]"
     >
       <div className="grid grid-cols-4 items-center min-h-16 px-1">
         {navItems.map((item) => {
