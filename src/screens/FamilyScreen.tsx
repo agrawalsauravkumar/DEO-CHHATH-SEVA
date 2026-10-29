@@ -273,35 +273,35 @@ export const FamilyScreen: React.FC = () => {
         {/* ======================================================== */}
         {/* HEADER HERO RIBBON                                       */}
         {/* ======================================================== */}
-        <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-950 text-white rounded-3xl p-4 shadow-md space-y-2 border border-purple-800">
+        <div className="bg-gradient-to-br from-[#075985] via-[#063B5C] to-[#04243A] text-white rounded-3xl p-4 shadow-md space-y-2 border border-[#FFB52E]/40">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <span className="text-2xl">👨👩👧</span>
               <div>
                 <h2 className="text-base sm:text-lg font-black tracking-tight">
-                  {group ? group.name : '👨👩👧 मेरा परिवार'}
+                  {group ? group.name : 'मेरा परिवार'}
                 </h2>
-                <span className="text-xs text-purple-200 block">
+                <span className="text-xs text-[#FFF7E5]/90 block">
                   “अपने परिवार के सदस्यों से सुरक्षित रूप से जुड़े रहें।”
                 </span>
               </div>
             </div>
 
             {group && (
-              <span className="text-[11px] font-mono font-black bg-purple-800 border border-purple-600 px-2.5 py-1 rounded-xl text-yellow-300 shadow-xs">
+              <span className="text-[11px] font-mono font-black bg-[#FFB52E]/20 border border-[#FFB52E]/60 px-2.5 py-1 rounded-xl text-[#FFB52E] shadow-xs">
                 {group.inviteCode}
               </span>
             )}
           </div>
 
-          <p className="text-[11px] text-purple-200/90 leading-relaxed pt-0.5">
+          <p className="text-[11px] text-[#FFF7E5]/80 leading-relaxed pt-0.5">
             छठ मेले की अपार भीड़ में परिजनों के साथ सुरक्षित रहें। स्थान साझा केवल आपके द्वारा अनुमोदित सदस्यों को ही दिखाई देता है।
           </p>
 
           {/* Offline Sync Banner if offline */}
           {!isOnline && (
-            <div className="bg-purple-950/80 border border-purple-700/80 p-2.5 rounded-2xl text-[11px] text-yellow-200 flex items-center gap-2">
-              <WifiOff className="w-4 h-4 text-yellow-300 shrink-0" />
+            <div className="bg-[#031B2B]/90 border border-[#FFB52E]/40 p-2.5 rounded-2xl text-[11px] text-[#FFB52E] flex items-center gap-2">
+              <WifiOff className="w-4 h-4 text-[#FFB52E] shrink-0" />
               <span>Offline Mode: Location update इंटरनेट कनेक्शन उपलब्ध होने पर sync होगी।</span>
             </div>
           )}
@@ -312,7 +312,7 @@ export const FamilyScreen: React.FC = () => {
         {/* ======================================================== */}
         {!group ? (
           <div className="bg-white rounded-3xl p-5 border border-stone-200/90 shadow-xs space-y-4 text-center">
-            <div className="w-14 h-14 bg-purple-50 text-purple-700 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-xs">
+            <div className="w-14 h-14 bg-[#FFF7E5] text-[#075985] rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-xs border border-[#075985]/15">
               👨👩👧
             </div>
             <div className="space-y-1">
@@ -327,7 +327,7 @@ export const FamilyScreen: React.FC = () => {
             <div className="grid grid-cols-2 gap-2.5 pt-1">
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="min-h-[48px] bg-purple-800 hover:bg-purple-900 active:scale-95 text-white font-black text-xs sm:text-sm rounded-2xl shadow-sm flex items-center justify-center gap-1.5 transition-all"
+                className="min-h-[48px] bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white font-black text-xs sm:text-sm rounded-2xl shadow-sm flex items-center justify-center gap-1.5 transition-all border border-[#075985]"
               >
                 <UserPlus className="w-4 h-4" />
                 <span>+ समूह बनाएँ</span>
@@ -335,7 +335,7 @@ export const FamilyScreen: React.FC = () => {
 
               <button
                 onClick={() => setShowJoinModal(true)}
-                className="min-h-[48px] bg-white hover:bg-stone-50 active:scale-95 text-purple-900 border-2 border-purple-300 font-black text-xs sm:text-sm rounded-2xl shadow-xs flex items-center justify-center gap-1.5 transition-all"
+                className="min-h-[48px] bg-white hover:bg-[#FFF7E5]/50 active:scale-95 text-[#075985] border-2 border-[#075985]/30 font-black text-xs sm:text-sm rounded-2xl shadow-xs flex items-center justify-center gap-1.5 transition-all"
               >
                 <span>🔑 कोड से जुड़ें</span>
               </button>
@@ -345,10 +345,10 @@ export const FamilyScreen: React.FC = () => {
           /* ======================================================== */
           /* ACTIVE GROUP CONTROLS BAR                                */
           /* ======================================================== */
-          <div className="bg-white rounded-3xl p-3.5 border border-purple-200 shadow-xs space-y-3">
+          <div className="bg-white rounded-3xl p-3.5 border border-[#075985]/20 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-purple-700 block">
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#075985] block">
                   Family Invite Code
                 </span>
                 <span className="text-lg font-black text-stone-900 font-mono tracking-wider">
@@ -359,7 +359,7 @@ export const FamilyScreen: React.FC = () => {
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={handleCopyCode}
-                  className="min-h-[38px] px-3 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors border border-purple-200"
+                  className="min-h-[38px] px-3 bg-[#FFF7E5] hover:bg-amber-100/70 text-[#075985] font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors border border-[#075985]/20"
                 >
                   {copiedCode ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copiedCode ? 'कॉपी हुआ' : 'कोड कॉपी'}</span>
@@ -367,7 +367,7 @@ export const FamilyScreen: React.FC = () => {
 
                 <button
                   onClick={handleShareCode}
-                  className="min-h-[38px] px-3 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors shadow-xs"
+                  className="min-h-[38px] px-3 bg-[#075985] hover:bg-[#063B5C] text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors shadow-xs"
                 >
                   <Share2 className="w-3.5 h-3.5" />
                   <span>Share करें</span>
@@ -430,7 +430,7 @@ export const FamilyScreen: React.FC = () => {
             <button
               onClick={() => setActiveTab('MEMBERS')}
               className={`py-2 px-1 rounded-xl transition-all ${
-                activeTab === 'MEMBERS' ? 'bg-white text-purple-900 shadow-xs' : 'text-stone-600'
+                activeTab === 'MEMBERS' ? 'bg-white text-[#075985] shadow-xs' : 'text-stone-600'
               }`}
             >
               👥 सदस्य ({members.length})
@@ -438,7 +438,7 @@ export const FamilyScreen: React.FC = () => {
             <button
               onClick={() => setActiveTab('SHARING')}
               className={`py-2 px-1 rounded-xl transition-all ${
-                activeTab === 'SHARING' ? 'bg-white text-purple-900 shadow-xs' : 'text-stone-600'
+                activeTab === 'SHARING' ? 'bg-white text-[#075985] shadow-xs' : 'text-stone-600'
               }`}
             >
               📍 Sharing
@@ -446,7 +446,7 @@ export const FamilyScreen: React.FC = () => {
             <button
               onClick={() => setActiveTab('MAP')}
               className={`py-2 px-1 rounded-xl transition-all ${
-                activeTab === 'MAP' ? 'bg-white text-purple-900 shadow-xs' : 'text-stone-600'
+                activeTab === 'MAP' ? 'bg-white text-[#075985] shadow-xs' : 'text-stone-600'
               }`}
             >
               🗺️ Map
@@ -477,11 +477,11 @@ export const FamilyScreen: React.FC = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
               <span className="text-xs font-black uppercase tracking-wider text-stone-500">
-                👨👩👧 परिवार के सदस्य ({members.length})
+                परिवार के सदस्य ({members.length})
               </span>
               <button
                 onClick={() => setShowJoinModal(true)}
-                className="text-xs font-bold text-purple-800 hover:text-purple-950 flex items-center gap-1"
+                className="text-xs font-bold text-[#075985] hover:text-[#063B5C] flex items-center gap-1"
               >
                 <UserPlus className="w-4 h-4" />
                 <span>+ सदस्य जोड़ें</span>
@@ -503,7 +503,7 @@ export const FamilyScreen: React.FC = () => {
                         <h4 className="text-base font-black text-stone-900">
                           {mem.name} {isMe && '(आप)'}
                         </h4>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFF7E5] text-[#075985] border border-[#075985]/20">
                           {mem.role === 'OWNER' ? 'समूह संचालक' : 'सदस्य'}
                         </span>
                       </div>
@@ -544,9 +544,9 @@ export const FamilyScreen: React.FC = () => {
                     {mem.locationSharingEnabled && mem.lastLatitude ? (
                       <button
                         onClick={() => handleNavigateToMember(mem)}
-                        className="min-h-[38px] px-3 bg-purple-50 hover:bg-purple-100 text-purple-900 font-black text-xs rounded-xl flex items-center gap-1.5 border border-purple-200 active:scale-95"
+                        className="min-h-[38px] px-3 bg-[#FFF7E5] hover:bg-amber-100/70 text-[#075985] font-black text-xs rounded-xl flex items-center gap-1.5 border border-[#075985]/20 active:scale-95"
                       >
-                        <Navigation className="w-3.5 h-3.5 text-purple-700" />
+                        <Navigation className="w-3.5 h-3.5 text-[#075985]" />
                         <span>इस सदस्य तक रास्ता</span>
                       </button>
                     ) : (
@@ -588,7 +588,7 @@ export const FamilyScreen: React.FC = () => {
         {group && activeTab === 'SHARING' && (
           <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-xs space-y-4 animate-fade-in">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-800 flex items-center justify-center text-xl shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-[#FFF7E5] text-[#075985] flex items-center justify-center text-xl shrink-0 border border-[#075985]/15">
                 📍
               </div>
               <div>
@@ -624,7 +624,7 @@ export const FamilyScreen: React.FC = () => {
                     onClick={() => setSelectedDuration(item.val)}
                     className={`min-h-[46px] p-2.5 rounded-xl border text-xs font-black text-center transition-all ${
                       selectedDuration === item.val
-                        ? 'bg-purple-900 text-white border-purple-900 shadow-xs'
+                        ? 'bg-[#075985] text-white border-[#075985] shadow-xs'
                         : 'bg-stone-50 text-stone-700 border-stone-300 hover:bg-stone-100'
                     }`}
                   >
@@ -690,7 +690,7 @@ export const FamilyScreen: React.FC = () => {
                   .map((m) => (
                     <div
                       key={m.id}
-                      className="flex items-center justify-between p-2.5 rounded-xl bg-purple-50/60 border border-purple-200 text-xs"
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-[#FFF7E5]/70 border border-[#075985]/20 text-xs"
                     >
                       <div>
                         <span className="font-black text-stone-900 block">{m.name}</span>
@@ -700,7 +700,7 @@ export const FamilyScreen: React.FC = () => {
                       </div>
                       <button
                         onClick={() => handleNavigateToMember(m)}
-                        className="px-3 py-1.5 bg-purple-800 text-white font-bold rounded-lg shadow-xs active:scale-95"
+                        className="px-3 py-1.5 bg-[#075985] hover:bg-[#063B5C] text-white font-bold rounded-lg shadow-xs active:scale-95"
                       >
                         रास्ता देखें
                       </button>
@@ -778,7 +778,7 @@ export const FamilyScreen: React.FC = () => {
 
                       <button
                         onClick={() => handleNavigateToMember(selectedLostMember)}
-                        className="min-h-[46px] bg-purple-800 text-white font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 active:scale-95"
+                        className="min-h-[46px] bg-[#075985] hover:bg-[#063B5C] text-white font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 active:scale-95"
                       >
                         <Compass className="w-4 h-4" />
                         <span>📍 वहाँ जाने का रास्ता</span>
@@ -908,7 +908,7 @@ export const FamilyScreen: React.FC = () => {
               </button>
               <button
                 type="submit"
-                className="min-h-[46px] bg-purple-800 hover:bg-purple-900 active:scale-95 text-white font-black text-xs rounded-xl shadow-md"
+                className="min-h-[46px] bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white font-black text-xs rounded-xl shadow-md"
               >
                 समूह बनाएं
               </button>
@@ -971,7 +971,7 @@ export const FamilyScreen: React.FC = () => {
               </button>
               <button
                 type="submit"
-                className="min-h-[46px] bg-purple-800 hover:bg-purple-900 active:scale-95 text-white font-black text-xs rounded-xl shadow-md"
+                className="min-h-[46px] bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white font-black text-xs rounded-xl shadow-md"
               >
                 जुड़ें
               </button>
@@ -986,7 +986,7 @@ export const FamilyScreen: React.FC = () => {
       {showConsentModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl animate-fade-in text-center">
-            <div className="w-12 h-12 bg-purple-100 text-purple-800 rounded-full flex items-center justify-center mx-auto text-xl font-black">
+            <div className="w-12 h-12 bg-[#FFF7E5] text-[#075985] border border-[#075985]/20 rounded-full flex items-center justify-center mx-auto text-xl font-black">
               🔒
             </div>
 
@@ -997,7 +997,7 @@ export const FamilyScreen: React.FC = () => {
               <p className="text-xs text-stone-600 leading-relaxed">
                 “आपकी location केवल इस family group के approved members को दिखाई जाएगी।”
               </p>
-              <p className="text-[11px] text-purple-700 font-bold bg-purple-50 p-2 rounded-xl">
+              <p className="text-[11px] text-[#075985] font-bold bg-[#FFF7E5] border border-[#075985]/20 p-2 rounded-xl">
                 अवधि: {selectedDuration === 15 ? '15 मिनट' : selectedDuration === 60 ? '1 घंटा' : selectedDuration === 240 ? '4 घंटे' : 'आज तक'}
               </p>
             </div>
@@ -1116,7 +1116,7 @@ export const FamilyScreen: React.FC = () => {
                 type="checkbox"
                 checked={attachLocationToAlert}
                 onChange={(e) => setAttachLocationToAlert(e.target.checked)}
-                className="text-purple-700 rounded"
+                className="accent-[#075985] rounded"
               />
               <span>वर्तमान GPS लोकेशन भी संदेश के साथ भेजें</span>
             </label>
