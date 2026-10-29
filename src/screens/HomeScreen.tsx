@@ -193,15 +193,47 @@ export const HomeScreen: React.FC = () => {
         {/* Chhath Arghya Timings & Live Sun Countdown */}
         <ChhathArghyaMuhurat language={language} />
 
-        {/* 3 Unique Spiritual & Pilgrim Companion Action Pills */}
+        {/* 4 Unique Spiritual & Pilgrim Companion Action Cards */}
         <section aria-label="छठ महापर्व विशेष सेवाएँ" className="home-special-tools">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <button
+              type="button"
+              onClick={() => navigate('chhath-katha')}
+              className="p-3 bg-gradient-to-br from-amber-500/20 via-orange-500/15 to-transparent border-2 border-amber-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-amber-500 active:scale-95 transition-all"
+            >
+              <div className="w-9 h-9 rounded-xl bg-amber-500/25 text-amber-950 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
+                📖
+              </div>
+              <span className="text-xs font-black text-stone-900 leading-tight">
+                {isEnglish ? 'Katha & Songs' : 'व्रत कथा व गीत'}
+              </span>
+              <span className="text-[10px] text-stone-600 font-semibold mt-0.5">
+                {isEnglish ? 'Offline Audio' : 'शारदा सिन्हा व आरती'}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('prasad-camps')}
+              className="p-3 bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-transparent border-2 border-emerald-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-emerald-500 active:scale-95 transition-all"
+            >
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/25 text-emerald-950 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
+                🎋
+              </div>
+              <span className="text-xs font-black text-stone-900 leading-tight">
+                {isEnglish ? 'Prasad Camps' : 'निःशुल्क शिविर'}
+              </span>
+              <span className="text-[10px] text-stone-600 font-semibold mt-0.5">
+                {isEnglish ? 'Soop, Milk, Daura' : 'सूप, दूध व ठेकुआ'}
+              </span>
+            </button>
+
             <button
               type="button"
               onClick={() => setShowChecklistModal(true)}
-              className="p-3 bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-400/60 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-amber-500 active:scale-95 transition-all"
+              className="p-3 bg-gradient-to-br from-sky-500/20 via-blue-500/15 to-transparent border-2 border-sky-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-sky-500 active:scale-95 transition-all"
             >
-              <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-900 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
+              <div className="w-9 h-9 rounded-xl bg-sky-500/25 text-sky-950 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
                 🧺
               </div>
               <span className="text-xs font-black text-stone-900 leading-tight">
@@ -214,26 +246,10 @@ export const HomeScreen: React.FC = () => {
 
             <button
               type="button"
-              onClick={() => setShowDevotionalModal(true)}
-              className="p-3 bg-gradient-to-br from-sky-500/15 to-blue-500/10 border border-sky-400/60 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-sky-500 active:scale-95 transition-all"
-            >
-              <div className="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-900 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
-                🎵
-              </div>
-              <span className="text-xs font-black text-stone-900 leading-tight">
-                {isEnglish ? 'Chhath Folk Songs' : 'छठ गीत व आरती'}
-              </span>
-              <span className="text-[10px] text-stone-600 font-semibold mt-0.5">
-                {isEnglish ? 'Offline Chime' : 'मंत्र व धुन'}
-              </span>
-            </button>
-
-            <button
-              type="button"
               onClick={() => setShowSafetyBadgeModal(true)}
-              className="p-3 bg-gradient-to-br from-emerald-500/15 to-teal-500/10 border border-emerald-400/60 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-emerald-500 active:scale-95 transition-all"
+              className="p-3 bg-gradient-to-br from-rose-500/20 via-red-500/15 to-transparent border-2 border-rose-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-rose-500 active:scale-95 transition-all"
             >
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-900 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
+              <div className="w-9 h-9 rounded-xl bg-rose-500/25 text-rose-950 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
                 🛡️
               </div>
               <span className="text-xs font-black text-stone-900 leading-tight">
