@@ -63,6 +63,9 @@ export const FamilyScreen: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [newGroupName, setNewGroupName] = useState<string>('हमारा Chhath परिवार');
 
+  const [showAddMemberModal, setShowAddMemberModal] = useState<boolean>(false);
+  const [directMemberName, setDirectMemberName] = useState<string>('');
+
   const [showJoinModal, setShowJoinModal] = useState<boolean>(false);
   const [joinCodeInput, setJoinCodeInput] = useState<string>('');
   const [joinNameInput, setJoinNameInput] = useState<string>('');
@@ -104,11 +107,13 @@ export const FamilyScreen: React.FC = () => {
   // ============================================================
   // HANDLERS
   // ============================================================
-  const handleCreateGroup = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreateGroup = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
     try {
-      const newGrp = FamilyService.createFamilyGroup(newGroupName);
+      const trimmed = newGroupName?.trim() || 'हमारा Chhath परिवार';
+      const newGrp = FamilyService.createFamilyGroup(trimmed);
       setShowCreateModal(false);
+      setNewGroupName('हमारा Chhath परिवार');
       refreshState();
       showToast(`नया परिवार समूह "${newGrp.name}" बनाया गया! कोड: ${newGrp.inviteCode}`);
     } catch (err: unknown) {
@@ -116,15 +121,32 @@ export const FamilyScreen: React.FC = () => {
     }
   };
 
-  const handleJoinGroup = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleJoinGroup = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
     const result = FamilyService.joinFamilyGroup(joinCodeInput, joinNameInput);
     if (result.success) {
       setShowJoinModal(false);
+      setJoinCodeInput('');
+      setJoinNameInput('');
       refreshState();
       showToast(result.message);
     } else {
       showToast(result.message);
+    }
+  };
+
+  const handleAddDirectMember = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    if (!directMemberName.trim()) {
+      showToast('कृपया सदस्य का नाम दर्ज करें।');
+      return;
+    }
+    const added = FamilyService.addMemberDirectly(directMemberName.trim());
+    if (added) {
+      setDirectMemberName('');
+      setShowAddMemberModal(false);
+      refreshState();
+      showToast(`सदस्य "${added.name}" को परिवार समूह में जोड़ा गया!`);
     }
   };
 
@@ -483,13 +505,23 @@ export const FamilyScreen: React.FC = () => {
               <span className="text-xs font-black uppercase tracking-wider text-stone-500">
                 परिवार के सदस्य ({members.length})
               </span>
-              <button
-                onClick={() => setShowJoinModal(true)}
-                className="text-xs font-bold text-[#075985] hover:text-[#063B5C] flex items-center gap-1"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span>+ सदस्य जोड़ें</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddMemberModal(true)}
+                  className="min-h-[32px] px-2.5 py-1 bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white text-xs font-bold rounded-xl flex items-center gap-1 shadow-xs cursor-pointer"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>+ सदस्य जोड़ें</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowJoinModal(true)}
+                  className="min-h-[32px] px-2 py-1 text-xs font-bold text-[#075985] hover:bg-stone-100 rounded-xl flex items-center gap-1 cursor-pointer"
+                >
+                  <span>🔑 कोड से</span>
+                </button>
+              </div>
             </div>
 
             {members.map((mem) => {
@@ -906,13 +938,14 @@ export const FamilyScreen: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="min-h-[46px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl"
+                className="min-h-[46px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl cursor-pointer"
               >
                 रद्द करें
               </button>
               <button
                 type="submit"
-                className="min-h-[46px] bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white font-black text-xs rounded-xl shadow-md"
+                onClick={handleCreateGroup}
+                className="min-h-[46px] bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white font-black text-xs rounded-xl shadow-md cursor-pointer"
               >
                 समूह बनाएं
               </button>
@@ -969,15 +1002,72 @@ export const FamilyScreen: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowJoinModal(false)}
-                className="min-h-[46px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl"
+                className="min-h-[46px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl cursor-pointer"
               >
                 रद्द करें
               </button>
               <button
                 type="submit"
-                className="min-h-[46px] bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white font-black text-xs rounded-xl shadow-md"
+                onClick={handleJoinGroup}
+                className="min-h-[46px] bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white font-black text-xs rounded-xl shadow-md cursor-pointer"
               >
                 जुड़ें
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 7: ADD MEMBER DIRECTLY TO GROUP                    */}
+      {/* ======================================================== */}
+      {showAddMemberModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <form
+            onSubmit={handleAddDirectMember}
+            className="bg-white rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl animate-fade-in"
+          >
+            <div className="space-y-1">
+              <h4 className="text-base font-black text-stone-900">
+                परिवार में नया सदस्य जोड़ें
+              </h4>
+              <p className="text-xs text-stone-500">
+                अपने परिवार के किसी भी सदस्य (माता, पिता, बच्चे, रिश्तेदार) का नाम यहाँ जोड़ें।
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-stone-700">
+                सदस्य का नाम:
+              </label>
+              <input
+                type="text"
+                required
+                autoFocus
+                value={directMemberName}
+                onChange={(e) => setDirectMemberName(e.target.value)}
+                placeholder="उदा. रीता देवी / अमित कुमार"
+                className="w-full min-h-[46px] px-3.5 rounded-2xl border border-stone-300 text-sm font-bold bg-stone-50"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setDirectMemberName('');
+                  setShowAddMemberModal(false);
+                }}
+                className="min-h-[46px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl cursor-pointer"
+              >
+                रद्द करें
+              </button>
+              <button
+                type="submit"
+                onClick={handleAddDirectMember}
+                className="min-h-[46px] bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white font-black text-xs rounded-xl shadow-md cursor-pointer"
+              >
+                सदस्य जोड़ें
               </button>
             </div>
           </form>

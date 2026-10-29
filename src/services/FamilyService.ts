@@ -19,17 +19,50 @@ const STORAGE_KEYS = {
   ALERTS: 'deo_family_alerts',
 };
 
-const getStorage = (): Storage | null => {
-  if (typeof window !== 'undefined' && window.localStorage) return window.localStorage;
-  if (typeof globalThis !== 'undefined' && 'localStorage' in globalThis && globalThis.localStorage) {
-    return globalThis.localStorage as Storage;
-  }
-  return null;
+const inMemoryStore = new Map<string, string>();
+
+const safeStorage = {
+  getItem(key: string): string | null {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const val = window.localStorage.getItem(key);
+        if (val !== null) {
+          inMemoryStore.set(key, val);
+          return val;
+        }
+      }
+    } catch {
+      // Ignore security errors in restricted environments / private mode
+    }
+    return inMemoryStore.get(key) ?? null;
+  },
+  setItem(key: string, value: string): void {
+    inMemoryStore.set(key, value);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(key, value);
+      }
+    } catch {
+      // Fallback silently to in-memory store
+    }
+  },
+  removeItem(key: string): void {
+    inMemoryStore.delete(key);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(key);
+      }
+    } catch {
+      // Fallback silently to in-memory store
+    }
+  },
 };
 
 class FamilyServiceManager {
   private currentUserId: string;
   private currentUserName: string;
+  private cachedGroup: FamilyGroup | null = null;
+  private cachedMembers: FamilyGroupMember[] = [];
 
   constructor() {
     this.currentUserId = this.initUserId();
@@ -38,22 +71,18 @@ class FamilyServiceManager {
   }
 
   private initUserId(): string {
-    const storage = getStorage();
-    if (!storage) return 'user_offline';
-    const existing = storage.getItem(STORAGE_KEYS.CURRENT_USER_ID);
+    const existing = safeStorage.getItem(STORAGE_KEYS.CURRENT_USER_ID);
     if (existing) return existing;
     const newId = 'user_' + Math.random().toString(36).substring(2, 9);
-    storage.setItem(STORAGE_KEYS.CURRENT_USER_ID, newId);
+    safeStorage.setItem(STORAGE_KEYS.CURRENT_USER_ID, newId);
     return newId;
   }
 
   private initUserName(): string {
-    const storage = getStorage();
-    if (!storage) return 'आप (You)';
-    const existing = storage.getItem(STORAGE_KEYS.CURRENT_USER_NAME);
+    const existing = safeStorage.getItem(STORAGE_KEYS.CURRENT_USER_NAME);
     if (existing) return existing;
     const defaultName = 'आप (You)';
-    storage.setItem(STORAGE_KEYS.CURRENT_USER_NAME, defaultName);
+    safeStorage.setItem(STORAGE_KEYS.CURRENT_USER_NAME, defaultName);
     return defaultName;
   }
 
@@ -69,10 +98,7 @@ class FamilyServiceManager {
 
   public setCurrentUserName(name: string): void {
     this.currentUserName = name.trim() || 'आप (You)';
-    const storage = getStorage();
-    if (storage) {
-      storage.setItem(STORAGE_KEYS.CURRENT_USER_NAME, this.currentUserName);
-    }
+    safeStorage.setItem(STORAGE_KEYS.CURRENT_USER_NAME, this.currentUserName);
 
     // Also update current user record in member list if present
     const members = this.getFamilyMembers();
@@ -86,15 +112,17 @@ class FamilyServiceManager {
   // FAMILY GROUP MANAGEMENT
   // ============================================================
   public getFamilyGroup(): FamilyGroup | null {
-    const storage = getStorage();
-    if (!storage) return null;
     try {
-      const data = storage.getItem(STORAGE_KEYS.GROUP);
-      if (!data) return null;
-      return JSON.parse(data) as FamilyGroup;
+      const data = safeStorage.getItem(STORAGE_KEYS.GROUP);
+      if (data) {
+        const parsed = JSON.parse(data) as FamilyGroup;
+        this.cachedGroup = parsed;
+        return parsed;
+      }
     } catch {
-      return null;
+      // Fall through to cachedGroup
     }
+    return this.cachedGroup;
   }
 
   public createFamilyGroup(groupName?: string): FamilyGroup {
@@ -112,10 +140,8 @@ class FamilyServiceManager {
       status: 'ACTIVE',
     };
 
-    const storage = getStorage();
-    if (storage) {
-      storage.setItem(STORAGE_KEYS.GROUP, JSON.stringify(newGroup));
-    }
+    this.cachedGroup = newGroup;
+    safeStorage.setItem(STORAGE_KEYS.GROUP, JSON.stringify(newGroup));
 
     // Add creator as owner member
     const ownerMember: FamilyGroupMember = {
@@ -136,6 +162,27 @@ class FamilyServiceManager {
     );
 
     return newGroup;
+  }
+
+  public addMemberDirectly(memberName: string, role: 'MEMBER' | 'OWNER' = 'MEMBER'): FamilyGroupMember | null {
+    const group = this.getFamilyGroup();
+    if (!group) return null;
+    const cleanName = memberName.trim() || 'परिवार सदस्य';
+    const newMember: FamilyGroupMember = {
+      id: 'mem_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      familyGroupId: group.id,
+      userId: 'user_rel_' + Date.now(),
+      name: cleanName,
+      role,
+      locationSharingEnabled: false,
+      joinedAt: new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    const members = this.getFamilyMembers();
+    members.push(newMember);
+    this.saveMembers(members);
+    this.sendFamilyAlert(`${cleanName} को परिवार समूह में शामिल किया गया।`, 'INFO');
+    return newMember;
   }
 
   public joinFamilyGroup(
@@ -166,10 +213,8 @@ class FamilyServiceManager {
         createdAt: new Date().toISOString(),
         status: 'ACTIVE',
       };
-      const storage = getStorage();
-      if (storage) {
-        storage.setItem(STORAGE_KEYS.GROUP, JSON.stringify(groupToJoin));
-      }
+      this.cachedGroup = groupToJoin;
+      safeStorage.setItem(STORAGE_KEYS.GROUP, JSON.stringify(groupToJoin));
     }
 
     const members = this.getFamilyMembers();
@@ -204,12 +249,11 @@ class FamilyServiceManager {
 
     this.sendFamilyAlert(`${this.getCurrentUserName()} ने family group छोड़ दिया है।`, 'WARNING');
 
-    const storage = getStorage();
-    if (storage) {
-      storage.removeItem(STORAGE_KEYS.GROUP);
-      storage.removeItem(STORAGE_KEYS.MEMBERS);
-      storage.removeItem(STORAGE_KEYS.SHARING_STATE);
-    }
+    this.cachedGroup = null;
+    this.cachedMembers = [];
+    safeStorage.removeItem(STORAGE_KEYS.GROUP);
+    safeStorage.removeItem(STORAGE_KEYS.MEMBERS);
+    safeStorage.removeItem(STORAGE_KEYS.SHARING_STATE);
     return true;
   }
 
@@ -229,22 +273,22 @@ class FamilyServiceManager {
   // MEMBERS LIST & LOCATION
   // ============================================================
   public getFamilyMembers(): FamilyGroupMember[] {
-    const storage = getStorage();
-    if (!storage) return [];
     try {
-      const data = storage.getItem(STORAGE_KEYS.MEMBERS);
-      if (!data) return [];
-      return JSON.parse(data) as FamilyGroupMember[];
+      const data = safeStorage.getItem(STORAGE_KEYS.MEMBERS);
+      if (data) {
+        const parsed = JSON.parse(data) as FamilyGroupMember[];
+        this.cachedMembers = parsed;
+        return parsed;
+      }
     } catch {
-      return [];
+      // Fall through to cachedMembers
     }
+    return this.cachedMembers;
   }
 
   private saveMembers(members: FamilyGroupMember[]): void {
-    const storage = getStorage();
-    if (storage) {
-      storage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(members));
-    }
+    this.cachedMembers = [...members];
+    safeStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(members));
   }
 
   // ============================================================
@@ -302,10 +346,7 @@ class FamilyServiceManager {
       createdAt: now.toISOString(),
       expiresAt: expiresAt.toISOString(),
     };
-    const storage = getStorage();
-    if (storage) {
-      storage.setItem(STORAGE_KEYS.SHARING_STATE, JSON.stringify(shareState));
-    }
+    safeStorage.setItem(STORAGE_KEYS.SHARING_STATE, JSON.stringify(shareState));
 
     this.sendFamilyAlert(
       `${this.getCurrentUserName()} ने Location Sharing शुरू की (${this.formatDuration(durationMinutes)})।`,
@@ -330,20 +371,15 @@ class FamilyServiceManager {
       return m;
     });
     this.saveMembers(updated);
-    const storage = getStorage();
-    if (storage) {
-      storage.removeItem(STORAGE_KEYS.SHARING_STATE);
-    }
+    safeStorage.removeItem(STORAGE_KEYS.SHARING_STATE);
 
     this.sendFamilyAlert(`${this.getCurrentUserName()} ने location sharing बंद कर दी।`, 'SHARING_CHANGE');
     return true;
   }
 
   public isSharingActive(): boolean {
-    const storage = getStorage();
-    if (!storage) return false;
     try {
-      const state = storage.getItem(STORAGE_KEYS.SHARING_STATE);
+      const state = safeStorage.getItem(STORAGE_KEYS.SHARING_STATE);
       if (!state) return false;
       const parsed = JSON.parse(state) as FamilyLocationShare;
       const expiry = new Date(parsed.expiresAt).getTime();
@@ -358,10 +394,8 @@ class FamilyServiceManager {
   }
 
   public getSharingRemainingMinutes(): number {
-    const storage = getStorage();
-    if (!storage) return 0;
     try {
-      const state = storage.getItem(STORAGE_KEYS.SHARING_STATE);
+      const state = safeStorage.getItem(STORAGE_KEYS.SHARING_STATE);
       if (!state) return 0;
       const parsed = JSON.parse(state) as FamilyLocationShare;
       const diffMs = new Date(parsed.expiresAt).getTime() - Date.now();
@@ -372,10 +406,8 @@ class FamilyServiceManager {
   }
 
   public getSharingExpiresTimeString(): string {
-    const storage = getStorage();
-    if (!storage) return '';
     try {
-      const state = storage.getItem(STORAGE_KEYS.SHARING_STATE);
+      const state = safeStorage.getItem(STORAGE_KEYS.SHARING_STATE);
       if (!state) return '';
       const parsed = JSON.parse(state) as FamilyLocationShare;
       return new Date(parsed.expiresAt).toLocaleTimeString('hi-IN', {
@@ -455,18 +487,13 @@ class FamilyServiceManager {
     const alerts = this.getFamilyAlerts();
     alerts.unshift(alertItem);
     if (alerts.length > 20) alerts.pop();
-    const storage = getStorage();
-    if (storage) {
-      storage.setItem(STORAGE_KEYS.ALERTS, JSON.stringify(alerts));
-    }
+    safeStorage.setItem(STORAGE_KEYS.ALERTS, JSON.stringify(alerts));
     return true;
   }
 
   public getFamilyAlerts(): FamilyAlertItem[] {
-    const storage = getStorage();
-    if (!storage) return [];
     try {
-      const data = storage.getItem(STORAGE_KEYS.ALERTS);
+      const data = safeStorage.getItem(STORAGE_KEYS.ALERTS);
       if (!data) return [];
       return JSON.parse(data) as FamilyAlertItem[];
     } catch {

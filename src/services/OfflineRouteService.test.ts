@@ -47,3 +47,4 @@ test('OfflineRouteService adjusts duration between walking and driving modes', a
 
   assert.ok(walkRoute.durationSeconds > driveRoute.durationSeconds, 'Walking should take longer than driving');
 });
+
