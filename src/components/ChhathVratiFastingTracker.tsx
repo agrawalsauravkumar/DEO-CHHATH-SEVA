@@ -200,3 +200,4 @@ export const ChhathVratiFastingTracker: React.FC<Props> = ({ onOpenCompass, onOp
     </section>
   );
 };
+

@@ -246,3 +246,4 @@ export const ChhathSolarCompassModal: React.FC<Props> = ({ isOpen, onClose }) =>
     </div>
   );
 };
+

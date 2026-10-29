@@ -19,78 +19,7 @@ import {
   Check,
   ChevronRight,
 } from 'lucide-react';
-
-interface FolkTrack {
-  id: string;
-  title: string;
-  singer: string;
-  tagline: string;
-  lyrics: string[];
-  meaning: string;
-}
-
-const FOLK_TRACKS: FolkTrack[] = [
-  {
-    id: 'katha-track-1',
-    title: 'काँच ही बाँस के बहँगिया',
-    singer: 'पारंपरिक अमर लोकगीत (शारदा सिन्हा स्वर प्रेरणा)',
-    tagline: 'सूप-दउरा उठाव व घाट प्रस्थान',
-    lyrics: [
-      'काँच ही बाँस के बहँगिया, बहँगी लचकत जाए…',
-      'बहँगी लचकत जाए…',
-      'बात जे पुछेले बटोहिया, बहँगी केकरा के जाए?',
-      'तू त आन्हर हउवे रे बटोहिया, बहँगी छठी माई के जाए…',
-      'काँच ही बाँस के बहँगिया, बहँगी लचकत जाए…',
-      'सूपे सूपे निपले अंगनवा, अरघ के बेरा भईल…',
-      'उग हे सुरुज देव, अरघ के बेरा भईल…',
-    ],
-    meaning: 'बांस की बहंगी में पावन दउरा लेकर छठ व्रती और परिजन देव के सूर्य कुंड घाट की ओर प्रस्थान करते हैं।',
-  },
-  {
-    id: 'katha-track-2',
-    title: 'उग हे सुरुज देव (अरघ के बेरा भईल)',
-    singer: 'पारंपरिक सांध्य व उषा अर्घ्य गान',
-    tagline: 'भगवान भुवन भास्कर को भावपूर्ण पुकार',
-    lyrics: [
-      'उग हे सुरुज देव, अरघ के बेरा भईल…',
-      'अरघ के बेरा भईल, पूजन के बेरा भईल…',
-      'जल बीच ठाढ़ व्रती विनती करेली…',
-      'दर्शन देहू सुरुज देव, अरघ के बेरा भईल…',
-      'अन्हरिया भगावल, जगमग उजियार भईल…',
-      'दीनानाथ हे प्रभु, तोहर जय-जयकार भईल…',
-    ],
-    meaning: 'शीतल सूर्य कुंड के जल में कमर तक खड़े होकर दोनों कर जोड़कर भगवान भास्कर से दर्शन देने की भावपूर्ण प्रार्थना।',
-  },
-  {
-    id: 'katha-track-3',
-    title: 'केलवा के पात पर उगेलन सुरुजमल',
-    singer: 'पारंपरिक मांगलिक अर्घ्य गीत',
-    tagline: 'पवित्र वेदी व प्रसाद अर्पण',
-    lyrics: [
-      'केलवा के पात पर उगेलन सुरुजमल झांके झुके…',
-      'करेलू छठ परबिया, से झांके झुके…',
-      'हम तोसे पुछी बरतिया हे, कवन फल पावेला…',
-      'से कवन फल पावेला…',
-      'पुत्र पावे अन्न-धन लछिमी, अमर सुहाग पावेला…',
-      'केलवा के पात पर उगेलन सुरुजमल झांके झुके…',
-    ],
-    meaning: 'केले के पत्तों और सूप में सजे ऋतु फलों के मध्य भगवान सूर्य की स्वर्णिम किरणों का अवतरण।',
-  },
-  {
-    id: 'katha-track-4',
-    title: 'पहिले पहिल हम कइनी छठी मइया',
-    singer: 'छठ व्रत संकल्प व समर्पण गान',
-    tagline: 'प्रथम व्रत की निष्ठा और श्रद्धा',
-    lyrics: [
-      'पहिले पहिल हम कइनी, छठी मइया बरत तोहार…',
-      'करिहा क्षमा छठी मइया, भूल-चूक गलती हमार…',
-      'सबके सुहाग रखिहा, अंचरा के लाज रखिहा…',
-      'गोदी में बालक खेलै, घर-अंगना भरल रखिहा…',
-      'पहिले पहिल हम कइनी, छठी मइया बरत तोहार…',
-    ],
-    meaning: 'निष्ठापूर्वक प्रथम बार छठ व्रत धारण करने वाली माताओं-बहनों की क्षमायाचना व मंगल कामना।',
-  },
-];
+import { ChhathSongPlayer } from '../components/ChhathSongPlayer';
 
 export const ChhathKathaScreen: React.FC = () => {
   const { navigate } = useApp();
@@ -101,8 +30,6 @@ export const ChhathKathaScreen: React.FC = () => {
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const chimeIntervalRef = useRef<number | null>(null);
-
-  const currentTrack = FOLK_TRACKS[selectedTrackIndex];
 
   // Synthesize soft temple bell & meditative Om resonance (100% offline, zero internet required)
   const startOfflineChime = () => {
@@ -307,58 +234,13 @@ export const ChhathKathaScreen: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 2: FOLK SONGS (GEET) */}
+        {/* TAB 2: FOLK SONGS (GEET) WITH LIVE AUDIO & MELODY PLAYER */}
         {activeTab === 'GEET' && (
-          <div className="space-y-3.5 animate-fade-in">
-            {/* Song Track Selector */}
-            <div className="grid grid-cols-2 gap-2">
-              {FOLK_TRACKS.map((t, idx) => (
-                <button
-                  key={t.id}
-                  onClick={() => setSelectedTrackIndex(idx)}
-                  className={`p-3 rounded-2xl border text-left transition-all ${
-                    selectedTrackIndex === idx
-                      ? 'bg-[#075985] text-white border-[#075985] shadow-sm'
-                      : 'bg-white text-stone-800 border-stone-200 hover:bg-stone-50'
-                  }`}
-                >
-                  <span className="text-[10px] block opacity-80 font-bold">गीत {idx + 1}</span>
-                  <h4 className="text-xs font-black truncate leading-tight mt-0.5">{t.title}</h4>
-                  <span className="text-[10px] block truncate opacity-75 mt-0.5">{t.tagline}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Song Lyrics Card */}
-            <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-xs space-y-3.5">
-              <div className="border-b border-stone-100 pb-2.5 flex items-start justify-between">
-                <div>
-                  <h3 className="text-base font-black text-[#075985]">{currentTrack.title}</h3>
-                  <span className="text-xs text-[#F47B20] font-bold block">{currentTrack.singer}</span>
-                </div>
-                <button
-                  onClick={() => handleCopyMantra(currentTrack.lyrics.join('\n'))}
-                  className="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold rounded-lg flex items-center gap-1"
-                >
-                  {copiedMantra ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
-                  <span>{copiedMantra ? 'कॉपी हुआ' : 'शेयर / कॉपी'}</span>
-                </button>
-              </div>
-
-              {/* Lyrics Verse */}
-              <div className="space-y-2 py-2 px-3 bg-amber-50/50 rounded-2xl border border-amber-200/50 text-stone-800 text-xs sm:text-sm font-semibold leading-relaxed">
-                {currentTrack.lyrics.map((line, lidx) => (
-                  <p key={lidx} className="tracking-wide">
-                    {line}
-                  </p>
-                ))}
-              </div>
-
-              <div className="p-3 bg-stone-50 rounded-xl text-xs text-stone-600 border border-stone-200/70">
-                <span className="font-black text-stone-900 block mb-0.5">भावार्थ:</span>
-                {currentTrack.meaning}
-              </div>
-            </div>
+          <div className="animate-fade-in">
+            <ChhathSongPlayer
+              currentTrackIndex={selectedTrackIndex}
+              onSelectTrack={setSelectedTrackIndex}
+            />
           </div>
         )}
 

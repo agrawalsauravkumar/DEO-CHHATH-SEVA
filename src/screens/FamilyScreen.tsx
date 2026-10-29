@@ -106,10 +106,14 @@ export const FamilyScreen: React.FC = () => {
   // ============================================================
   const handleCreateGroup = (e: React.FormEvent) => {
     e.preventDefault();
-    const newGrp = FamilyService.createFamilyGroup(newGroupName);
-    setShowCreateModal(false);
-    refreshState();
-    showToast(`नया परिवार समूह "${newGrp.name}" बनाया गया! कोड: ${newGrp.inviteCode}`);
+    try {
+      const newGrp = FamilyService.createFamilyGroup(newGroupName);
+      setShowCreateModal(false);
+      refreshState();
+      showToast(`नया परिवार समूह "${newGrp.name}" बनाया गया! कोड: ${newGrp.inviteCode}`);
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'परिवार समूह बनाने में समस्या हुई।');
+    }
   };
 
   const handleJoinGroup = (e: React.FormEvent) => {
