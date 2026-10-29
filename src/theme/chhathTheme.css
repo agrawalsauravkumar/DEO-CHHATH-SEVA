@@ -4,21 +4,37 @@
  */
 
 /* ========================================================
-   DEO CHHATH SEVA - GLOBAL CHHATH THEME
+   DEO CHHATH SEVA - OFFICIAL LOGO DESIGN THEME
    NEXTGEN DEVBHOOMI FOUNDATION
    "रास्ता भी • सहायता भी • सेवा भी"
    ======================================================== */
 
 :root {
-  --chhath-river-blue: #075985;
-  --chhath-deep-river-blue: #063B5C;
-  --chhath-sunrise-saffron: #F47B20;
-  --chhath-orange: #F47B20;
-  --chhath-gold: #FFB52E;
-  --chhath-marigold-gold: var(--chhath-gold);
+  /* Exact Logo Palette (from deo-chhath-seva-logo.svg) */
+  --chhath-logo-navy: #041E2F;
+  --chhath-logo-deep-blue: #073B5A;
+  --chhath-logo-river-blue: #0B5E8E;
+  --chhath-logo-gold-light: #FFE082;
+  --chhath-logo-gold: #FFD54F;
+  --chhath-logo-marigold: #FFA000;
+  --chhath-logo-saffron: #FF8C42;
+  --chhath-logo-vermilion: #E65100;
+  --chhath-logo-water: #0288D1;
+  --chhath-logo-water-light: #29B6F6;
+  --chhath-logo-green: #2E7D32;
+  --chhath-logo-cream: #FFF8E1;
+  --chhath-logo-ivory: #FFFDF7;
+
+  /* Global Application Colors Harmonized with Official Logo */
+  --chhath-river-blue: #0B5E8E;
+  --chhath-deep-river-blue: #041E2F;
+  --chhath-sunrise-saffron: #FF8C42;
+  --chhath-orange: #FF8C42;
+  --chhath-gold: #FFD54F;
+  --chhath-marigold-gold: #FFA000;
   --chhath-leaf-green: #2E7D32;
   --chhath-earth-brown: #8D6E63;
-  --chhath-cream: #FFF7E5;
+  --chhath-cream: #FFF8E1;
   --chhath-white: #FFFFFF;
   --chhath-emergency-red: #A61B29;
   --chhath-blue: var(--chhath-river-blue);
@@ -28,14 +44,14 @@
   --chhath-red: var(--chhath-emergency-red);
   --chhath-emergency: var(--chhath-emergency-red);
   --chhath-page: var(--chhath-cream);
-  --chhath-surface: var(--chhath-white);
+  --chhath-surface: #FFFDF7;
   --chhath-text: #1F2A37;
   --chhath-muted: #5F6B70;
-  --chhath-border: rgba(6, 59, 92, 0.12);
+  --chhath-border: rgba(255, 213, 79, 0.55);
   --app-shell-bg:
-    radial-gradient(ellipse at 10% 95%, rgba(244, 123, 32, 0.045), transparent 28rem),
-    linear-gradient(180deg, #fff7e5 0%, #fffdf7 100%);
-  --app-shell-shadow: 0 22px 60px rgba(7, 52, 82, 0.12);
+    radial-gradient(ellipse at 10% 95%, rgba(255, 140, 66, 0.06), transparent 28rem),
+    linear-gradient(180deg, #FFF8E1 0%, #FFFDF7 100%);
+  --app-shell-shadow: 0 22px 60px rgba(4, 30, 47, 0.16);
 }
 
 .app-shell {
@@ -48,8 +64,8 @@
 .app-surface {
   color: var(--chhath-text);
   background: var(--chhath-surface);
-  border: 1px solid var(--chhath-border);
-  box-shadow: 0 10px 28px rgba(6, 59, 92, 0.07);
+  border: 1.5px solid var(--chhath-border);
+  box-shadow: 0 10px 28px rgba(4, 30, 47, 0.08);
 }
 
 .bg-chhath-blue { background-color: var(--chhath-blue); }

@@ -2,14 +2,17 @@
 @import "./theme/chhathTheme.css";
 
 @theme {
-  --color-chhath-river-blue: #075985;
-  --color-chhath-deep-river-blue: #063B5C;
-  --color-chhath-sunrise: #F47B20;
-  --color-chhath-orange: #F47B20;
-  --color-chhath-gold: #FFB52E;
+  --color-chhath-navy: #041E2F;
+  --color-chhath-river-blue: #0B5E8E;
+  --color-chhath-deep-river-blue: #041E2F;
+  --color-chhath-sunrise: #FF8C42;
+  --color-chhath-orange: #FF8C42;
+  --color-chhath-gold: #FFD54F;
+  --color-chhath-marigold: #FFA000;
   --color-chhath-green: #2E7D32;
   --color-chhath-earth: #8D6E63;
-  --color-chhath-cream: #FFF7E5;
+  --color-chhath-cream: #FFF8E1;
+  --color-chhath-ivory: #FFFDF7;
   --color-chhath-red: #A61B29;
 }
 
@@ -105,9 +108,10 @@ img {
   padding: 0.875rem 1rem 0.75rem;
   color: var(--chhath-white);
   background:
-    radial-gradient(circle at 88% 0%, rgba(255, 213, 79, 0.22), transparent 9rem),
-    linear-gradient(135deg, var(--chhath-river-blue), var(--chhath-deep-river-blue));
-  border-bottom: 3px solid var(--chhath-marigold-gold);
+    radial-gradient(circle at 88% 0%, rgba(255, 213, 79, 0.28), transparent 9rem),
+    linear-gradient(135deg, #041E2F 0%, #073B5A 50%, #0B5E8E 100%);
+  border-bottom: 3px solid var(--chhath-gold);
+  box-shadow: 0 6px 20px rgba(4, 30, 47, 0.22);
 }
 
 .map-screen__header-inner {
@@ -239,11 +243,11 @@ img {
   padding: 1.3rem 1.15rem 2.5rem;
   color: var(--chhath-white);
   background:
-    radial-gradient(circle at 80% 23%, rgba(255, 213, 79, 0.85) 0 1.1rem, rgba(255, 140, 66, 0.5) 1.2rem 2rem, transparent 2.1rem),
-    linear-gradient(150deg, var(--chhath-river-blue), var(--chhath-deep-river-blue));
-  border: 1px solid rgba(255, 213, 79, 0.65);
+    radial-gradient(circle at 82% 22%, rgba(255, 248, 225, 0.95) 0 0.8rem, rgba(255, 213, 79, 0.75) 0.9rem 1.8rem, rgba(230, 81, 0, 0.45) 1.9rem 2.8rem, transparent 3rem),
+    linear-gradient(150deg, #073B5A 0%, #041E2F 100%);
+  border: 2px solid #FFD54F;
   border-radius: 1.6rem;
-  box-shadow: 0 14px 30px rgba(6, 59, 92, 0.16);
+  box-shadow: 0 16px 36px rgba(4, 30, 47, 0.22);
 }
 
 .welcome-panel__sun {

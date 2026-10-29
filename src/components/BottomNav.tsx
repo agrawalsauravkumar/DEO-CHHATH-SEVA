@@ -4,7 +4,7 @@ import { ScreenId } from '../types';
 import { HandHeart, House, Map, Menu } from 'lucide-react';
 
 export const BottomNav: React.FC = () => {
-  const { currentScreen, navigate, seniorMode, language } = useApp();
+  const { currentScreen, navigate, language } = useApp();
   const isEnglish = language === 'en';
 
   const navItems: {
@@ -31,7 +31,7 @@ export const BottomNav: React.FC = () => {
   return (
     <nav
       aria-label={isEnglish ? 'Main navigation' : 'मुख्य नेविगेशन'}
-      className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md md:max-w-xl bg-white border-t-2 md:border-x-2 md:rounded-t-2xl border-[#FFB52E] shadow-[0_-8px_24px_rgba(6,59,92,0.12)] pb-[env(safe-area-inset-bottom)] select-none font-['Mukta',sans-serif]"
+      className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md md:max-w-xl bg-[#041E2F]/98 backdrop-blur-md border-t-2 md:border-x-2 md:rounded-t-3xl border-[#FFD54F] shadow-[0_-10px_32px_rgba(4,30,47,0.35)] pb-[env(safe-area-inset-bottom)] select-none font-['Mukta',sans-serif]"
     >
       <div className="grid grid-cols-4 items-center min-h-16 px-1">
         {navItems.map((item) => {
@@ -48,21 +48,21 @@ export const BottomNav: React.FC = () => {
               key={item.id}
               onClick={() => navigate(item.id)}
               aria-current={isActive ? 'page' : undefined}
-              className={`min-h-[56px] w-full flex flex-col items-center justify-center transition-all active:scale-95 relative py-1 rounded-xl focus-visible:outline-offset-[-2px] ${
+              className={`min-h-[56px] w-full flex flex-col items-center justify-center transition-all active:scale-95 relative py-1 rounded-2xl focus-visible:outline-offset-[-2px] ${
                 isActive
-                  ? 'text-[#F57C00] font-black'
-                  : 'text-[#063B5C] hover:text-[#075985] font-medium'
+                  ? 'text-[#FFD54F] font-black'
+                  : 'text-[#FFF8E1]/75 hover:text-[#FFD54F] font-medium'
               }`}
             >
               {isActive && (
-                <span className="absolute top-1 w-9 h-1 bg-[#F57C00] rounded-full" />
+                <span className="absolute top-1 w-9 h-1 bg-gradient-to-r from-[#FFE082] via-[#FFD54F] to-[#FFA000] rounded-full shadow-[0_0_10px_rgba(255,213,79,0.8)]" />
               )}
-              <span className={`transition-transform ${isActive ? 'scale-110' : 'opacity-90'}`}>
+              <span className={`transition-transform ${isActive ? 'scale-110 drop-shadow-[0_2px_6px_rgba(255,213,79,0.5)]' : 'opacity-85'}`}>
                 <item.icon className="h-5 w-5" aria-hidden />
               </span>
               <span
                 className={`leading-none mt-1 tracking-wide ${
-                  isActive ? 'text-[#F57C00] font-black text-xs' : 'text-[#063B5C] text-[11px]'
+                  isActive ? 'text-[#FFD54F] font-black text-xs' : 'text-[#FFF8E1]/80 text-[11px]'
                 }`}
               >
                 {item.label}

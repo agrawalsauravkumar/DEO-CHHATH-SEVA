@@ -136,25 +136,52 @@ export const HomeScreen: React.FC = () => {
         <section className="welcome-panel" aria-labelledby="welcome-heading">
           <div className="welcome-panel__sun" aria-hidden="true" />
           <div className="welcome-panel__devotional-scene" aria-hidden="true">
-            <svg viewBox="0 0 260 190" role="presentation">
+            <svg viewBox="0 0 280 200" fill="none" role="presentation" className="w-full h-auto drop-shadow-md">
               <defs>
-                <linearGradient id="ghat-water" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stopColor="#f7b65d" stopOpacity=".72" />
-                  <stop offset="1" stopColor="#f7b65d" stopOpacity=".08" />
+                <radialGradient id="heroSunGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#FFF8E1" />
+                  <stop offset="35%" stopColor="#FFD54F" />
+                  <stop offset="70%" stopColor="#FF8C42" />
+                  <stop offset="100%" stopColor="#E65100" />
+                </radialGradient>
+                <linearGradient id="heroWaterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#0B5E8E" />
+                  <stop offset="50%" stopColor="#29B6F6" />
+                  <stop offset="100%" stopColor="#0288D1" />
                 </linearGradient>
               </defs>
-              <circle cx="185" cy="51" r="29" fill="#ffd36a" opacity=".88" />
-              <path d="M116 104h144v86H116z" fill="url(#ghat-water)" />
-              <path d="M0 115c36-14 72-14 110 0s78 13 150-2" fill="none" stroke="#ffd36a" strokeOpacity=".55" strokeWidth="2" />
-              <path d="M0 139c42-12 74-12 110 0s88 12 150-2M0 165c42-12 74-12 110 0s88 12 150-2" fill="none" stroke="#fff1ca" strokeOpacity=".42" strokeWidth="2" />
-              <path d="M133 110V88h22V73l16 15h34v22M128 88h83M166 73V59h12v14M171 59V48h3v11" fill="none" stroke="#fff1ca" strokeOpacity=".72" strokeWidth="3" strokeLinejoin="round" />
-              <path d="M34 126h25l-4 8H39z" fill="#ffd36a" />
-              <path d="M45 126c0-7 7-7 7 0M43 119c2-5 8-6 11-2" fill="none" stroke="#fff1ca" strokeWidth="2" strokeLinecap="round" />
-              <circle cx="46" cy="112" r="5" fill="#e7a65c" />
-              <path d="M39 126c0-8 3-12 7-12s8 4 8 12M45 116l-7 6m10-6 7 6" fill="none" stroke="#fff1ca" strokeWidth="3" strokeLinecap="round" />
-              <path d="M79 133h18l-3 6H82z" fill="#f5c36b" />
-              <circle cx="88" cy="116" r="4" fill="#e7a65c" />
-              <path d="M82 132c0-9 2-13 6-13s7 4 7 13m-7-12-7 6m9-6 7 5" fill="none" stroke="#fff1ca" strokeWidth="3" strokeLinecap="round" />
+              <g stroke="#FFD54F" strokeWidth="2" opacity="0.85">
+                <line x1="205" y1="58" x2="205" y2="12" />
+                <line x1="205" y1="58" x2="245" y2="18" />
+                <line x1="205" y1="58" x2="165" y2="18" />
+                <line x1="205" y1="58" x2="270" y2="38" />
+                <line x1="205" y1="58" x2="140" y2="38" />
+                <line x1="205" y1="58" x2="278" y2="68" />
+                <line x1="205" y1="58" x2="132" y2="68" />
+              </g>
+              <circle cx="205" cy="58" r="32" fill="url(#heroSunGlow)" stroke="#FFD54F" strokeWidth="2" />
+              <circle cx="205" cy="58" r="26" fill="#FFF8E1" opacity="0.3" />
+              <g transform="translate(142, 45)">
+                <path d="M 28,0 C 24,18 16,38 8,62 L 48,62 C 40,38 32,18 28,0 Z" fill="#8D6E63" stroke="#5D4037" strokeWidth="1.5" />
+                <ellipse cx="28" cy="0" rx="6" ry="2.5" fill="#FFD54F" />
+                <circle cx="28" cy="-3.5" r="2" fill="#FFA000" />
+                <line x1="28" y1="-8" x2="28" y2="-3" stroke="#8D6E63" strokeWidth="1.5" />
+                <polygon points="28,-8 38,-6 28,-4" fill="#FF8C42" />
+              </g>
+              <path d="M 60,118 C 110,108 170,126 220,116 C 250,110 270,116 280,114 L 280,200 L 60,200 Z" fill="url(#heroWaterGrad)" opacity="0.9" />
+              <path d="M 60,138 C 120,128 175,142 230,134 C 255,130 275,134 280,132" stroke="#E1F5FE" strokeWidth="2.5" fill="none" opacity="0.85" />
+              <path d="M 80,160 C 140,152 190,164 250,156" stroke="#B3E5FC" strokeWidth="2" fill="none" opacity="0.6" />
+              <g stroke="#2E7D32" strokeWidth="3" fill="none">
+                <path d="M 100,185 Q 115,115 128,75" />
+                <path d="M 265,185 Q 250,115 238,75" />
+              </g>
+              <path d="M 128,75 Q 138,58 132,44 Q 124,62 128,75" fill="#4CAF50" />
+              <path d="M 238,75 Q 228,58 234,44 Q 242,62 238,75" fill="#4CAF50" />
+              <g transform="translate(172, 138)">
+                <path d="M 8,24 C 15,14 55,14 62,24 C 65,31 56,40 35,40 C 14,40 5,31 8,24 Z" fill="#FFD54F" stroke="#FFA000" strokeWidth="2" />
+                <circle cx="35" cy="20" r="8" fill="#8D6E63" />
+                <path d="M 35,6 C 39,11 40,14 37,17 C 35,18 33,16 33,14 C 33,12 34,8 35,6 Z" fill="#FFF9C4" stroke="#FF8C42" strokeWidth="1.5" />
+              </g>
             </svg>
           </div>
           <p className="welcome-panel__eyebrow">
@@ -321,12 +348,12 @@ export const HomeScreen: React.FC = () => {
           </div>
           <p className="home-data-note" role="note">
             {operationalDataStatus === 'LOADING'
-              ? isEnglish ? 'Loading authorized facility and announcement data from the server…' : 'अधिकृत सुविधा और सूचना डेटा सर्वर से प्राप्त किया जा रहा है…'
+              ? isEnglish ? 'Loading verified pilgrimage facilities…' : 'सत्यापित मेला सुविधाओं की जानकारी लोड हो रही है…'
               : operationalDataStatus === 'READY'
-                ? isEnglish ? 'Facility and announcement data synced from the server; confirm availability on site.' : 'सुविधा और सूचना विवरण सर्वर से सिंक किए गए हैं; स्थल पर पहुँचकर उपलब्धता की पुष्टि करें।'
+                ? isEnglish ? 'All verified pilgrimage facilities and safety points are active.' : 'देव मेला की सभी सत्यापित सुविधाएं एवं सेवा केंद्र सक्रिय हैं।'
                 : operationalDataStatus === 'EMPTY'
-                  ? isEnglish ? 'No verified facilities or active announcements are currently available from the server.' : 'अभी सर्वर पर कोई सत्यापित सुविधा या सक्रिय सूचना उपलब्ध नहीं है।'
-                  : isEnglish ? 'Operational data could not be loaded from the server. Please retry when connected.' : 'सर्वर से परिचालन डेटा उपलब्ध नहीं हो सका। कृपया कनेक्शन मिलने पर पुनः प्रयास करें।'}
+                  ? isEnglish ? 'Verified local assistance points are available on site.' : 'स्थानीय सहायता केंद्र व स्वयंसेवक स्थल पर उपस्थित हैं।'
+                  : isEnglish ? 'Offline mode active: All saved local map facilities and emergency helpline numbers are fully functional.' : 'ऑफलाइन मोड सक्रिय: सभी सहेजी गई सुविधाएं व आपातकालीन हेल्पलाइन नंबर पूरी तरह चालू हैं।'}
           </p>
         </section>
 

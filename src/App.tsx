@@ -6,6 +6,7 @@
 import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { BottomNav } from './components/BottomNav';
+import { ChhathFloatingSOS } from './components/ChhathFloatingSOS';
 
 const SplashScreen = React.lazy(() =>
   import('./screens/SplashScreen').then(({ SplashScreen }) => ({ default: SplashScreen }))
@@ -297,6 +298,7 @@ const MainRouter: React.FC = () => {
             {renderScreen()}
           </React.Suspense>
           <BottomNav />
+          <ChhathFloatingSOS />
         </div>
       </div>
     </div>
