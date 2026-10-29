@@ -36,10 +36,10 @@ export const SettingsScreen: React.FC = () => {
   } = useApp();
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="ऐप सेटिंग्स" showBack />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 space-y-4">
         {/* Account & Profile (Step 18) */}
         <div className="bg-white border-2 border-stone-200 rounded-2xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between">

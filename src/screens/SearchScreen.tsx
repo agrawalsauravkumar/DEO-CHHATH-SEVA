@@ -140,10 +140,10 @@ export const SearchScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white border-b border-stone-200 px-4 py-3 shadow-xs">
-        <div className="max-w-lg mx-auto flex items-center justify-between min-h-[44px]">
+        <div className="max-w-3xl sm:max-w-4xl mx-auto flex items-center justify-between min-h-[44px]">
           <button
             onClick={goBack}
             aria-label="वापस जाएं"
@@ -160,7 +160,7 @@ export const SearchScreen: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 space-y-4">
         {/* Large Search Box */}
         <div className="space-y-1.5">
           <label htmlFor="destination-search" className="block text-xs font-black uppercase tracking-wider text-stone-600">

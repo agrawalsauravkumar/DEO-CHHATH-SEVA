@@ -8,11 +8,11 @@ export const SaveParkingScreen: React.FC = () => {
   const { savedParking, navigate } = useApp();
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="मेरी पार्किंग" showBack />
       <DataFreshnessNotice />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 space-y-4">
         {savedParking ? (
           <section className="rounded-2xl border border-[#075985]/25 bg-white p-4 shadow-xs">
             <div className="flex items-start gap-3">

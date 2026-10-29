@@ -186,7 +186,7 @@ export const NavigationScreen: React.FC = () => {
     <div className="min-h-screen bg-stone-950 text-white pb-6 flex flex-col font-['Mukta',sans-serif] select-none">
       {/* Top Header: ← वापस | 🧭 Navigation */}
       <header className="bg-stone-900 border-b border-stone-800 px-4 py-2.5 shadow-md sticky top-0 z-30">
-        <div className="max-w-lg mx-auto flex items-center justify-between min-h-[44px]">
+        <div className="max-w-3xl sm:max-w-4xl mx-auto flex items-center justify-between min-h-[44px]">
           <button
             onClick={goBack}
             className="min-h-[44px] px-3 -ml-2 rounded-xl bg-stone-800 hover:bg-stone-700 active:scale-95 text-white text-sm font-black flex items-center gap-1.5 transition-colors"
@@ -248,7 +248,7 @@ export const NavigationScreen: React.FC = () => {
       )}
 
       {/* Middle: Real Interactive Leaflet Map */}
-      <main className="flex-1 max-w-lg mx-auto w-full p-2 sm:p-3 flex flex-col space-y-3">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-2 sm:p-3 flex flex-col space-y-3">
         <div className="flex-1 min-h-[300px] rounded-2xl overflow-hidden shadow-2xl border border-stone-800 relative">
           <DeoMap
             heightClass="h-full min-h-[300px]"

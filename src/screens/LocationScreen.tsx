@@ -19,10 +19,10 @@ export const LocationScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col justify-between">
+    <div className="min-h-screen bg-[var(--chhath-cream)] flex flex-col justify-between">
       <TopBar title="लोकेशन अनुमति" showBack />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 sm:p-5 flex flex-col justify-center space-y-6">
+      <main className="flex-1 max-w-2xl sm:max-w-3xl mx-auto w-full p-4 sm:p-5 flex flex-col justify-center space-y-6">
         <div className="text-center space-y-3">
           <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
             <div className="absolute inset-0 rounded-full bg-[#FFB52E]/30 animate-ping" />
@@ -86,7 +86,7 @@ export const LocationScreen: React.FC = () => {
       </main>
 
       <footer className="p-4 bg-white border-t border-stone-200 space-y-2 sticky bottom-0">
-        <div className="max-w-lg mx-auto space-y-2">
+        <div className="max-w-2xl sm:max-w-3xl mx-auto space-y-2">
           <button
             onClick={handleGrant}
             disabled={requesting}

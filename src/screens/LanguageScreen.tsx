@@ -64,7 +64,7 @@ export const LanguageScreen: React.FC = () => {
     <div className="min-h-screen bg-[#FFF7E5]/60 flex flex-col justify-between font-['Mukta',sans-serif]">
       <TopBar title="भाषा चयन / Select Language" showBack />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 sm:p-5 space-y-4">
+      <main className="flex-1 max-w-2xl sm:max-w-3xl mx-auto w-full p-4 sm:p-5 space-y-4">
         {/* Welcome Header with Chhath Sunrise Aura */}
         <div className="text-center space-y-1.5 pt-2">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#075985] to-[#123052] text-[#FFB52E] mx-auto flex items-center justify-center mb-1 shadow-md border border-[#FFB52E]/40 text-2xl">
@@ -153,7 +153,7 @@ export const LanguageScreen: React.FC = () => {
       </main>
 
       <footer className="p-4 bg-white border-t border-stone-200 sticky bottom-0">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-2xl sm:max-w-3xl mx-auto">
           <button
             onClick={() => navigate('location-permission')}
             className="w-full min-h-[52px] bg-gradient-to-r from-[#F47B20] to-[#EA580C] hover:from-[#EA580C] hover:to-[#C2410C] active:scale-98 text-white font-black text-base rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all border border-amber-300/40"

@@ -103,7 +103,7 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
 
   return (
     <header className="sticky top-0 z-40 bg-gradient-to-r from-[#063B5C] via-[#075985] to-[#063B5C] text-white border-b-[3px] border-[#FFB52E] shadow-md px-3 sm:px-4 py-2 font-['Mukta',sans-serif]">
-      <div className="max-w-lg mx-auto flex items-center justify-between min-h-[46px]">
+      <div className="max-w-3xl sm:max-w-4xl mx-auto flex items-center justify-between min-h-[46px]">
         {/* Left Slot: Back or Official NGO Seal Logo */}
         <div className="flex min-w-0 flex-1 items-center gap-2.5">
           {showBack || canGoBack ? (

@@ -14,6 +14,7 @@ import { ChhathPujaChecklist } from '../components/ChhathPujaChecklist';
 import { ChhathDevotionalPlayer } from '../components/ChhathDevotionalPlayer';
 import { ChhathSafetyBadgeModal } from '../components/ChhathSafetyBadgeModal';
 import { ChhathSolarCompassModal } from '../components/ChhathSolarCompassModal';
+import { ChhathSafetySection } from '../components/ChhathSafetySection';
 import { ChhathVratiFastingTracker } from '../components/ChhathVratiFastingTracker';
 import {
   ArrowRight,
@@ -328,6 +329,8 @@ export const HomeScreen: React.FC = () => {
                   : isEnglish ? 'Operational data could not be loaded from the server. Please retry when connected.' : 'सर्वर से परिचालन डेटा उपलब्ध नहीं हो सका। कृपया कनेक्शन मिलने पर पुनः प्रयास करें।'}
           </p>
         </section>
+
+        <ChhathSafetySection />
 
         <section className="home-secondary-actions" aria-label={isEnglish ? 'More options' : 'अन्य विकल्प'}>
           <button type="button" onClick={openMyLocation}>

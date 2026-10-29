@@ -124,11 +124,11 @@ export const ShuttleScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="शटल सेवा" showBack />
       <DataFreshnessNotice />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 space-y-4">
         {/* Hero Header Banner */}
         <div className="bg-gradient-to-br from-[#075985] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-amber-500/40 shadow-xl space-y-3">
           <div className="flex items-center gap-3">

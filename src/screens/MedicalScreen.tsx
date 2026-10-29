@@ -134,11 +134,11 @@ export const MedicalScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="चिकित्सा व प्राथमिक उपचार" showBack />
       <DataFreshnessNotice />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 space-y-4">
         {/* Urgent Emergency Call Banner (108 Ambulance) */}
         <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-3xl p-4 sm:p-5 shadow-lg flex items-center justify-between gap-3 border-2 border-red-500">
           <div className="flex items-center gap-3 min-w-0">

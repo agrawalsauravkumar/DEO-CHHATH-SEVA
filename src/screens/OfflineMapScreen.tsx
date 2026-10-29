@@ -67,10 +67,10 @@ export const OfflineMapScreen: React.FC = () => {
   const isReady = meta.status === 'ready';
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 font-['Mukta',sans-serif]">
       <TopBar title="ऑफलाइन मैप (Offline Map)" showBack />
 
-      <main className="mx-auto flex max-w-lg flex-col gap-4 p-4 sm:p-5">
+      <main className="mx-auto flex max-w-3xl sm:max-w-4xl flex-col gap-4 p-4 sm:p-5">
         {/* Main Status Hero Card */}
         <section className="rounded-3xl border border-stone-200 bg-white p-5 text-center shadow-sm">
           <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-[#FFF7E5] text-[#075985]">

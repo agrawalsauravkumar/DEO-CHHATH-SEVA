@@ -20,10 +20,10 @@ export const OfflineScreen: React.FC = () => {
   const { navigate, isOnline } = useApp();
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="ऑफलाइन स्थिति" showBack />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 flex flex-col justify-between space-y-5">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 flex flex-col justify-between space-y-5">
         <div className="space-y-4 pt-2">
           {/* Main Offline Card */}
           <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-3xl p-6 text-center space-y-3 shadow-sm relative overflow-hidden">

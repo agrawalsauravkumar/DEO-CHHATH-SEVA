@@ -194,10 +194,10 @@ export const NavigationPreviewScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-100 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white border-b border-stone-200 px-4 py-3 shadow-xs">
-        <div className="max-w-lg mx-auto flex items-center justify-between min-h-[44px]">
+        <div className="max-w-3xl sm:max-w-4xl mx-auto flex items-center justify-between min-h-[44px]">
           <button
             onClick={goBack}
             className="min-h-[44px] px-3 -ml-2 rounded-xl bg-stone-100 hover:bg-stone-200 active:scale-95 text-stone-800 text-sm font-black flex items-center gap-1.5 transition-colors"
@@ -221,7 +221,7 @@ export const NavigationPreviewScreen: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-3 sm:p-4 space-y-3 flex flex-col">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-3 sm:p-4 space-y-3 flex flex-col">
         {/* Missing Destination Alert */}
         {!destination ? (
           <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 text-center space-y-3 shadow-sm">

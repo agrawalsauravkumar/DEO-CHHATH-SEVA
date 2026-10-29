@@ -169,7 +169,7 @@ export const LoginScreen: React.FC = () => {
         }}
       />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 space-y-4">
         {/* Brand & Organization Title Card */}
         <div className="relative overflow-hidden bg-gradient-to-br from-[#075985] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-5 border-2 border-[#FFB52E]/70 shadow-xl space-y-2 text-center">
           <div aria-hidden="true" className="absolute -top-12 -right-10 h-36 w-36 rounded-full border border-[#FFB52E]/25 bg-[radial-gradient(circle,#FFB52E55,transparent_68%)]" />

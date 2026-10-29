@@ -42,10 +42,10 @@ export const VolunteerRequestScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="सहायता का अनुरोध" showBack />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 space-y-4">
         {/* Intro Banner */}
         <div className="bg-amber-600 text-white rounded-2xl p-4 shadow-sm space-y-1">
           <div className="flex items-center gap-2">

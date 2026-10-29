@@ -147,7 +147,7 @@ export const SeniorModeScreen: React.FC = () => {
             : 'bg-stone-900 border-amber-500 text-white'
         } shadow-md`}
       >
-        <div className="max-w-lg mx-auto flex items-center justify-between">
+        <div className="max-w-3xl sm:max-w-4xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-amber-400">
               👴 वरिष्ठ नागरिक मोड

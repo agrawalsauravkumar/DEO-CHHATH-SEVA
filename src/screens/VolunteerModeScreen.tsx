@@ -206,10 +206,10 @@ export const VolunteerModeScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="⚡ Volunteer Mode Dashboard" showBack />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 space-y-4">
         {/* Offline Guard Banner */}
         {!isOnline && (
           <div className="bg-amber-50 border border-amber-300 text-amber-950 p-3 rounded-2xl text-xs font-bold flex items-center gap-2">
