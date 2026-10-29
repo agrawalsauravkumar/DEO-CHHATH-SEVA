@@ -7,6 +7,7 @@
 // Providers: OSRM (OpenStreetMap default), GraphHopper, Valhalla
 
 import { RouteResult, RouteStep, TravelMode } from '../types';
+import { OfflineRouteService } from './OfflineRouteService';
 
 export interface RouteRequestParams {
   startLatitude: number;
@@ -419,10 +420,15 @@ export class CompositeRoutingProvider implements RoutingProvider {
     }
 
     if (this.fallback.isConfigured()) {
-      return await this.fallback.calculateRoute(params);
+      try {
+        return await this.fallback.calculateRoute(params);
+      } catch (fallbackErr) {
+        console.warn('Fallback online engine failed, attempting Deo Road Network fallback:', fallbackErr);
+      }
     }
 
-    throw new Error('रूट सेवा अभी उपलब्ध नहीं है। कृपया इंटरनेट कनेक्शन जाँचें।');
+    // High-resilience tertiary fallback: Local Deo Road Network
+    return await OfflineRouteService.calculateRoute(params);
   }
 }
 

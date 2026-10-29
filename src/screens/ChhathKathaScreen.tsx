@@ -195,6 +195,20 @@ export const ChhathKathaScreen: React.FC = () => {
               </p>
             </div>
 
+            {/* Real Chhath Arghya Photo */}
+            <div className="relative h-48 rounded-2xl overflow-hidden border-2 border-amber-300 shadow-sm">
+              <img
+                src="/images/chhath/sandhya-arghya.jpg"
+                alt="छठ महापर्व सांध्य अर्घ्य"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-3.5">
+                <span className="text-white text-xs sm:text-sm font-black drop-shadow-md">
+                  🌅 सूर्य कुंड एवं पावन घाटों पर अस्ताचलगामी व उदयगामी भगवान भास्कर को अर्घ्य
+                </span>
+              </div>
+            </div>
+
             <div className="space-y-3.5 text-xs sm:text-sm leading-relaxed text-stone-700">
               <div className="p-3 bg-amber-50/70 rounded-2xl border border-amber-200/60 text-amber-950">
                 <span className="font-black block text-sm mb-1">👑 १. राजा प्रियंवद की संतान कामना:</span>

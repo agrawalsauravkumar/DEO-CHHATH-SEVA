@@ -297,6 +297,25 @@ export const AboutScreen: React.FC = () => {
           </div>
         </section>
 
+        {/* Authentic Deo Sun Temple Photo & Cultural Heritage */}
+        <div className="relative overflow-hidden rounded-3xl border-2 border-[#FFD54F] shadow-md">
+          <img
+            src="/images/chhath/deo-sun-temple.jpg"
+            alt="देव सूर्य मंदिर, औरंगाबाद, बिहार"
+            className="w-full h-52 object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex items-end p-4">
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#FFD54F] bg-[#041E2F]/90 border border-[#FFD54F]/50 px-2 py-0.5 rounded-md">
+                पवित्र देवार्क धाम • औरंगाबाद, बिहार
+              </span>
+              <p className="text-white text-xs sm:text-sm font-bold drop-shadow-md mt-1 leading-snug">
+                विश्व का अद्वितीय पश्चिमाभिमुख 100 फीट ऊंचा ऐतिहासिक पाषाण सूर्य मंदिर
+              </p>
+            </div>
+          </div>
+        </div>
+
         <BrandFooter language={language} />
 
         <p className="px-1 text-center text-xs leading-5 text-stone-600">

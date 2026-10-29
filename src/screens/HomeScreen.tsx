@@ -10,6 +10,7 @@ import { AnnouncementService } from '../services/AnnouncementService';
 import { ChhathArghyaMuhurat } from '../components/ChhathArghyaMuhurat';
 import { ChhathVratiModeSection } from '../components/ChhathVratiModeSection';
 import { ChhathGhatDirectory } from '../components/ChhathGhatDirectory';
+import { DeoChhathDarshan } from '../components/DeoChhathDarshan';
 import { ChhathPujaChecklist } from '../components/ChhathPujaChecklist';
 import { ChhathDevotionalPlayer } from '../components/ChhathDevotionalPlayer';
 import { ChhathSafetyBadgeModal } from '../components/ChhathSafetyBadgeModal';
@@ -304,6 +305,9 @@ export const HomeScreen: React.FC = () => {
 
         {/* Sacred Ghat Directory (Surya Kund & Rudra Kund) */}
         <ChhathGhatDirectory />
+
+        {/* Authentic Deo Chhath Darshan, Real Photos & Heritage */}
+        <DeoChhathDarshan />
 
         <section aria-labelledby="services-heading" className="home-services">
           <div className="home-section-heading">

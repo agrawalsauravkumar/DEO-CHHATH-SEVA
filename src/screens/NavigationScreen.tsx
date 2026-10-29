@@ -180,7 +180,7 @@ export const NavigationScreen: React.FC = () => {
     );
   }
 
-  const routeAvailable = isOnline && Boolean(activeRoute && currentStep);
+  const routeAvailable = Boolean(activeRoute && currentStep);
 
   return (
     <div className="min-h-screen bg-stone-950 text-white pb-6 flex flex-col font-['Mukta',sans-serif] select-none">
@@ -243,7 +243,7 @@ export const NavigationScreen: React.FC = () => {
       {!isOnline && (
         <div className="bg-stone-800 text-stone-300 px-3 py-1 text-[11px] text-center flex items-center justify-center gap-1">
           <WifiOff className="w-3.5 h-3.5 text-amber-400" />
-          <span>ऑफलाइन • रूट सेवा उपलब्ध नहीं है। GPS अलग से काम कर सकता है।</span>
+          <span>ऑफलाइन मोड • देव स्थानीय सड़क नेटवर्क एवं GPS दिशा-निर्देश चालू हैं।</span>
         </div>
       )}
 
@@ -252,7 +252,8 @@ export const NavigationScreen: React.FC = () => {
         <div className="flex-1 min-h-[300px] rounded-2xl overflow-hidden shadow-2xl border border-stone-800 relative">
           <DeoMap
             heightClass="h-full min-h-[300px]"
-            routeGeometry={isOnline ? activeRoute?.geometry : undefined}
+            routeGeometry={activeRoute?.geometry}
+            showRouteLine={Boolean(activeRoute && activeRoute.geometry && activeRoute.geometry.length > 1)}
             centerOnUserByDefault={true}
           />
         </div>

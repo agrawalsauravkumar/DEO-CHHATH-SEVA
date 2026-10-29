@@ -52,7 +52,7 @@ export const DeoMap: React.FC<Props> = ({
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
   const userAccuracyCircleRef = useRef<L.Circle | null>(null);
-  const routeLineRef = useRef<L.Polyline | null>(null);
+  const routeLineRef = useRef<L.LayerGroup | L.Polyline | null>(null);
   const offlineRoutesLayerRef = useRef<L.LayerGroup | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const centerOnNextLocationRef = useRef(false);
@@ -421,18 +421,54 @@ export const DeoMap: React.FC<Props> = ({
     }
 
     if (showRouteLine && routeGeometry && routeGeometry.length > 1) {
-      const polyline = L.polyline(routeGeometry, {
-        color: '#075985',
-        weight: 5,
-        opacity: 0.9,
+      const routeGroup = L.layerGroup();
+
+      // Outer luminous gold border casing
+      const casing = L.polyline(routeGeometry, {
+        color: '#FFD54F',
+        weight: 9,
+        opacity: 0.95,
         lineCap: 'round',
         lineJoin: 'round',
-      }).addTo(map);
+      });
 
-      routeLineRef.current = polyline;
+      // Inner high-visibility deep river blue road core
+      const core = L.polyline(routeGeometry, {
+        color: '#0B5E8E',
+        weight: 5,
+        opacity: 1.0,
+        lineCap: 'round',
+        lineJoin: 'round',
+      });
+
+      // Start Marker (Green beacon)
+      const startMarker = L.circleMarker(routeGeometry[0], {
+        radius: 7,
+        color: '#FFFFFF',
+        fillColor: '#16A34A',
+        fillOpacity: 1,
+        weight: 3,
+      });
+
+      // Destination Marker (Red beacon)
+      const endMarker = L.circleMarker(routeGeometry[routeGeometry.length - 1], {
+        radius: 8,
+        color: '#FFFFFF',
+        fillColor: '#DC2626',
+        fillOpacity: 1,
+        weight: 3,
+      });
+
+      routeGroup.addLayer(casing);
+      routeGroup.addLayer(core);
+      routeGroup.addLayer(startMarker);
+      routeGroup.addLayer(endMarker);
+      routeGroup.addTo(map);
+
+      routeLineRef.current = routeGroup;
 
       const bounds = L.latLngBounds(routeGeometry);
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 17 });
+      map.fitBounds(bounds, { padding: [45, 45], maxZoom: 17 });
     }
   }, [routeGeometry, showRouteLine]);
 
