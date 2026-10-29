@@ -651,48 +651,34 @@ img {
   }
 }
 
+/* Desktop Experience: Maintain Sleek Mobile Phone Frame Centered with Holy Backdrop */
 @media (min-width: 1024px) {
   .app-shell {
-    max-width: none;
-    border-inline: 0;
+    max-width: 440px;
+    margin-inline: auto;
+    border-inline: 1px solid rgba(255, 181, 46, 0.35);
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(245, 158, 11, 0.15);
   }
 
   .app-shell main {
-    width: min(calc(100% - 4rem), 90rem);
-    max-width: none;
+    width: 100%;
+    max-width: 440px;
     margin-inline: auto;
   }
 
-  .app-shell header > div {
-    max-width: 90rem;
-  }
-
   .app-shell nav[aria-label="मुख्य नेविगेशन"] {
-    max-width: none;
-  }
-
-  .app-shell nav[aria-label="मुख्य नेविगेशन"] > div {
-    max-width: 64rem;
+    max-width: 440px;
     margin-inline: auto;
   }
 
   .home-brand-header__top,
   .home-brand-header__status {
-    max-width: 90rem;
+    max-width: 100%;
   }
 
   .home-content {
-    width: min(calc(100% - 4rem), 80rem);
-    max-width: none;
-  }
-
-  .home-service-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .welcome-panel {
-    min-height: 190px;
-    padding: 1.75rem 1.6rem 3rem;
+    width: 100%;
+    max-width: 440px;
   }
 }
 
