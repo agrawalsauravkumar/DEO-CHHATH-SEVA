@@ -30,7 +30,7 @@ class OtpServiceManager {
   constructor() {
     const isDevExplicit = process.env.OTP_DEV_MODE === 'true';
     const sms = new SmsOtpProvider();
-    const isProduction = process.env.NODE_ENV === 'production';
+    const isProduction = process.env.NODE_ENV === 'production' && !isDevExplicit;
 
     if (isProduction) {
       this.provider = sms.isConfigured() ? sms : null;

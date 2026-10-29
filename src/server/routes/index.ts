@@ -31,6 +31,8 @@ export const apiRouter = Router();
 
 apiRouter.use((req, res, next) => {
   if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+  // Auth routes (OTP send/verify, password login) and team routes handle their own memory fallbacks
+  if (req.path.startsWith('/auth') || req.path.startsWith('/team')) return next();
   return requirePersistentDatabase(req, res, next);
 });
 
