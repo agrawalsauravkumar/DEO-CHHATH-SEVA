@@ -271,8 +271,7 @@ class FamilyServiceManager {
         locationSharingEnabled: true,
         lastLatitude: lat || 24.6548,
         lastLongitude: lng || 84.4362,
-        lastAccuracy: accuracy || 10,
-        lastUpdatedTime: now.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
+        lastLocationUpdatedAt: now.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
         sharingExpiresAt: expiresAt.toISOString(),
       };
     } else {
@@ -285,9 +284,9 @@ class FamilyServiceManager {
         locationSharingEnabled: true,
         lastLatitude: lat || 24.6548,
         lastLongitude: lng || 84.4362,
-        lastAccuracy: accuracy || 10,
-        lastUpdatedTime: now.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
+        lastLocationUpdatedAt: now.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
         sharingExpiresAt: expiresAt.toISOString(),
+        joinedAt: now.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
       });
     }
 

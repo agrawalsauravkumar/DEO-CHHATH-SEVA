@@ -11,6 +11,8 @@ import {
   LostFoundType,
 } from '../types';
 import { apiUrl } from '../services/apiUrl';
+import { LostFoundService } from '../services/LostFoundService';
+import { OfflineDataService } from '../services/OfflineDataService';
 import {
   Search,
   UserX,
@@ -224,10 +226,6 @@ export const LostFoundScreen: React.FC = () => {
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isOnline) {
-      showToast('रिपोर्ट सर्वर पर भेजने के लिए इंटरनेट कनेक्शन आवश्यक है।');
-      return;
-    }
     if (!contactName.trim()) {
       showToast('कृपया सत्यापन के लिए अपना नाम दर्ज करें।');
       return;
@@ -238,27 +236,64 @@ export const LostFoundScreen: React.FC = () => {
         ? `${description} | उम्र: ${age || 'अज्ञात'} | कपड़े: ${clothes || 'विवरण नहीं'} | पहचान: ${identifyingFeatures || 'सामान्य'}`
         : `${description} | पहचान विशेषता: ${identifyingFeatures || 'सामान्य'}`;
 
+    const reportPayload = {
+      type: selectedReportType,
+      category,
+      title: title.trim(),
+      description: compiledDesc.trim(),
+      locationName: locationStr.trim(),
+      ...(includeLocation && deviceLocation
+        ? {
+            latitude: deviceLocation.latitude,
+            longitude: deviceLocation.longitude,
+          }
+        : {}),
+      contactName: contactName.trim(),
+      contactPhone: contactPhone.trim() || undefined,
+      identifyingFeatures: identifyingFeatures.trim() || undefined,
+    };
+
     setIsSubmittingReport(true);
-    try {
-      const response = await fetch(apiUrl('/api/lost-found'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+
+    // If offline, save locally and enqueue in durable IndexedDB action queue
+    if (!isOnline) {
+      try {
+        const localReport = LostFoundService.createReport({
           type: selectedReportType,
           category,
           title: title.trim(),
           description: compiledDesc.trim(),
-          locationName: locationStr.trim(),
-          ...(includeLocation && deviceLocation
-            ? {
-                latitude: deviceLocation.latitude,
-                longitude: deviceLocation.longitude,
-              }
-            : {}),
+          location: locationStr.trim(),
+          latitude: includeLocation && deviceLocation ? deviceLocation.latitude : undefined,
+          longitude: includeLocation && deviceLocation ? deviceLocation.longitude : undefined,
           contactName: contactName.trim(),
           contactPhone: contactPhone.trim() || undefined,
           identifyingFeatures: identifyingFeatures.trim() || undefined,
-        }),
+        });
+
+        await OfflineDataService.enqueueAction({
+          id: localReport.id,
+          type: 'SUBMIT_LOST_FOUND',
+          payload: reportPayload,
+        });
+
+        setAllReports((reports) => [localReport, ...reports.filter((r) => r.id !== localReport.id)]);
+        setSubmittedReport(localReport);
+        showToast('रिपोर्ट आपके फ़ोन में सुरक्षित दर्ज हो गई है (ऑफ़लाइन)। नेटवर्क मिलते ही स्वतः सिंक होगी।');
+      } catch (offlineErr: unknown) {
+        showToast(offlineErr instanceof Error ? offlineErr.message : 'ऑफ़लाइन रिपोर्ट सहेजने में समस्या हुई।');
+      } finally {
+        setIsSubmittingReport(false);
+      }
+      return;
+    }
+
+    // If online, attempt direct server submission with offline queue fallback
+    try {
+      const response = await fetch(apiUrl('/api/lost-found'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reportPayload),
       });
       const result: unknown = await response.json();
       if (!response.ok) {
@@ -281,11 +316,37 @@ export const LostFoundScreen: React.FC = () => {
       setAllReports((reports) => [newReport, ...reports.filter((report) => report.id !== newReport.id)]);
       setSubmittedReport(newReport);
     } catch (error) {
-      showToast(
-        error instanceof Error
-          ? error.message
-          : 'रिपोर्ट भेजते समय त्रुटि हुई। कृपया दोबारा प्रयास करें।'
-      );
+      // Network failed during send: fallback to offline queue so user data is never lost
+      try {
+        const localReport = LostFoundService.createReport({
+          type: selectedReportType,
+          category,
+          title: title.trim(),
+          description: compiledDesc.trim(),
+          location: locationStr.trim(),
+          latitude: includeLocation && deviceLocation ? deviceLocation.latitude : undefined,
+          longitude: includeLocation && deviceLocation ? deviceLocation.longitude : undefined,
+          contactName: contactName.trim(),
+          contactPhone: contactPhone.trim() || undefined,
+          identifyingFeatures: identifyingFeatures.trim() || undefined,
+        });
+
+        await OfflineDataService.enqueueAction({
+          id: localReport.id,
+          type: 'SUBMIT_LOST_FOUND',
+          payload: reportPayload,
+        });
+
+        setAllReports((reports) => [localReport, ...reports.filter((r) => r.id !== localReport.id)]);
+        setSubmittedReport(localReport);
+        showToast('नेटवर्क त्रुटि के कारण रिपोर्ट फ़ोन में सुरक्षित कर ली गई है। नेटवर्क मिलते ही सिंक होगी।');
+      } catch {
+        showToast(
+          error instanceof Error
+            ? error.message
+            : 'रिपोर्ट भेजते समय त्रुटि हुई। कृपया दोबारा प्रयास करें।'
+        );
+      }
     } finally {
       setIsSubmittingReport(false);
     }

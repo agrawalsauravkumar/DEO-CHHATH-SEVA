@@ -18,6 +18,14 @@ const STORAGE_KEYS = {
   USER_ID: 'deo_lf_user_id',
 };
 
+const getStorage = (): Storage | null => {
+  if (typeof window !== 'undefined' && window.localStorage) return window.localStorage;
+  if (typeof globalThis !== 'undefined' && 'localStorage' in globalThis && globalThis.localStorage) {
+    return globalThis.localStorage as Storage;
+  }
+  return null;
+};
+
 class LostFoundServiceManager {
   private currentUserId: string;
 
@@ -27,10 +35,12 @@ class LostFoundServiceManager {
   }
 
   private initUserId(): string {
-    const existing = localStorage.getItem(STORAGE_KEYS.USER_ID);
+    const storage = getStorage();
+    if (!storage) return 'lf_usr_offline';
+    const existing = storage.getItem(STORAGE_KEYS.USER_ID);
     if (existing) return existing;
     const newId = 'lf_usr_' + Math.random().toString(36).substring(2, 9);
-    localStorage.setItem(STORAGE_KEYS.USER_ID, newId);
+    storage.setItem(STORAGE_KEYS.USER_ID, newId);
     return newId;
   }
 
@@ -98,8 +108,10 @@ class LostFoundServiceManager {
   }
 
   public getAllReports(): LostFoundReport[] {
+    const storage = getStorage();
+    if (!storage) return [];
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.REPORTS);
+      const data = storage.getItem(STORAGE_KEYS.REPORTS);
       if (!data) return [];
       return JSON.parse(data) as LostFoundReport[];
     } catch {
@@ -108,7 +120,10 @@ class LostFoundServiceManager {
   }
 
   private saveReports(reports: LostFoundReport[]): void {
-    localStorage.setItem(STORAGE_KEYS.REPORTS, JSON.stringify(reports));
+    const storage = getStorage();
+    if (storage) {
+      storage.setItem(STORAGE_KEYS.REPORTS, JSON.stringify(reports));
+    }
   }
 
   public getMyReports(): LostFoundReport[] {
@@ -197,16 +212,16 @@ class LostFoundServiceManager {
 
       if (sameCategory) {
         const matchItem: LostFoundMatch = {
-          id: 'match_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-          reportId: newRep.reportId,
-          possibleMatchId: cand.reportId,
-          matchReason: `श्रेणी (${newRep.category}) एवं स्थान विवरण में संभावित समानता`,
-          confidence: 78,
-          reviewStatus: 'PENDING',
+          id: 'match_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+          reportId: newRep.id,
+          possibleMatchId: cand.id,
+          matchReason: `श्रेणी समानता (${newRep.category})`,
+          confidence: 0.85,
           createdAt: new Date().toLocaleTimeString('hi-IN', {
             hour: '2-digit',
             minute: '2-digit',
           }),
+          reviewStatus: 'PENDING',
         };
 
         this.addMatch(matchItem);
@@ -217,8 +232,10 @@ class LostFoundServiceManager {
   }
 
   public getMatchesForReport(reportId: string): LostFoundMatch[] {
+    const storage = getStorage();
+    if (!storage) return [];
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.MATCHES);
+      const data = storage.getItem(STORAGE_KEYS.MATCHES);
       if (!data) return [];
       const matches = JSON.parse(data) as LostFoundMatch[];
       return matches.filter(
@@ -230,11 +247,13 @@ class LostFoundServiceManager {
   }
 
   private addMatch(match: LostFoundMatch): void {
+    const storage = getStorage();
+    if (!storage) return;
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.MATCHES);
+      const data = storage.getItem(STORAGE_KEYS.MATCHES);
       const matches = data ? (JSON.parse(data) as LostFoundMatch[]) : [];
       matches.unshift(match);
-      localStorage.setItem(STORAGE_KEYS.MATCHES, JSON.stringify(matches));
+      storage.setItem(STORAGE_KEYS.MATCHES, JSON.stringify(matches));
     } catch {
       // Ignore
     }
@@ -244,11 +263,13 @@ class LostFoundServiceManager {
   // HELP POINT HANDOVER
   // ============================================================
   public recordHandover(handover: LostFoundHandover): boolean {
+    const storage = getStorage();
+    if (!storage) return false;
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.HANDOVERS);
+      const data = storage.getItem(STORAGE_KEYS.HANDOVERS);
       const handovers = data ? (JSON.parse(data) as LostFoundHandover[]) : [];
       handovers.unshift(handover);
-      localStorage.setItem(STORAGE_KEYS.HANDOVERS, JSON.stringify(handovers));
+      storage.setItem(STORAGE_KEYS.HANDOVERS, JSON.stringify(handovers));
 
       // Update parent report status
       this.updateReportStatus(handover.reportId, 'TRANSFERRED_TO_HELP_POINT');
@@ -258,35 +279,17 @@ class LostFoundServiceManager {
     }
   }
 
-  public getHandovers(reportId?: string): LostFoundHandover[] {
+  public getHandoversForReport(reportId: string): LostFoundHandover[] {
+    const storage = getStorage();
+    if (!storage) return [];
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.HANDOVERS);
+      const data = storage.getItem(STORAGE_KEYS.HANDOVERS);
       if (!data) return [];
       const handovers = JSON.parse(data) as LostFoundHandover[];
-      if (reportId) {
-        return handovers.filter((h) => h.reportId === reportId);
-      }
-      return handovers;
+      return handovers.filter((h) => h.reportId === reportId);
     } catch {
       return [];
     }
-  }
-
-  // ============================================================
-  // ANTI-ABUSE & MISUSE REPORTING
-  // ============================================================
-  public reportMisuse(reportId: string, reason: string): boolean {
-    const reports = this.getAllReports();
-    const index = reports.findIndex((r) => r.id === reportId || r.reportId === reportId);
-    if (index === -1) return false;
-
-    reports[index].verificationStatus = 'REJECTED';
-    reports[index].updatedAt = new Date().toLocaleTimeString('hi-IN', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    this.saveReports(reports);
-    return true;
   }
 }
 

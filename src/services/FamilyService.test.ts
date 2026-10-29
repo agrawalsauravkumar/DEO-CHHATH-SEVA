@@ -60,3 +60,4 @@ test('CHHATH_FOLK_PLAYLIST contains all 4 traditional folk tracks with valid mel
     assert.ok(track.youtubeQuery.includes('शारदा सिन्हा'), 'YouTube query must feature Sharda Sinha');
   }
 });
+
