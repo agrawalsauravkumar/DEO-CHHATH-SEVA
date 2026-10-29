@@ -105,6 +105,30 @@ export const EmergencyScreen: React.FC = () => {
     setCallModalContact(null);
   };
 
+  // Share directly via WhatsApp link (no-app needed for recipient)
+  const handleWhatsAppShare = async () => {
+    if (!deviceLocation) {
+      const success = await requestDeviceLocation();
+      if (!success) {
+        setLocationSharedNotice('आपकी location उपलब्ध नहीं है। कृपया GPS ऑन करें।');
+        setTimeout(() => setLocationSharedNotice(null), 4000);
+        return;
+      }
+    }
+    const lat = deviceLocation ? deviceLocation.latitude.toFixed(5) : '24.6538';
+    const lng = deviceLocation ? deviceLocation.longitude.toFixed(5) : '84.4375';
+    const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
+    const text = encodeURIComponent(
+      `🚨 *आपातकालीन संदेश (देव छठ सेवा)*\n` +
+      `मैं इस समय देव (औरंगाबाद) छठ मेले में हूँ और मुझे सहायता चाहिए।\n` +
+      `📍 मेरी वर्तमान लोकेशन: ${mapsLink}\n` +
+      `सटीकता: ±${deviceLocation?.accuracy ? Math.round(deviceLocation.accuracy) : 10} मीटर\n` +
+      `समय: ${new Date().toLocaleTimeString('hi-IN')}\n` +
+      `(NEXTGEN DEVBHOOMI FOUNDATION)`
+    );
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
+
   // Share current GPS location card
   const handleShareLocation = async () => {
     if (!deviceLocation) {
@@ -256,13 +280,66 @@ export const EmergencyScreen: React.FC = () => {
             “आपकी location केवल आपकी अनुमति के बाद साझा की जाएगी।”
           </p>
 
-          <button
-            onClick={handleShareLocation}
-            className="w-full min-h-[48px] bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-black text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-md transition-all"
-          >
-            <Share2 className="w-4 h-4" />
-            <span>📍 मेरा स्थान साझा करें (Share Location)</span>
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={handleShareLocation}
+              className="min-h-[48px] bg-stone-800 hover:bg-stone-700 active:scale-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-md transition-all border border-stone-700"
+            >
+              <Share2 className="w-4 h-4 text-amber-400" />
+              <span>📍 स्थान साझा करें</span>
+            </button>
+
+            <button
+              onClick={handleWhatsAppShare}
+              className="min-h-[48px] bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-md transition-all"
+            >
+              <span className="text-sm">📲</span>
+              <span>WhatsApp पर भेजें</span>
+            </button>
+          </div>
+        </div>
+
+        {/* On-Demand Vrati & Senior Citizen Assistance Dispatch (Feature 7) */}
+        <div className="bg-gradient-to-r from-amber-950 via-orange-950 to-stone-900 border border-[#FFB52E]/40 rounded-3xl p-4 shadow-lg space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">🎋</span>
+            <div>
+              <h4 className="text-sm font-black text-white leading-tight">
+                छठ व्रती व वृद्ध ऑन-डिमांड सहायता
+              </h4>
+              <p className="text-[11px] text-amber-200/80">
+                घाट पर तत्काल व्हीलचेयर, स्ट्रेचर या जल-सेवा हेतु
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => handleInitiateCall({
+                title: '🦽 स्ट्रेचर / व्हीलचेयर सहायता',
+                number: '108',
+                desc: 'अस्वस्थ व्रतियों व वरिष्ठ नागरिकों हेतु घाट पर स्ट्रेचर/एम्बुलेंस',
+              })}
+              className="p-3 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 rounded-2xl text-left transition-all active:scale-95"
+            >
+              <span className="text-xl block mb-1">🦽</span>
+              <span className="text-xs font-black text-white block">स्ट्रेचर सहायता</span>
+              <span className="text-[10px] text-amber-200 block">108 आपातकालीन</span>
+            </button>
+
+            <button
+              onClick={() => handleInitiateCall({
+                title: '💧 स्वयंसेवक जल-सेवा सहायता',
+                number: '06186-222100',
+                desc: 'पारण पूर्व पवित्र जल, ओआरएस एवं प्राथमिक सहायता दल',
+              })}
+              className="p-3 bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/50 rounded-2xl text-left transition-all active:scale-95"
+            >
+              <span className="text-xl block mb-1">💧</span>
+              <span className="text-xs font-black text-white block">जल-सेवा दल</span>
+              <span className="text-[10px] text-sky-200 block">स्वयंसेवक डेस्क</span>
+            </button>
+          </div>
         </div>
 
         {/* Child & Senior Digital QR Safety Badge */}

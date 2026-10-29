@@ -93,6 +93,8 @@ export const LostFoundScreen: React.FC = () => {
   const [currentView, setCurrentView] = useState<'MENU' | 'FORM' | 'LIST' | 'DETAIL'>('MENU');
   const [selectedReportType, setSelectedReportType] = useState<LostFoundType>('LOST_PERSON');
   const [selectedReport, setSelectedReport] = useState<LostFoundReport | null>(null);
+  const [showBroadcastSlip, setShowBroadcastSlip] = useState<boolean>(false);
+  const [slipCopied, setSlipCopied] = useState<boolean>(false);
 
   // Filter for reports list
   const [listFilter, setListFilter] = useState<'ALL' | 'PERSON' | 'ITEM'>('ALL');
@@ -463,21 +465,21 @@ export const LostFoundScreen: React.FC = () => {
             </div>
 
             {/* Missing Family shortcut */}
-            <div className="bg-purple-50 border border-purple-200 rounded-3xl p-4 flex items-center justify-between gap-3">
+            <div className="bg-[#FFF7E5] border border-[#075985]/20 rounded-3xl p-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl">👨👩👧</span>
                 <div>
-                  <h4 className="text-sm font-black text-purple-950">
+                  <h4 className="text-sm font-black text-[#075985]">
                     क्या परिवार का सदस्य नहीं मिल रहा?
                   </h4>
-                  <p className="text-[11px] text-purple-700">
+                  <p className="text-[11px] text-[#075985]/80">
                     परिवार की लाइव लोकेशन इस ऐप में उपलब्ध नहीं है। सहायता के लिए परिवार स्क्रीन देखें।
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => navigate('family')}
-                className="px-3 py-2 bg-purple-800 text-white font-black text-xs rounded-xl shadow-xs shrink-0 active:scale-95"
+                className="px-3.5 py-2 bg-[#075985] hover:bg-[#063B5C] text-white font-black text-xs rounded-xl shadow-xs shrink-0 active:scale-95"
               >
                 परिवार देखें
               </button>
@@ -872,11 +874,29 @@ export const LostFoundScreen: React.FC = () => {
               )}
             </div>
 
+            {/* Control Room Loudspeaker Broadcast Action */}
+            <div className="p-3 bg-amber-50 rounded-2xl border border-amber-300 space-y-2">
+              <div className="flex items-center gap-2 text-amber-950 font-black text-xs">
+                <span className="text-base">📢</span>
+                <span>मेला नियंत्रण कक्ष लाउडस्पीकर मुनादी</span>
+              </div>
+              <p className="text-[11px] text-amber-900 leading-snug">
+                खोए व्यक्ति/सामान की कंट्रोल रूम से लाउडस्पीकर पर तत्काल घोषणा हेतु प्रामाणिक पर्ची तैयार करें।
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowBroadcastSlip(true)}
+                className="w-full min-h-[42px] bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-stone-950 font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <span>📢 लाउडस्पीकर मुनादी पर्ची खोलें</span>
+              </button>
+            </div>
+
             {/* Claim / Handover Action */}
             <div className="pt-2 space-y-2">
               <button
                 onClick={() => setShowClaimModal(true)}
-                className="w-full min-h-[46px] bg-purple-800 hover:bg-purple-900 active:scale-95 text-white font-black text-xs rounded-2xl shadow-xs flex items-center justify-center gap-1.5"
+                className="w-full min-h-[46px] bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white font-black text-xs rounded-2xl shadow-xs flex items-center justify-center gap-1.5"
               >
                 <ShieldCheck className="w-4 h-4" />
                 <span>यह मेरा परिजन / सामान है (सत्यापन का दावा करें)</span>
@@ -1030,12 +1050,93 @@ export const LostFoundScreen: React.FC = () => {
               </button>
               <button
                 type="submit"
-                className="min-h-[46px] bg-purple-800 hover:bg-purple-900 active:scale-95 text-white font-black text-xs rounded-xl shadow-md"
+                className="min-h-[46px] bg-[#075985] hover:bg-[#063B5C] active:scale-95 text-white font-black text-xs rounded-xl shadow-md"
               >
                 सत्यापन भेजें
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* LOUDSPEAKER BROADCAST SLIP MODAL (Feature 5)             */}
+      {/* ======================================================== */}
+      {showBroadcastSlip && selectedReport && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-5 space-y-4 shadow-2xl animate-fade-in border-2 border-amber-400">
+            <div className="flex items-center justify-between border-b border-stone-200 pb-2.5">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">📢</span>
+                <div>
+                  <h4 className="text-base font-black text-stone-900 leading-tight">
+                    लाउडस्पीकर मुनादी पर्ची
+                  </h4>
+                  <span className="text-[10px] text-amber-800 font-bold block">
+                    देव छठ मेला नियंत्रण कक्ष उद्घोषक प्रति (Announcer Slip)
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowBroadcastSlip(false)}
+                className="w-8 h-8 rounded-full bg-stone-100 text-stone-600 hover:bg-stone-200 flex items-center justify-center font-bold text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Read-Aloud Hindi Script Box */}
+            <div className="bg-amber-50 p-4 rounded-2xl border-2 border-dashed border-amber-400 text-xs sm:text-sm text-stone-900 space-y-2 font-serif leading-relaxed">
+              <span className="text-[10px] font-sans font-black uppercase tracking-wider text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded-full inline-block">
+                माइक पर बोलने हेतु आधिकारिक प्रारूप:
+              </span>
+              <p className="font-bold">
+                “कृपया ध्यान दें! एक {selectedReport.category || 'व्यक्ति'} जिनका नाम <strong>{selectedReport.title}</strong> है, अंतिम बार <strong>{selectedReport.location}</strong> के समीप देखे गए थे। {selectedReport.identifyingFeatures ? `पहचान: ${selectedReport.identifyingFeatures}।` : ''}”
+              </p>
+              <p className="pt-1 text-xs font-sans text-stone-700">
+                “यदि किसी को इनके विषय में जानकारी मिले, तो तुरंत निकटतम सहायता केंद्र, स्वयंसेवक, अथवा केंद्रीय नियंत्रण कक्ष (फोन: 112 / 06186-222100) पर संपर्क करें। रिपोर्ट संख्या: <strong>{selectedReport.reportId}</strong>।”
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  const text = `📢 देव छठ मेला लाउडस्पीकर मुनादी\n` +
+                    `रिपोर्ट संख्या: ${selectedReport.reportId}\n` +
+                    `नाम/विवरण: ${selectedReport.title}\n` +
+                    `स्थान: ${selectedReport.location}\n` +
+                    `पहचान: ${selectedReport.identifyingFeatures || 'विवरण ऐप में उपलब्ध'}\n` +
+                    `सहायता नंबर: 112 / 06186-222100`;
+                  navigator.clipboard?.writeText(text);
+                  setSlipCopied(true);
+                  setTimeout(() => setSlipCopied(false), 2000);
+                }}
+                className="min-h-[44px] bg-stone-100 hover:bg-stone-200 text-stone-900 font-black text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <span>{slipCopied ? '✓ कॉपी हुआ' : '📋 पर्ची कॉपी करें'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const text = encodeURIComponent(
+                    `📢 *देव छठ मेला खोया-पाया मुनादी*\n` +
+                    `रिपोर्ट ID: ${selectedReport.reportId}\n` +
+                    `नाम: *${selectedReport.title}*\n` +
+                    `स्थान: ${selectedReport.location}\n` +
+                    `पहचान: ${selectedReport.identifyingFeatures || 'सामान्य'}\n` +
+                    `मेला नियंत्रण कक्ष: 112 / 06186-222100`
+                  );
+                  window.open(`https://wa.me/?text=${text}`, '_blank');
+                }}
+                className="min-h-[44px] bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5"
+              >
+                <span>📲 WhatsApp भेजें</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

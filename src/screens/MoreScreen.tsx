@@ -39,6 +39,25 @@ export const MoreScreen: React.FC = () => {
     }[];
   }[] = [
     {
+      category: 'छठ महापर्व विशेष (Sacred Chhath Mahaparv)',
+      items: [
+        {
+          id: 'chhath-katha',
+          label: 'छठ व्रत कथा, गीत व मंत्र',
+          desc: 'प्रामाणिक व्रत कथा, शारदा सिन्हा अमर लोकगीत, सूर्य गायत्री व आरती',
+          icon: '📖',
+          badge: 'पावन',
+        },
+        {
+          id: 'prasad-camps',
+          label: 'निःशुल्क सामग्री व प्रसाद शिविर',
+          desc: 'निःशुल्क ईख, सूप, दउरा, कच्चा दूध व ठेकुआ महाप्रसाद केंद्र',
+          icon: '🎋',
+          badge: 'सेवा',
+        },
+      ],
+    },
+    {
       category: 'खाता एवं सुरक्षा (Account & Security)',
       items: [
         {
@@ -226,7 +245,7 @@ export const MoreScreen: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-24 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="सभी सेवाएँ एवं मेनू" showBack />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-5">
@@ -236,12 +255,12 @@ export const MoreScreen: React.FC = () => {
               {sec.category}
             </h3>
 
-            <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden divide-y divide-stone-100 shadow-xs">
+            <div className="bg-white border-2 border-stone-200/90 rounded-3xl overflow-hidden divide-y divide-stone-100 shadow-xs">
               {sec.items.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => navigate(item.id)}
-                  className="w-full p-3.5 flex items-center justify-between text-left hover:bg-amber-50/50 active:bg-amber-100/50 transition-colors"
+                  className="w-full p-3.5 flex items-center justify-between text-left hover:bg-amber-50/70 active:bg-amber-100/70 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-xl w-8 text-center shrink-0">{item.icon}</span>

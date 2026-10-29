@@ -1,0 +1,461 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useRef, useEffect } from 'react';
+import { useApp } from '../context/AppContext';
+import { TopBar } from '../components/TopBar';
+import {
+  Volume2,
+  VolumeX,
+  Play,
+  Pause,
+  BookOpen,
+  Music,
+  Sun,
+  Sparkles,
+  Share2,
+  Check,
+  ChevronRight,
+} from 'lucide-react';
+
+interface FolkTrack {
+  id: string;
+  title: string;
+  singer: string;
+  tagline: string;
+  lyrics: string[];
+  meaning: string;
+}
+
+const FOLK_TRACKS: FolkTrack[] = [
+  {
+    id: 'katha-track-1',
+    title: 'काँच ही बाँस के बहँगिया',
+    singer: 'पारंपरिक अमर लोकगीत (शारदा सिन्हा स्वर प्रेरणा)',
+    tagline: 'सूप-दउरा उठाव व घाट प्रस्थान',
+    lyrics: [
+      'काँच ही बाँस के बहँगिया, बहँगी लचकत जाए…',
+      'बहँगी लचकत जाए…',
+      'बात जे पुछेले बटोहिया, बहँगी केकरा के जाए?',
+      'तू त आन्हर हउवे रे बटोहिया, बहँगी छठी माई के जाए…',
+      'काँच ही बाँस के बहँगिया, बहँगी लचकत जाए…',
+      'सूपे सूपे निपले अंगनवा, अरघ के बेरा भईल…',
+      'उग हे सुरुज देव, अरघ के बेरा भईल…',
+    ],
+    meaning: 'बांस की बहंगी में पावन दउरा लेकर छठ व्रती और परिजन देव के सूर्य कुंड घाट की ओर प्रस्थान करते हैं।',
+  },
+  {
+    id: 'katha-track-2',
+    title: 'उग हे सुरुज देव (अरघ के बेरा भईल)',
+    singer: 'पारंपरिक सांध्य व उषा अर्घ्य गान',
+    tagline: 'भगवान भुवन भास्कर को भावपूर्ण पुकार',
+    lyrics: [
+      'उग हे सुरुज देव, अरघ के बेरा भईल…',
+      'अरघ के बेरा भईल, पूजन के बेरा भईल…',
+      'जल बीच ठाढ़ व्रती विनती करेली…',
+      'दर्शन देहू सुरुज देव, अरघ के बेरा भईल…',
+      'अन्हरिया भगावल, जगमग उजियार भईल…',
+      'दीनानाथ हे प्रभु, तोहर जय-जयकार भईल…',
+    ],
+    meaning: 'शीतल सूर्य कुंड के जल में कमर तक खड़े होकर दोनों कर जोड़कर भगवान भास्कर से दर्शन देने की भावपूर्ण प्रार्थना।',
+  },
+  {
+    id: 'katha-track-3',
+    title: 'केलवा के पात पर उगेलन सुरुजमल',
+    singer: 'पारंपरिक मांगलिक अर्घ्य गीत',
+    tagline: 'पवित्र वेदी व प्रसाद अर्पण',
+    lyrics: [
+      'केलवा के पात पर उगेलन सुरुजमल झांके झुके…',
+      'करेलू छठ परबिया, से झांके झुके…',
+      'हम तोसे पुछी बरतिया हे, कवन फल पावेला…',
+      'से कवन फल पावेला…',
+      'पुत्र पावे अन्न-धन लछिमी, अमर सुहाग पावेला…',
+      'केलवा के पात पर उगेलन सुरुजमल झांके झुके…',
+    ],
+    meaning: 'केले के पत्तों और सूप में सजे ऋतु फलों के मध्य भगवान सूर्य की स्वर्णिम किरणों का अवतरण।',
+  },
+  {
+    id: 'katha-track-4',
+    title: 'पहिले पहिल हम कइनी छठी मइया',
+    singer: 'छठ व्रत संकल्प व समर्पण गान',
+    tagline: 'प्रथम व्रत की निष्ठा और श्रद्धा',
+    lyrics: [
+      'पहिले पहिल हम कइनी, छठी मइया बरत तोहार…',
+      'करिहा क्षमा छठी मइया, भूल-चूक गलती हमार…',
+      'सबके सुहाग रखिहा, अंचरा के लाज रखिहा…',
+      'गोदी में बालक खेलै, घर-अंगना भरल रखिहा…',
+      'पहिले पहिल हम कइनी, छठी मइया बरत तोहार…',
+    ],
+    meaning: 'निष्ठापूर्वक प्रथम बार छठ व्रत धारण करने वाली माताओं-बहनों की क्षमायाचना व मंगल कामना।',
+  },
+];
+
+export const ChhathKathaScreen: React.FC = () => {
+  const { navigate } = useApp();
+  const [activeTab, setActiveTab] = useState<'KATHA' | 'GEET' | 'MANTRA' | 'AARTI'>('KATHA');
+  const [selectedTrackIndex, setSelectedTrackIndex] = useState<number>(0);
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const [copiedMantra, setCopiedMantra] = useState<boolean>(false);
+
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const chimeIntervalRef = useRef<number | null>(null);
+
+  const currentTrack = FOLK_TRACKS[selectedTrackIndex];
+
+  // Synthesize soft temple bell & meditative Om resonance (100% offline, zero internet required)
+  const startOfflineChime = () => {
+    try {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = audioContextRef.current || new AudioCtx();
+      audioContextRef.current = ctx;
+
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      const playBellTone = () => {
+        if (!audioContextRef.current) return;
+        const now = audioContextRef.current.currentTime;
+        const osc = audioContextRef.current.createOscillator();
+        const gain = audioContextRef.current.createGain();
+
+        // Sacred 432Hz Om / Temple bell fundamental harmonic
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(432, now);
+        osc.frequency.exponentialRampToValueAtTime(864, now + 0.15);
+        osc.frequency.exponentialRampToValueAtTime(432, now + 1.2);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.18, now + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.0);
+
+        osc.connect(gain);
+        gain.connect(audioContextRef.current.destination);
+
+        osc.start(now);
+        osc.stop(now + 3.2);
+      };
+
+      playBellTone();
+      chimeIntervalRef.current = window.setInterval(playBellTone, 3800);
+      setIsPlayingAudio(true);
+    } catch (err) {
+      console.warn('Audio synthesis unavailable:', err);
+    }
+  };
+
+  const stopOfflineChime = () => {
+    if (chimeIntervalRef.current) {
+      clearInterval(chimeIntervalRef.current);
+      chimeIntervalRef.current = null;
+    }
+    setIsPlayingAudio(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      stopOfflineChime();
+      if (audioContextRef.current) {
+        audioContextRef.current.close().catch(() => undefined);
+      }
+    };
+  }, []);
+
+  const handleCopyMantra = (text: string) => {
+    navigator.clipboard?.writeText(text);
+    setCopiedMantra(true);
+    setTimeout(() => setCopiedMantra(false), 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-24 flex flex-col font-['Mukta',sans-serif]">
+      <TopBar title="छठ व्रत कथा, गीत व मंत्र" showBack />
+
+      <main className="flex-1 max-w-lg mx-auto w-full p-3 sm:p-4 space-y-4">
+        {/* Divine Hero Card */}
+        <div className="bg-gradient-to-br from-[#075985] via-[#063B5C] to-[#041E2F] text-white rounded-3xl p-5 shadow-lg relative overflow-hidden border border-[#FFB52E]/50">
+          <div className="pointer-events-none absolute -right-6 -bottom-6 w-36 h-36 bg-[#F47B20]/25 rounded-full blur-2xl" />
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="space-y-1">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#FFB52E] bg-[#FFB52E]/20 border border-[#FFB52E]/40 px-2.5 py-0.5 rounded-full inline-block">
+                छठ महापर्व आध्यात्मिक संग्रह
+              </span>
+              <h2 className="text-xl font-black text-white leading-tight">
+                संपूर्ण व्रत कथा व पावन भक्ति
+              </h2>
+              <p className="text-xs text-[#FFF7E5]/90">
+                भगवान भास्कर एवं षष्ठी माता की महिमा, पारंपरिक लोकगीत व आरती
+              </p>
+            </div>
+
+            {/* Offline Audio Chime Control Button */}
+            <button
+              onClick={isPlayingAudio ? stopOfflineChime : startOfflineChime}
+              className={`p-3 rounded-2xl flex flex-col items-center justify-center shrink-0 border transition-all active:scale-95 shadow-md ${
+                isPlayingAudio
+                  ? 'bg-[#F47B20] text-white border-white animate-pulse'
+                  : 'bg-white/10 hover:bg-white/20 text-[#FFB52E] border-[#FFB52E]/40'
+              }`}
+              title={isPlayingAudio ? 'धुन बंद करें' : 'मंदिर की पावन धुन बजाएं'}
+            >
+              {isPlayingAudio ? <Volume2 className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              <span className="text-[9px] font-black mt-1">
+                {isPlayingAudio ? 'धुन बज रही' : 'मंदिर धुन'}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Navigation Tabs (4 Pillars) */}
+        <div className="grid grid-cols-4 gap-1.5 bg-stone-200/80 p-1 rounded-2xl text-[11px] font-black">
+          <button
+            onClick={() => setActiveTab('KATHA')}
+            className={`py-2 px-1 rounded-xl transition-all ${
+              activeTab === 'KATHA'
+                ? 'bg-[#075985] text-white shadow-xs'
+                : 'text-stone-700 hover:text-stone-900'
+            }`}
+          >
+            📖 व्रत कथा
+          </button>
+          <button
+            onClick={() => setActiveTab('GEET')}
+            className={`py-2 px-1 rounded-xl transition-all ${
+              activeTab === 'GEET'
+                ? 'bg-[#075985] text-white shadow-xs'
+                : 'text-stone-700 hover:text-stone-900'
+            }`}
+          >
+            🎵 छठ गीत
+          </button>
+          <button
+            onClick={() => setActiveTab('MANTRA')}
+            className={`py-2 px-1 rounded-xl transition-all ${
+              activeTab === 'MANTRA'
+                ? 'bg-[#075985] text-white shadow-xs'
+                : 'text-stone-700 hover:text-stone-900'
+            }`}
+          >
+            🕉️ मन्त्र
+          </button>
+          <button
+            onClick={() => setActiveTab('AARTI')}
+            className={`py-2 px-1 rounded-xl transition-all ${
+              activeTab === 'AARTI'
+                ? 'bg-[#075985] text-white shadow-xs'
+                : 'text-stone-700 hover:text-stone-900'
+            }`}
+          >
+            🙏 आरती
+          </button>
+        </div>
+
+        {/* TAB 1: SACRED CHHATH VRATA KATHA */}
+        {activeTab === 'KATHA' && (
+          <div className="bg-white rounded-3xl p-5 border border-stone-200/90 shadow-xs space-y-4 text-stone-800 animate-fade-in">
+            <div className="border-b border-amber-100 pb-3">
+              <span className="text-[11px] font-black text-[#F47B20] uppercase tracking-wider block">
+                पौराणिक संदर्भ • ब्रह्मवैवर्त पुराण
+              </span>
+              <h3 className="text-lg font-black text-[#075985]">
+                छठ महापर्व की प्रामाणिक व्रत कथा
+              </h3>
+              <p className="text-xs text-stone-500 font-medium">
+                राजा प्रियंवद एवं षष्ठी देवी (छठी मइया) का दिव्य प्राकट्य
+              </p>
+            </div>
+
+            <div className="space-y-3.5 text-xs sm:text-sm leading-relaxed text-stone-700">
+              <div className="p-3 bg-amber-50/70 rounded-2xl border border-amber-200/60 text-amber-950">
+                <span className="font-black block text-sm mb-1">👑 १. राजा प्रियंवद की संतान कामना:</span>
+                पौराणिक काल में राजा प्रियंवद और उनकी पत्नी मालिनी के कोई संतान नहीं थी। संतान प्राप्ति के लिए महर्षि कश्यप ने पुत्रकामेष्टि यज्ञ संपन्न कराया और महारानी मालिनी को आहुति की खीर दी।
+              </div>
+
+              <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 text-stone-800">
+                <span className="font-black block text-sm mb-1 text-stone-900">⚡ २. मृत शिशु का जन्म व वैराग्य:</span>
+                यज्ञ के प्रभाव से रानी ने एक सुंदर पुत्र को जन्म दिया, किंतु वह बालक मृत उत्पन्न हुआ। राजा प्रियंवद अगाध शोक में डूब गए और श्मशान में अपने प्राण त्यागने को उद्यत हुए।
+              </div>
+
+              <div className="p-3 bg-sky-50 rounded-2xl border border-sky-200/80 text-sky-950">
+                <span className="font-black block text-sm mb-1 text-[#075985]">✨ ३. देवसेना (षष्ठी देवी) का दिव्य प्राकट्य:</span>
+                उसी क्षण आकाश में एक अलौकिक ज्योतिर्मय विमान उतरा, जिस पर भगवान ब्रह्मा की मानस पुत्री <strong>देवी षष्ठी (छठी मइया)</strong> विराजमान थीं। देवी ने कहा:
+                <blockquote className="my-2 p-2.5 bg-white/80 rounded-xl border-l-4 border-[#075985] italic font-semibold text-stone-800">
+                  “हे राजन! मैं मूल प्रकृति के छठे अंश से उत्पन्न हुई हूँ, इसलिए मेरा नाम ‘षष्ठी’ है। मैं समस्त जगत के शिशुओं की रक्षिका और निःसंतानों को संतान व आरोग्य प्रदान करने वाली हूँ। तुम मेरी आराधना करो और प्रजा में मेरा प्रचार करो।”
+                </blockquote>
+                देवी ने अपने दिव्य स्पर्श से बालक को जीवित कर दिया।
+              </div>
+
+              <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-emerald-950">
+                <span className="font-black block text-sm mb-1 text-[#2E7D32]">☀️ ४. कार्तिक शुक्ल षष्ठी का प्रथम महाव्रत:</span>
+                राजा प्रियंवद ने कार्तिक शुक्ल षष्ठी के दिन संपूर्ण विधि-विधान से देवी षष्ठी एवं प्रत्यक्ष देवता भगवान सूर्य का पूजन किया। तभी से संतान की दीर्घायु, पारिवारिक सुख-समृद्धि एवं आरोग्य के लिए यह महापर्व निरंतर मनाया जाने लगा।
+              </div>
+            </div>
+
+            {/* Arghya Significance Banner */}
+            <div className="bg-[#FFF7E5] border border-[#FFB52E]/60 p-4 rounded-2xl text-xs space-y-1.5 text-stone-900">
+              <span className="font-black text-[#075985] flex items-center gap-1.5 text-sm">
+                <Sparkles className="w-4 h-4 text-[#F47B20]" />
+                छठ पूजा की अद्वितीय विशेषता:
+              </span>
+              <p className="leading-relaxed">
+                संसार में केवल छठ पर्व ही ऐसा पावन अनुष्ठान है जहाँ अस्ताचलगामी (डूबते हुए) सूर्य को पहले नमन किया जाता है और तत्पश्चात उदीयमान (उगते हुए) सूर्य को अर्घ्य दिया जाता है। यह प्रकृति के समभाव का प्रतीक है।
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: FOLK SONGS (GEET) */}
+        {activeTab === 'GEET' && (
+          <div className="space-y-3.5 animate-fade-in">
+            {/* Song Track Selector */}
+            <div className="grid grid-cols-2 gap-2">
+              {FOLK_TRACKS.map((t, idx) => (
+                <button
+                  key={t.id}
+                  onClick={() => setSelectedTrackIndex(idx)}
+                  className={`p-3 rounded-2xl border text-left transition-all ${
+                    selectedTrackIndex === idx
+                      ? 'bg-[#075985] text-white border-[#075985] shadow-sm'
+                      : 'bg-white text-stone-800 border-stone-200 hover:bg-stone-50'
+                  }`}
+                >
+                  <span className="text-[10px] block opacity-80 font-bold">गीत {idx + 1}</span>
+                  <h4 className="text-xs font-black truncate leading-tight mt-0.5">{t.title}</h4>
+                  <span className="text-[10px] block truncate opacity-75 mt-0.5">{t.tagline}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Song Lyrics Card */}
+            <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-xs space-y-3.5">
+              <div className="border-b border-stone-100 pb-2.5 flex items-start justify-between">
+                <div>
+                  <h3 className="text-base font-black text-[#075985]">{currentTrack.title}</h3>
+                  <span className="text-xs text-[#F47B20] font-bold block">{currentTrack.singer}</span>
+                </div>
+                <button
+                  onClick={() => handleCopyMantra(currentTrack.lyrics.join('\n'))}
+                  className="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold rounded-lg flex items-center gap-1"
+                >
+                  {copiedMantra ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
+                  <span>{copiedMantra ? 'कॉपी हुआ' : 'शेयर / कॉपी'}</span>
+                </button>
+              </div>
+
+              {/* Lyrics Verse */}
+              <div className="space-y-2 py-2 px-3 bg-amber-50/50 rounded-2xl border border-amber-200/50 text-stone-800 text-xs sm:text-sm font-semibold leading-relaxed">
+                {currentTrack.lyrics.map((line, lidx) => (
+                  <p key={lidx} className="tracking-wide">
+                    {line}
+                  </p>
+                ))}
+              </div>
+
+              <div className="p-3 bg-stone-50 rounded-xl text-xs text-stone-600 border border-stone-200/70">
+                <span className="font-black text-stone-900 block mb-0.5">भावार्थ:</span>
+                {currentTrack.meaning}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: MANTRAS & 12 ADITYA NAMES */}
+        {activeTab === 'MANTRA' && (
+          <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-xs space-y-4 animate-fade-in">
+            <div className="border-b border-stone-100 pb-2">
+              <h3 className="text-base font-black text-[#075985]">
+                वैदिक सूर्य अर्घ्य मन्त्र व गायत्री
+              </h3>
+              <p className="text-xs text-stone-500 font-medium">
+                अर्घ्य अर्पण एवं सूर्य नमस्कार के समय उच्चारणीय पावन मन्त्र
+              </p>
+            </div>
+
+            {/* Main Arghya Mantra */}
+            <div className="p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl space-y-2">
+              <span className="text-[10px] font-black uppercase tracking-wider text-amber-900 bg-amber-200 px-2 py-0.5 rounded-full inline-block">
+                मुख्य अर्घ्य अर्पण मन्त्र
+              </span>
+              <p className="text-sm sm:text-base font-black text-stone-900 leading-relaxed font-serif">
+                ॐ एहि सूर्य सहस्त्रांशो तेजोराशे जगत्पते।<br />
+                अनुकम्पय मां भक्त्या गृहाणार्घ्यं दिवाकर॥
+              </p>
+              <p className="text-xs text-stone-600 leading-normal pt-1 border-t border-amber-200">
+                <strong>अर्थ:</strong> हे सहस्र किरणों वाले, तेज के सागर, समस्त जगत के स्वामी भगवान सूर्य! मुझ भक्त पर अनुकम्पा करते हुए मेरे द्वारा समर्पित इस पावन अर्घ्य को स्वीकार करें।
+              </p>
+            </div>
+
+            {/* Surya Gayatri Mantra */}
+            <div className="p-4 bg-sky-50 border border-sky-300 rounded-2xl space-y-1.5">
+              <span className="text-[10px] font-black uppercase tracking-wider text-sky-900 bg-sky-200 px-2 py-0.5 rounded-full inline-block">
+                सूर्य गायत्री मन्त्र
+              </span>
+              <p className="text-sm font-black text-[#075985] leading-relaxed">
+                ॐ भास्कराय विद्महे महातेजाय धीमहि।<br />
+                तन्नः सूर्यः प्रचोदयात्॥
+              </p>
+            </div>
+
+            {/* 12 Holy Sun Names */}
+            <div className="space-y-2 pt-1">
+              <h4 className="text-xs font-black uppercase tracking-wider text-stone-600">
+                द्वादश आदित्य नाम (भगवान सूर्य के १२ पावन नाम):
+              </h4>
+              <div className="grid grid-cols-2 gap-2 text-xs font-bold text-stone-800">
+                {[
+                  '१. ॐ मित्राय नमः',
+                  '२. ॐ रवये नमः',
+                  '३. ॐ सूर्याय नमः',
+                  '४. ॐ भानवे नमः',
+                  '५. ॐ खगाय नमः',
+                  '६. ॐ पूष्णे नमः',
+                  '७. ॐ हिरण्यगर्भाय नमः',
+                  '८. ॐ मरीचये नमः',
+                  '९. ॐ आदित्याय नमः',
+                  '१०. ॐ सवित्रे नमः',
+                  '११. ॐ अर्काय नमः',
+                  '१२. ॐ भास्कराय नमः',
+                ].map((m, midx) => (
+                  <div key={midx} className="p-2 rounded-xl bg-stone-50 border border-stone-200">
+                    {m}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: AARTI */}
+        {activeTab === 'AARTI' && (
+          <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-xs space-y-4 animate-fade-in">
+            <div className="border-b border-stone-100 pb-2">
+              <h3 className="text-base font-black text-[#075985]">
+                भगवान भास्कर एवं षष्ठी माता की पावन आरती
+              </h3>
+              <p className="text-xs text-stone-500 font-medium">
+                देव सूर्य मंदिर में प्रातः व सायंकाल गाई जाने वाली नित्य आरती
+              </p>
+            </div>
+
+            <div className="space-y-2 p-4 bg-amber-50/70 rounded-2xl border border-amber-200 text-xs sm:text-sm font-semibold text-stone-800 leading-relaxed">
+              <p className="font-black text-[#075985] text-base text-center pb-2 border-b border-amber-200">
+                ॥ श्री सूर्य देव की आरती ॥
+              </p>
+              <p>जय कश्यप-नंदन, ॐ जय अदिति-नंदन।</p>
+              <p>त्रिभुवन-तिमिर-निकंदन, भक्त-हृदय-वंदन॥ जय जय सूर्य हरे॥</p>
+              <p>सप्त-अश्व-रथ सोहे, छवि निर्मल कांति।</p>
+              <p>ऋषि-मुनि सुर-नर ध्यावत, मिटे सकल भ्रांति॥ जय जय सूर्य हरे॥</p>
+              <p>अर्घ्य देत जो ध्यावे, रोग-शोक न रहे।</p>
+              <p>छठी मैया के संग में, सुख-संपत्ति लहे॥ जय जय सूर्य हरे॥</p>
+              <p>कंचन थार कपूर लौ छाई, आरती करत सब नर-नारी।</p>
+              <p>देव सूर्य मंदिर में गूंजे, जयकार तिहारी॥ जय जय सूर्य हरे॥</p>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};

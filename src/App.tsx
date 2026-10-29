@@ -118,6 +118,12 @@ const OfflineScreen = React.lazy(() =>
 const ErrorScreen = React.lazy(() =>
   import('./screens/ErrorScreen').then(({ ErrorScreen }) => ({ default: ErrorScreen }))
 );
+const ChhathKathaScreen = React.lazy(() =>
+  import('./screens/ChhathKathaScreen').then(({ ChhathKathaScreen }) => ({ default: ChhathKathaScreen }))
+);
+const PrasadCampsScreen = React.lazy(() =>
+  import('./screens/PrasadCampsScreen').then(({ PrasadCampsScreen }) => ({ default: PrasadCampsScreen }))
+);
 
 const ScreenLoadingFallback = () => (
   <div
@@ -231,6 +237,10 @@ const MainRouter: React.FC = () => {
         return <OfflineScreen />;
       case 'error':
         return <ErrorScreen />;
+      case 'chhath-katha':
+        return <ChhathKathaScreen />;
+      case 'prasad-camps':
+        return <PrasadCampsScreen />;
       default:
         return <HomeScreen />;
     }

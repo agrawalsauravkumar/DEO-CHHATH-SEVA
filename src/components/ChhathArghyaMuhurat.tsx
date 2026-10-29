@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Compass, Clock, Sun, Moon, Sparkles, ChevronRight, Info } from 'lucide-react';
+import { Compass, Clock, Sun, Moon, Sparkles, ChevronRight, Info, BookOpen } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 
 interface ChhathDayInfo {
   dayNumber: number;
@@ -20,6 +21,8 @@ interface ChhathDayInfo {
 }
 
 export const ChhathArghyaMuhurat: React.FC<{ language?: string }> = ({ language = 'hi' }) => {
+  const { navigate } = useApp();
+  const [showMantra, setShowMantra] = useState<boolean>(false);
   const isEnglish = language === 'en';
 
   // Chhath Mahaparv 2026 Official Festival Schedule (Deo, Aurangabad, Bihar)
@@ -203,6 +206,48 @@ export const ChhathArghyaMuhurat: React.FC<{ language?: string }> = ({ language 
           <p className="text-[11px] text-stone-300 leading-snug mt-2.5">
             {currentDay.description}
           </p>
+
+          {/* Arghya Vedic Mantra Quick Expander */}
+          <div className="mt-3 pt-2.5 border-t border-white/10 space-y-2">
+            <button
+              type="button"
+              onClick={() => setShowMantra(!showMantra)}
+              className="w-full flex items-center justify-between text-left p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-black text-[#FFD54F] transition-colors"
+            >
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#FF8C42]" />
+                <span>अर्घ्य अर्पण मन्त्र (Vedic Arghya Mantra)</span>
+              </span>
+              <span className="text-[10px] text-stone-300 underline">
+                {showMantra ? 'छुपाएं ▲' : 'देखें ▼'}
+              </span>
+            </button>
+
+            {showMantra && (
+              <div className="p-3 bg-amber-500/15 border border-[#FFD54F]/40 rounded-xl space-y-1.5 animate-fade-in">
+                <p className="text-xs sm:text-sm font-black text-[#FFD54F] font-serif leading-relaxed text-center">
+                  ॐ एहि सूर्य सहस्त्रांशो तेजोराशे जगत्पते।<br />
+                  अनुकम्पय मां भक्त्या गृहाणार्घ्यं दिवाकर॥
+                </p>
+                <p className="text-[10px] text-stone-200 text-center">
+                  (दोनों हाथों में सूप-पात्र लेकर सूर्य देव की ओर मुख करके धारा प्रवाहित करें)
+                </p>
+              </div>
+            )}
+
+            {/* Quick Action to Full Katha & Bhakti Screen */}
+            <button
+              type="button"
+              onClick={() => navigate('chhath-katha')}
+              className="w-full mt-1 py-2 px-3 bg-gradient-to-r from-[#FF8C42]/20 to-[#FFB52E]/20 hover:from-[#FF8C42]/30 hover:to-[#FFB52E]/30 border border-[#FFD54F]/50 rounded-xl flex items-center justify-between text-xs font-black text-white transition-all active:scale-98"
+            >
+              <span className="flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5 text-[#FFD54F]" />
+                <span>संपूर्ण छठ व्रत कथा, गीत व सूर्य चालीसा</span>
+              </span>
+              <ChevronRight className="w-4 h-4 text-[#FFD54F]" />
+            </button>
+          </div>
         </div>
       </div>
     </section>

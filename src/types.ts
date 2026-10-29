@@ -34,6 +34,8 @@ export type ScreenId =
   | 'session-expired'
   | 'offline'
   | 'error'
+  | 'chhath-katha'
+  | 'prasad-camps'
   | 'admin-login'
   | 'admin-dashboard';
 
