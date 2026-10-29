@@ -269,7 +269,7 @@ export const FamilyScreen: React.FC = () => {
         </div>
       )}
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-3 sm:p-4 space-y-3.5">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-3 sm:p-6 space-y-4">
         {/* ======================================================== */}
         {/* HEADER HERO RIBBON                                       */}
         {/* ======================================================== */}

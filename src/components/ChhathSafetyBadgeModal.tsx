@@ -136,6 +136,15 @@ export const ChhathSafetyBadgeModal: React.FC<{ isOpen: boolean; onClose: () => 
     }
   };
 
+  const handleDownloadBadge = () => {
+    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const link = document.createElement('a');
+    link.download = `chhath-safety-card-${badgeData.personName || 'devotee'}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs font-['Mukta',sans-serif] animate-fade-in">
       <div className="w-full max-w-lg max-h-[92vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border-2 border-emerald-500">
@@ -327,14 +336,23 @@ export const ChhathSafetyBadgeModal: React.FC<{ isOpen: boolean; onClose: () => 
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={handleDownloadBadge}
+                  className="py-2.5 bg-amber-500 hover:bg-amber-600 text-stone-950 font-black text-xs rounded-xl flex items-center justify-center gap-1 shadow-xs"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>फोटो सेव करें</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={handleShare}
-                  className="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-xs"
+                  className="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1 shadow-xs"
                 >
                   <Share2 className="w-4 h-4" />
-                  <span>{copiedNotice ? 'कॉपी हुआ!' : 'शेयर / कॉपी करें'}</span>
+                  <span>{copiedNotice ? 'कॉपी हुआ!' : 'शेयर करें'}</span>
                 </button>
 
                 <button
@@ -342,7 +360,7 @@ export const ChhathSafetyBadgeModal: React.FC<{ isOpen: boolean; onClose: () => 
                   onClick={() => setIsGenerated(false)}
                   className="py-2.5 bg-stone-200 hover:bg-stone-300 text-stone-800 font-black text-xs rounded-xl"
                 >
-                  जानकारी बदलें
+                  बदलें
                 </button>
               </div>
             </div>

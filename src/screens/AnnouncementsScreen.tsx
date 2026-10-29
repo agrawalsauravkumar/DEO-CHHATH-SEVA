@@ -225,7 +225,7 @@ export const AnnouncementsScreen: React.FC = () => {
         </div>
       )}
 
-      <main className="flex-1 max-w-lg mx-auto w-full px-3.5 sm:px-4 py-3.5 space-y-3.5">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full px-3.5 sm:px-6 py-4 space-y-4">
         {/* Official Header Banner */}
         <div className="bg-gradient-to-br from-[#075985] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-4 sm:p-5 shadow-md border-2 border-amber-500/40 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />

@@ -189,7 +189,7 @@ export const EmergencyScreen: React.FC = () => {
     <div className="min-h-screen bg-stone-950 text-white pb-20 flex flex-col font-['Mukta',sans-serif] select-none">
       <TopBar title="🚨 आपातकालीन सहायता" showBack />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 sm:p-6 space-y-5">
         {/* Success Alert */}
         {locationSharedNotice && (
           <div className="bg-emerald-900/90 border border-emerald-500 text-emerald-100 px-4 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 shadow-lg animate-fade-in">

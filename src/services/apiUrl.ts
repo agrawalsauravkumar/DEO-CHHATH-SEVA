@@ -5,7 +5,7 @@ const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 export const apiUrl = (path: `/api/${string}`): string => {
   if (!configuredApiBaseUrl) {
     if (Capacitor.isNativePlatform()) {
-      throw new Error('Android app के लिए VITE_API_BASE_URL में deployed HTTPS API URL सेट करें।');
+      console.warn('⚠️ [API URL]: Android app running without explicit VITE_API_BASE_URL. Using fallback path and cached offline data.');
     }
     return path;
   }

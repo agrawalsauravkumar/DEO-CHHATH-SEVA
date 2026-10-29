@@ -248,7 +248,7 @@ export const MoreScreen: React.FC = () => {
     <div className="min-h-screen bg-[var(--chhath-cream)] pb-24 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="सभी सेवाएँ एवं मेनू" showBack />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-5">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 sm:p-6 space-y-6">
         {menuSections.map((sec, idx) => (
           <div key={idx} className="space-y-2">
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 px-1">

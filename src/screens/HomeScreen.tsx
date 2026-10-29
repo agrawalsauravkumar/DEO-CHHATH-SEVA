@@ -13,6 +13,8 @@ import { ChhathGhatDirectory } from '../components/ChhathGhatDirectory';
 import { ChhathPujaChecklist } from '../components/ChhathPujaChecklist';
 import { ChhathDevotionalPlayer } from '../components/ChhathDevotionalPlayer';
 import { ChhathSafetyBadgeModal } from '../components/ChhathSafetyBadgeModal';
+import { ChhathSolarCompassModal } from '../components/ChhathSolarCompassModal';
+import { ChhathVratiFastingTracker } from '../components/ChhathVratiFastingTracker';
 import {
   ArrowRight,
   Bell,
@@ -45,6 +47,7 @@ export const HomeScreen: React.FC = () => {
   const [showChecklistModal, setShowChecklistModal] = useState<boolean>(false);
   const [showDevotionalModal, setShowDevotionalModal] = useState<boolean>(false);
   const [showSafetyBadgeModal, setShowSafetyBadgeModal] = useState<boolean>(false);
+  const [showSolarCompassModal, setShowSolarCompassModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isOnline) {
@@ -192,6 +195,12 @@ export const HomeScreen: React.FC = () => {
 
         {/* Chhath Arghya Timings & Live Sun Countdown */}
         <ChhathArghyaMuhurat language={language} />
+
+        {/* 36-Hour Nirjala Fasting Tracker with Live Arghya Pipeline */}
+        <ChhathVratiFastingTracker
+          onOpenCompass={() => setShowSolarCompassModal(true)}
+          onOpenChecklist={() => setShowChecklistModal(true)}
+        />
 
         {/* 4 Unique Spiritual & Pilgrim Companion Action Cards */}
         <section aria-label="छठ महापर्व विशेष सेवाएँ" className="home-special-tools">
@@ -381,6 +390,11 @@ export const HomeScreen: React.FC = () => {
       <ChhathSafetyBadgeModal
         isOpen={showSafetyBadgeModal}
         onClose={() => setShowSafetyBadgeModal(false)}
+      />
+
+      <ChhathSolarCompassModal
+        isOpen={showSolarCompassModal}
+        onClose={() => setShowSolarCompassModal(false)}
       />
     </div>
   );

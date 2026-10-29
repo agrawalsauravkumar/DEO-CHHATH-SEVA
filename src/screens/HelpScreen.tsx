@@ -246,7 +246,7 @@ export const HelpScreen: React.FC = () => {
       <TopBar title="🆘 सहायता" showBack />
       <DataFreshnessNotice />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 sm:p-6 space-y-5">
         {/* Notice Toast */}
         {copiedNotice && (
           <div className="bg-emerald-50 border border-emerald-300 text-emerald-950 px-4 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 shadow-xs animate-fade-in">

@@ -179,7 +179,7 @@ export const SeniorModeScreen: React.FC = () => {
       {/* ======================================================== */}
       {/* MAIN CONTAINER (7 Main Actions + Voice Search Button)     */}
       {/* ======================================================== */}
-      <main className="flex-1 max-w-lg mx-auto w-full p-3.5 sm:p-4 space-y-3.5">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-3.5 sm:p-6 space-y-4">
         {/* VOICE SEARCH MIC BAR (Requirement 9) */}
         <div
           className={`p-4 rounded-3xl border-2 shadow-sm flex items-center justify-between gap-3 ${

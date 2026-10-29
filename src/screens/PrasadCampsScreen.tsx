@@ -164,7 +164,7 @@ export const PrasadCampsScreen: React.FC = () => {
     <div className="min-h-screen bg-[var(--chhath-cream)] pb-24 flex flex-col font-['Mukta',sans-serif]">
       <TopBar title="निःशुल्क सामग्री व प्रसाद शिविर" showBack />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-3 sm:p-4 space-y-4">
+      <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-3 sm:p-6 space-y-5">
         {/* Hero Card */}
         <div className="bg-gradient-to-br from-[#075985] via-[#063B5C] to-[#041E2F] text-white rounded-3xl p-5 shadow-lg border border-[#FFB52E]/50 relative overflow-hidden">
           <div className="pointer-events-none absolute -right-6 -bottom-6 w-32 h-32 bg-[#F47B20]/25 rounded-full blur-2xl" />
