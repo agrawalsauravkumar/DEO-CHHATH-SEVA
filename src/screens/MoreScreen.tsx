@@ -132,39 +132,39 @@ export const MoreScreen: React.FC = () => {
       items: [
         {
           id: 'family',
-          label: '👨👩👧 मेरा परिवार',
+          label: 'मेरा परिवार',
           desc: 'परिवार लोकेशन सेवा इस बिल्ड में उपलब्ध नहीं है',
           icon: '👨👩👧',
         },
         {
           id: 'lost-found',
-          label: '🔎 Lost & Found (खोया-पाया)',
+          label: 'Lost & Found (खोया-पाया)',
           desc: 'लापता व्यक्ति व सामान की सुरक्षित रिपोर्टिंग एवं सहायता',
           icon: '🔎',
         },
         {
           id: 'senior-mode',
-          label: '👴 Senior Citizen Mode',
+          label: 'Senior Citizen Mode',
           desc: 'बड़े अक्षर, सरल 7 विकल्प और आवाज़ सहायता',
           icon: '👴',
         },
         {
           id: 'volunteer',
-          label: '🙋 स्वयंसेवक (Volunteer Hub)',
+          label: 'स्वयंसेवक (Volunteer Hub)',
           desc: 'स्वयंसेवक के रूप में जुड़ें व Volunteer Mode',
           icon: '🙋',
         },
         {
           id: 'volunteer-register',
-          label: '✍️ स्वयंसेवक के रूप में जुड़ें',
+          label: 'स्वयंसेवक के रूप में जुड़ें',
           desc: 'नया स्वयंसेवक पंजीकरण फॉर्म भरें',
           icon: '📝',
         },
         {
           id: 'volunteer-mode',
-          label: '⚡ Volunteer Mode (डैशबोर्ड)',
+          label: 'Volunteer Mode (डैशबोर्ड)',
           desc: 'सत्यापित स्वयंसेवक लॉगिन और सर्वर सेवा आवश्यक',
-          icon: '🟢',
+          icon: '⚡',
         },
         {
           id: 'volunteer-request',
@@ -174,7 +174,7 @@ export const MoreScreen: React.FC = () => {
         },
         {
           id: 'announcements',
-          label: '📢 महत्वपूर्ण सूचना',
+          label: 'महत्वपूर्ण सूचना',
           desc: 'अधिकृत और सक्रिय घोषणाएँ उपलब्ध होने पर देखें',
           icon: '📢',
           badge: 'OFFICIAL',
@@ -216,7 +216,7 @@ export const MoreScreen: React.FC = () => {
         },
         {
           id: 'admin-login',
-          label: '🔐 Admin Portal (व्यवस्थापक पोर्टल)',
+          label: 'Admin Portal (व्यवस्थापक पोर्टल)',
           desc: 'फाउंडेशन व नियंत्रण कक्ष अधिकृत लॉगिन एवं डैशबोर्ड',
           icon: '🔐',
           badge: 'STAFF',
