@@ -393,11 +393,47 @@ export class ValhallaProvider implements RoutingProvider {
   }
 }
 
-// 4. Factory to instantiate the active routing provider
+// 4. Multi-engine resilient provider with auto-fallback
+export class CompositeRoutingProvider implements RoutingProvider {
+  name = 'Multi-Engine Routing Service (Valhalla / OSRM)';
+  providerId = 'VALHALLA' as const;
+  private primary: RoutingProvider;
+  private fallback: RoutingProvider;
+
+  constructor(primary: RoutingProvider, fallback: RoutingProvider) {
+    this.primary = primary;
+    this.fallback = fallback;
+  }
+
+  isConfigured(): boolean {
+    return this.primary.isConfigured() || this.fallback.isConfigured();
+  }
+
+  async calculateRoute(params: RouteRequestParams): Promise<RouteResult> {
+    if (this.primary.isConfigured()) {
+      try {
+        return await this.primary.calculateRoute(params);
+      } catch (primaryErr) {
+        console.warn('Primary routing engine failed, attempting fallback engine:', primaryErr);
+      }
+    }
+
+    if (this.fallback.isConfigured()) {
+      return await this.fallback.calculateRoute(params);
+    }
+
+    throw new Error('रूट सेवा अभी उपलब्ध नहीं है। कृपया इंटरनेट कनेक्शन जाँचें।');
+  }
+}
+
+// 5. Factory to instantiate the active routing provider
 export class RoutingProviderFactory {
   static getProvider(): RoutingProvider {
     const configuredType = (import.meta.env.VITE_ROUTING_PROVIDER || 'VALHALLA').toUpperCase();
     const baseUrl = import.meta.env.VITE_ROUTING_ENGINE_URL?.trim();
+
+    const val = new ValhallaProvider(undefined, baseUrl);
+    const osrm = new OSRMProvider(baseUrl && baseUrl.includes('osrm') ? baseUrl : undefined);
 
     if (configuredType === 'GRAPHHOPPER') {
       const gh = new GraphHopperProvider(undefined, baseUrl);
@@ -405,17 +441,12 @@ export class RoutingProviderFactory {
       return new UnavailableRoutingProvider();
     }
 
-    if (configuredType === 'VALHALLA') {
-      const val = new ValhallaProvider(undefined, baseUrl);
-      if (val.isConfigured()) return val;
-      return new UnavailableRoutingProvider();
-    }
-
     if (configuredType === 'OSRM') {
-      const osrm = new OSRMProvider(baseUrl);
       return osrm.isConfigured() ? osrm : new UnavailableRoutingProvider();
     }
-    return new UnavailableRoutingProvider();
+
+    // Default: Multi-engine resilient provider (Valhalla primary, OSRM fallback)
+    return new CompositeRoutingProvider(val, osrm);
   }
 }
 

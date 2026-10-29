@@ -270,6 +270,7 @@ export interface DbTeamMember {
   id: string;
   fullName: string;
   designation: string;
+  biography?: string;
   photoPath?: string;
   photoPermissionConfirmed: boolean;
   isDemo: boolean;

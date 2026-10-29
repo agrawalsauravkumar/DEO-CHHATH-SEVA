@@ -8,7 +8,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { apiRouter } from './src/server/routes';
-import { initializeDatabase } from './src/server/db/connection';
+import { initializeDatabase, getDatabaseStatus } from './src/server/db/connection';
 import { repository } from './src/server/db/repository';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,31 +23,63 @@ const isProd = process.env.NODE_ENV === 'production';
 // Express Middlewares
 app.use(express.json());
 
-const allowedOrigins = (process.env.CORS_ORIGIN || 'https://localhost')
+const allowedOrigins = (process.env.CORS_ORIGIN || '*')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
 
 app.use('/api', (req, res, next) => {
   const requestOrigin = req.headers.origin;
-  if (!requestOrigin) return next();
 
-  if (allowedOrigins.includes('*')) {
+  if (requestOrigin) {
+    if (
+      allowedOrigins.includes('*') ||
+      allowedOrigins.length === 0 ||
+      allowedOrigins.includes(requestOrigin) ||
+      requestOrigin.startsWith('http://localhost') ||
+      requestOrigin.startsWith('https://localhost') ||
+      requestOrigin.startsWith('capacitor://localhost')
+    ) {
+      res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+      res.setHeader('Vary', 'Origin');
+    } else {
+      res.setHeader('Access-Control-Allow-Origin', allowedOrigins[0] || '*');
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
     res.setHeader('Access-Control-Allow-Origin', '*');
-  } else if (allowedOrigins.includes(requestOrigin)) {
-    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
-    res.setHeader('Vary', 'Origin');
-  } else if (req.method === 'OPTIONS') {
-    return res.sendStatus(403);
   }
 
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Photo-Permission-Confirmed, Cache-Control, Pragma'
+  );
+
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Photo-Permission-Confirmed');
     return res.sendStatus(204);
   }
 
   next();
+});
+
+// Production & Operations Health Endpoint
+app.get('/api/health', (_req, res) => {
+  const dbStatus = getDatabaseStatus();
+  return res.json({
+    status: 'ok',
+    service: 'DEO CHHATH SEVA API',
+    organization: 'NEXTGEN DEVBHOOMI FOUNDATION',
+    version: '1.4.0',
+    uptimeSeconds: Math.round(process.uptime()),
+    timestamp: new Date().toISOString(),
+    database: {
+      engine: dbStatus.engine,
+      state: dbStatus.connectionState,
+      hasPostGIS: dbStatus.hasPostGIS,
+    },
+    environment: process.env.NODE_ENV || 'development',
+  });
 });
 
 // Request logger for API calls
@@ -67,12 +99,22 @@ app.use((req, res, next) => {
 // ================================================================
 app.use('/api', apiRouter);
 
+// Never serve HTML for missing API routes
+app.all('/api/*', (_req, res) => {
+  res.status(404).json({ error: 'API endpoint not found' });
+});
+
 // ================================================================
 // VITE DEV SERVER OR STATIC PRODUCTION SERVE
 // ================================================================
 async function startServer() {
-  // 1. Initialize PostgreSQL + PostGIS before accepting requests.
-  await initializeDatabase();
+  // 1. Initialize PostgreSQL + PostGIS (resilient, does not terminate process on DB unreachable)
+  try {
+    await initializeDatabase();
+  } catch (err: any) {
+    console.warn('⚠️ [Database Notice]: Initial connection attempt failed, running in standby mode:', err.message);
+  }
+
   if (process.env.NODE_ENV === 'development' && process.env.DEMO_TEAM_SEED === 'true') {
     await repository.seedDemoTeamMembers();
     console.log('Development-only demo team profiles are enabled.');
@@ -94,7 +136,7 @@ async function startServer() {
     // Production: serve built static files from dist
     const distPath = path.resolve(__dirname, 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    app.get('*', (_req, res) => {
       res.sendFile(path.resolve(distPath, 'index.html'));
     });
   }

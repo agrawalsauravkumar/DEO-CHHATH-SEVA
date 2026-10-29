@@ -102,6 +102,9 @@ export const TeamScreen: React.FC = () => {
                 <div className="border-t-2 border-[#FFB52E] px-3 py-3">
                   <h2 className="break-words text-base font-black leading-snug text-[#063B5C]">{member.fullName}</h2>
                   <p className="mt-1 break-words text-sm font-semibold text-[#075985]">{member.designation}</p>
+                  {member.biography && (
+                    <p className="mt-2 break-words text-xs leading-relaxed text-stone-600 border-t border-stone-100 pt-1.5">{member.biography}</p>
+                  )}
                 </div>
               </li>
             ))}

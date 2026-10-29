@@ -36,7 +36,9 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const headers = new Headers(init.headers);
   if (init.body && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
+    if (typeof FormData === 'undefined' || !(init.body instanceof FormData)) {
+      headers.set('Content-Type', 'application/json');
+    }
   }
   const token = getStoredToken(sessionType);
   if (token) headers.set('Authorization', `Bearer ${token}`);

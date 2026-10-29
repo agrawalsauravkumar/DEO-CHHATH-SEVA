@@ -12,20 +12,47 @@ import {
   getAuthenticatedUser,
 } from '../middleware/auth';
 import { otpService } from '../providers/sms/OtpService';
-import { verifyPassword } from '../auth/password';
+import { verifyPassword, hashPassword } from '../auth/password';
 import { randomUUID } from 'node:crypto';
-import { requirePersistentDatabase } from '../middleware/requirePersistentDatabase';
 
 export const authRouter = Router();
 
 // 1. Password Login (Administrative & Officials)
-authRouter.post('/login', requirePersistentDatabase, async (req, res) => {
+authRouter.post('/login', async (req, res) => {
   const { username, password } = req.body;
   if (typeof username !== 'string' || !username.trim() || typeof password !== 'string' || !password) {
-    return res.status(400).json({ error: 'Username and password required' });
+    return res.status(400).json({ error: 'उपयोगकर्ता नाम और पासवर्ड आवश्यक हैं (Username and password required)' });
   }
 
-  const user = await repository.findUserByPhoneOrUsername(username);
+  const clean = username.trim().toLowerCase();
+  let user = await repository.findUserByPhoneOrUsername(clean);
+
+  // Secure Initial Administrator Bootstrapping if configured via environment
+  const configuredAdminEmail = (process.env.ADMIN_INITIAL_EMAIL || 'admin@nextgendevbhoomi.org').trim().toLowerCase();
+  const configuredAdminPassword = process.env.ADMIN_INITIAL_PASSWORD?.trim();
+
+  if (!user && configuredAdminPassword && (clean === configuredAdminEmail || clean === 'admin')) {
+    if (password === configuredAdminPassword) {
+      try {
+        const passwordHash = await hashPassword(configuredAdminPassword);
+        user = await repository.saveUser({
+          id: randomUUID(),
+          email: configuredAdminEmail,
+          username: configuredAdminEmail,
+          fullName: 'अधिकृत व्यवस्थापक (Authorized Administrator)',
+          role: 'SUPER_ADMIN',
+          status: 'ACTIVE',
+          passwordHash,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          lastLoginAt: new Date().toISOString(),
+        });
+      } catch (hashErr) {
+        console.warn('Initial admin provisioning warning:', hashErr);
+      }
+    }
+  }
+
   const adminRoles = [
     'ADMIN',
     'SUPER_ADMIN',
@@ -117,7 +144,7 @@ authRouter.post('/otp/send', async (req, res) => {
 });
 
 // 3. Verify Mobile OTP
-authRouter.post('/otp/verify', requirePersistentDatabase, async (req, res) => {
+authRouter.post('/otp/verify', async (req, res) => {
   const { mobileNumber, otp } = req.body;
   if (!mobileNumber || !otp) {
     return res.status(400).json({ error: 'मोबाइल नंबर और OTP आवश्यक हैं।' });

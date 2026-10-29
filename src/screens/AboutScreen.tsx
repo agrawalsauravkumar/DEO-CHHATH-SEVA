@@ -216,6 +216,35 @@ export const AboutScreen: React.FC = () => {
         </section>
 
         <section
+          className="space-y-3 rounded-3xl border border-[#FFD54F]/70 bg-gradient-to-br from-white via-[#FFF8E1]/40 to-white p-5 shadow-sm sm:p-6"
+          aria-labelledby="team-highlight-heading"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0B5E8E]/10 text-[#0B5E8E]">
+                <UsersRound className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div>
+                <h2 id="team-highlight-heading" className="text-base font-black text-[#0B5E8E]">
+                  {isEnglish ? 'Our Dedicated Team' : 'हमारी समर्पित टीम'}
+                </h2>
+                <p className="text-xs text-stone-600">
+                  {isEnglish ? 'Foundation leadership, coordinators, and seva team.' : 'संस्था के संयोजक, संचालक एवं सेवा कार्यकर्ता।'}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('team')}
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-[#0B5E8E] px-3.5 py-1.5 text-xs font-black text-white transition-colors hover:bg-[#084569]"
+            >
+              <span>{isEnglish ? 'View All' : 'सभी देखें'}</span>
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          </div>
+        </section>
+
+        <section
           className="space-y-3 rounded-3xl border border-[#0B5E8E]/15 bg-white p-5 shadow-sm sm:p-6"
           aria-label={copy.joinSection}
         >

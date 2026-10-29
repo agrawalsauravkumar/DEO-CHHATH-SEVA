@@ -56,6 +56,7 @@ export const TeamManagementPanel: React.FC<Props> = ({ notify }) => {
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [fullName, setFullName] = useState('');
   const [designation, setDesignation] = useState('');
+  const [biography, setBiography] = useState('');
   const [isDemo, setIsDemo] = useState(false);
   const [photoPermissionConfirmed, setPhotoPermissionConfirmed] = useState(false);
   const [photo, setPhoto] = useState<File | null>(null);
@@ -93,6 +94,7 @@ export const TeamManagementPanel: React.FC<Props> = ({ notify }) => {
     setEditingMember(null);
     setFullName('');
     setDesignation('');
+    setBiography('');
     setIsDemo(false);
     setPhotoPermissionConfirmed(false);
     setPhoto(null);
@@ -107,6 +109,7 @@ export const TeamManagementPanel: React.FC<Props> = ({ notify }) => {
     setEditingMember(member);
     setFullName(member.fullName);
     setDesignation(member.designation);
+    setBiography(member.biography || '');
     setIsDemo(member.isDemo);
     setPhotoPermissionConfirmed(Boolean(member.photoPermissionConfirmed));
     setPhoto(null);
@@ -133,8 +136,13 @@ export const TeamManagementPanel: React.FC<Props> = ({ notify }) => {
     event.preventDefault();
     const trimmedName = fullName.trim();
     const trimmedDesignation = designation.trim();
+    const trimmedBio = biography.trim();
     if (!trimmedName || trimmedName.length > 150 || !trimmedDesignation || trimmedDesignation.length > 120) {
       notify('नाम और पद भरें; नाम 150 और पद 120 अक्षरों तक हो सकता है।');
+      return;
+    }
+    if (trimmedBio.length > 1000) {
+      notify('संक्षिप्त परिचय (Biography) अधिकतम 1000 अक्षरों तक हो सकता है।');
       return;
     }
     if (!editingMember && !photo) {
@@ -152,11 +160,13 @@ export const TeamManagementPanel: React.FC<Props> = ({ notify }) => {
         ? (await TeamService.updateMember(editingMember.id, {
             fullName: trimmedName,
             designation: trimmedDesignation,
+            biography: trimmedBio || undefined,
             isDemo,
           })).member
         : (await TeamService.createMember({
             fullName: trimmedName,
             designation: trimmedDesignation,
+            biography: trimmedBio || undefined,
           })).member;
 
       if (!editingMember) setEditingMember(saved);
@@ -265,6 +275,9 @@ export const TeamManagementPanel: React.FC<Props> = ({ notify }) => {
                       <div className="min-w-0">
                         <p className="break-words font-bold text-[#063B5C]">{member.fullName}</p>
                         <p className="break-words text-xs text-stone-600">{member.designation}</p>
+                        {member.biography && (
+                          <p className="mt-0.5 max-w-xs truncate text-[11px] italic text-stone-500">{member.biography}</p>
+                        )}
                       </div>
                     </div>
                   </td>
@@ -317,6 +330,20 @@ export const TeamManagementPanel: React.FC<Props> = ({ notify }) => {
             <label className="block space-y-1 text-sm font-bold text-stone-700">
               <span>पद</span>
               <input required maxLength={120} value={designation} onChange={(event) => setDesignation(event.currentTarget.value)} className="min-h-11 w-full rounded-xl border border-stone-300 px-3" />
+            </label>
+            <label className="block space-y-1 text-sm font-bold text-stone-700">
+              <div className="flex justify-between items-center">
+                <span>संक्षिप्त परिचय (Biography - ऐच्छिक)</span>
+                <span className="text-xs font-normal text-stone-500">{biography.length}/1000</span>
+              </div>
+              <textarea
+                maxLength={1000}
+                rows={3}
+                value={biography}
+                onChange={(event) => setBiography(event.currentTarget.value)}
+                placeholder="संस्था में भूमिका, कार्यक्षेत्र या संक्षिप्त परिचय..."
+                className="w-full rounded-xl border border-stone-300 p-3 text-sm focus:border-[#075985] focus:outline-hidden"
+              />
             </label>
             <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-stone-200 p-3 text-sm font-semibold text-stone-700">
               <input type="checkbox" checked={isDemo} onChange={(event) => setIsDemo(event.currentTarget.checked)} className="h-5 w-5 accent-[#075985]" />

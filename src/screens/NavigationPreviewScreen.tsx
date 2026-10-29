@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { DeoMap } from '../components/DeoMap';
 import { RouteService } from '../services/RouteService';
-import { TravelMode } from '../types';
+import { TravelMode, LocationItem } from '../types';
+import { DEFAULT_AUTHENTIC_FACILITIES } from '../services/MapFacilityService';
 import {
   ArrowLeft,
   Navigation,
@@ -16,8 +22,51 @@ import {
   RefreshCw,
   Search,
   CheckCircle2,
-  WifiOff,
+  ChevronDown,
+  ChevronUp,
+  SlidersHorizontal,
 } from 'lucide-react';
+
+interface StartPointOption {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  isGps?: boolean;
+}
+
+const COMMON_START_HUBS: StartPointOption[] = [
+  {
+    id: 'start-parking-1',
+    name: 'पार्किंग 1 - राजा जगन्नाथ स्कूल मैदान',
+    latitude: 24.6508,
+    longitude: 84.4325,
+  },
+  {
+    id: 'start-parking-2',
+    name: 'पार्किंग 2 - देव डिग्री कॉलेज मैदान',
+    latitude: 24.6565,
+    longitude: 84.4285,
+  },
+  {
+    id: 'start-bus-stand',
+    name: 'देव बस स्टैंड / मुख्य चौक',
+    latitude: 24.6528,
+    longitude: 84.435,
+  },
+  {
+    id: 'start-temple-gate',
+    name: 'देव सूर्य मंदिर मुख्य द्वार',
+    latitude: 24.6542,
+    longitude: 84.4371,
+  },
+  {
+    id: 'start-hospital',
+    name: 'सामुदायिक स्वास्थ्य केंद्र (अस्पताल)',
+    latitude: 24.6555,
+    longitude: 84.4342,
+  },
+];
 
 export const NavigationPreviewScreen: React.FC = () => {
   const {
@@ -36,18 +85,46 @@ export const NavigationPreviewScreen: React.FC = () => {
 
   const destination = activeNavigationTarget || selectedMapItem;
 
+  const [selectedStartHub, setSelectedStartHub] = useState<StartPointOption | null>(null);
+  const [useGpsAsStart, setUseGpsAsStart] = useState<boolean>(true);
+  const [showStartSelector, setShowStartSelector] = useState<boolean>(false);
+  const [showStepsList, setShowStepsList] = useState<boolean>(false);
   const [isLoadingRoute, setIsLoadingRoute] = useState<boolean>(false);
   const [routeError, setRouteError] = useState<string | null>(null);
 
-  // Fetch real road route
-  const fetchRoute = async (mode: TravelMode = travelMode) => {
-    if (!deviceLocation) {
-      setRouteError('पहले वास्तविक डिवाइस GPS स्थान प्राप्त करें।');
-      return;
+  // Compute effective start point
+  const effectiveStart = useMemo<StartPointOption | null>(() => {
+    if (useGpsAsStart && deviceLocation) {
+      return {
+        id: 'gps-device',
+        name: `आपका वर्तमान GPS स्थान (±${Math.round(deviceLocation.accuracy)}m)`,
+        latitude: deviceLocation.latitude,
+        longitude: deviceLocation.longitude,
+        isGps: true,
+      };
     }
-    if (!isOnline) {
-      setRouteError('रूट सेवा अभी उपलब्ध नहीं है। इंटरनेट कनेक्शन आवश्यक है।');
-      setActiveRoute(null);
+    if (selectedStartHub) {
+      return selectedStartHub;
+    }
+    if (deviceLocation) {
+      return {
+        id: 'gps-device',
+        name: `आपका वर्तमान GPS स्थान (±${Math.round(deviceLocation.accuracy)}m)`,
+        latitude: deviceLocation.latitude,
+        longitude: deviceLocation.longitude,
+        isGps: true,
+      };
+    }
+    // Default to first hub if no GPS
+    return COMMON_START_HUBS[0];
+  }, [useGpsAsStart, deviceLocation, selectedStartHub]);
+
+  // Fetch real road route
+  const fetchRoute = async (mode: TravelMode = travelMode, startOverride?: StartPointOption) => {
+    const start = startOverride || effectiveStart;
+
+    if (!start) {
+      setRouteError('कृपया शुरुआती स्थान (GPS या देव का कोई स्थल) चुनें।');
       return;
     }
     if (!destination || destination.latitude === undefined || destination.longitude === undefined) {
@@ -60,8 +137,8 @@ export const NavigationPreviewScreen: React.FC = () => {
 
     try {
       const result = await RouteService.calculateRoute({
-        startLatitude: deviceLocation.latitude,
-        startLongitude: deviceLocation.longitude,
+        startLatitude: start.latitude,
+        startLongitude: start.longitude,
         destinationLatitude: destination.latitude,
         destinationLongitude: destination.longitude,
         destinationName: destination.name,
@@ -69,8 +146,9 @@ export const NavigationPreviewScreen: React.FC = () => {
       });
 
       setActiveRoute(result);
-    } catch (err: any) {
-      setRouteError(err?.message || 'मार्ग सेवा से संपर्क नहीं हो पाया।');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'मार्ग सेवा से संपर्क नहीं हो पाया।';
+      setRouteError(message);
       setActiveRoute(null);
     } finally {
       setIsLoadingRoute(false);
@@ -78,14 +156,37 @@ export const NavigationPreviewScreen: React.FC = () => {
   };
 
   useEffect(() => {
-    if (deviceLocation) {
+    if (effectiveStart && destination?.latitude !== undefined) {
       fetchRoute(travelMode);
     }
-  }, [deviceLocation, destination?.id, travelMode, isOnline]);
+  }, [effectiveStart?.id, effectiveStart?.latitude, destination?.id, travelMode]);
 
   const handleModeChange = (mode: TravelMode) => {
     setTravelMode(mode);
     fetchRoute(mode);
+  };
+
+  const handleSelectStartHub = (hub: StartPointOption) => {
+    setUseGpsAsStart(false);
+    setSelectedStartHub(hub);
+    setShowStartSelector(false);
+    fetchRoute(travelMode, hub);
+  };
+
+  const handleUseGps = async () => {
+    setUseGpsAsStart(true);
+    setSelectedStartHub(null);
+    setShowStartSelector(false);
+    const success = await requestDeviceLocation();
+    if (success && deviceLocation) {
+      fetchRoute(travelMode, {
+        id: 'gps-device',
+        name: 'आपका वर्तमान GPS स्थान',
+        latitude: deviceLocation.latitude,
+        longitude: deviceLocation.longitude,
+        isGps: true,
+      });
+    }
   };
 
   const handleStartNav = () => {
@@ -110,12 +211,18 @@ export const NavigationPreviewScreen: React.FC = () => {
             रास्ता पूर्वावलोकन (Route Preview)
           </h1>
 
-          <div className="w-8" />
+          <button
+            onClick={() => setShowStartSelector(!showStartSelector)}
+            className="p-2 rounded-xl bg-amber-50 text-amber-900 border border-amber-300 active:scale-95 text-xs font-bold flex items-center gap-1"
+            title="शुरुआती स्थान बदलें"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+          </button>
         </div>
       </header>
 
       <main className="flex-1 max-w-lg mx-auto w-full p-3 sm:p-4 space-y-3 flex flex-col">
-        {/* Missing GPS Location Alert */}
+        {/* Missing Destination Alert */}
         {!destination ? (
           <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 text-center space-y-3 shadow-sm">
             <MapPin className="w-8 h-8 text-amber-700 mx-auto" />
@@ -124,62 +231,108 @@ export const NavigationPreviewScreen: React.FC = () => {
               स्थान खोजें
             </button>
           </div>
-        ) : !deviceLocation ? (
-          <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 text-center space-y-3 shadow-sm">
-            <MapPin className="w-8 h-8 text-amber-700 mx-auto" />
-            <h4 className="text-base font-black text-stone-900">
-              आपका वर्तमान स्थान उपलब्ध नहीं है।
-            </h4>
-            <p className="text-xs text-stone-600 max-w-xs mx-auto">
-              सड़क मार्ग से सही दिशा-निर्देश पाने के लिए डिवाइस की लोकेशन सक्रिय करें।
-            </p>
-            <button
-              onClick={requestDeviceLocation}
-              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-black text-sm rounded-xl shadow-md transition-all inline-flex items-center gap-2"
-            >
-              <span>📍 Location फिर से प्राप्त करें</span>
-            </button>
-          </div>
         ) : (
           /* Route Source & Destination Card */
           <div className="bg-white border-2 border-amber-300 rounded-2xl p-3.5 sm:p-4 shadow-sm space-y-3">
             <div className="flex flex-col items-start gap-1">
-              {/* Start */}
-              <div className="flex items-center gap-2.5 w-full">
-                <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
-                  📍
+              {/* Start Point */}
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
+                    📍
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
+                      आरंभिक बिंदु (START POINT)
+                    </span>
+                    <span className="text-xs sm:text-sm font-black text-stone-900 leading-tight block truncate">
+                      {effectiveStart?.name || 'आरंभिक स्थल चुनें'}
+                    </span>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
-                    आरंभिक बिंदु (START)
-                  </span>
-                  <span className="text-xs sm:text-sm font-black text-stone-900 leading-tight block truncate">
-                    आपका स्थान ({deviceLocation.latitude.toFixed(4)}°, {deviceLocation.longitude.toFixed(4)}°)
-                  </span>
-                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowStartSelector(!showStartSelector)}
+                  className="shrink-0 px-2.5 py-1 text-xs font-bold text-[#075985] bg-sky-50 rounded-lg border border-sky-200 hover:bg-sky-100"
+                >
+                  बदलें
+                </button>
               </div>
+
+              {/* Start Hub Selector Drawer */}
+              {showStartSelector && (
+                <div className="w-full mt-2 p-3 rounded-xl bg-amber-50/80 border border-amber-300/80 space-y-2 animate-fade-in text-xs">
+                  <div className="flex items-center justify-between font-bold text-stone-800">
+                    <span>शुरुआती स्थल चुनें:</span>
+                    <button
+                      onClick={() => setShowStartSelector(false)}
+                      className="text-stone-500 hover:text-stone-800 text-[11px]"
+                    >
+                      ✕ बंद करें
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-1.5 pt-1">
+                    <button
+                      onClick={handleUseGps}
+                      className={`p-2 rounded-lg text-left font-bold flex items-center gap-2 ${
+                        useGpsAsStart && deviceLocation
+                          ? 'bg-[#075985] text-white'
+                          : 'bg-white text-stone-800 border border-stone-200'
+                      }`}
+                    >
+                      <span>📍</span>
+                      <span>मेरा वर्तमान GPS स्थान {deviceLocation ? `(सटीकता ±${Math.round(deviceLocation.accuracy)}m)` : '(स्थान खोजें)'}</span>
+                    </button>
+                    {COMMON_START_HUBS.map((hub) => (
+                      <button
+                        key={hub.id}
+                        onClick={() => handleSelectStartHub(hub)}
+                        className={`p-2 rounded-lg text-left font-bold flex items-center gap-2 ${
+                          !useGpsAsStart && selectedStartHub?.id === hub.id
+                            ? 'bg-[#075985] text-white'
+                            : 'bg-white text-stone-800 border border-stone-200'
+                        }`}
+                      >
+                        <span>🏛️</span>
+                        <span className="truncate">{hub.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="pl-3 py-0.5 text-stone-400">
                 <ArrowDown className="w-3.5 h-3.5 text-amber-700" />
               </div>
 
-              {/* Destination */}
-              <div className="flex items-center gap-2.5 w-full">
-                <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm shrink-0">
-                  📌
+              {/* Destination Point */}
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm shrink-0">
+                    📌
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
+                      गंतव्य स्थल (DESTINATION)
+                    </span>
+                    <span className="text-xs sm:text-sm font-black text-amber-900 leading-tight block truncate">
+                      {destination.name}
+                    </span>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
-                    गंतव्य स्थल (DESTINATION)
-                  </span>
-                  <span className="text-xs sm:text-sm font-black text-amber-900 leading-tight block truncate">
-                    {destination.name}
-                  </span>
-                </div>
+
+                <button
+                  type="button"
+                  onClick={() => navigate('search')}
+                  className="shrink-0 px-2.5 py-1 text-xs font-bold text-amber-900 bg-amber-100 rounded-lg border border-amber-300 hover:bg-amber-200"
+                >
+                  बदलें
+                </button>
               </div>
             </div>
 
-            {/* Travel Mode Toggle (Default: 🚶 पैदल) */}
+            {/* Travel Mode Toggle (Default: 🚶 पैदल / Walking) */}
             <div className="pt-2 border-t border-stone-100 flex items-center gap-2">
               <span className="text-xs font-bold text-stone-600">मार्ग माध्यम:</span>
               <div className="flex-1 grid grid-cols-2 gap-2">
@@ -192,7 +345,7 @@ export const NavigationPreviewScreen: React.FC = () => {
                   }`}
                 >
                   <Footprints className="w-4 h-4" />
-                  <span>🚶 पैदल</span>
+                  <span>🚶 पैदल चलें</span>
                 </button>
 
                 <button
@@ -204,7 +357,7 @@ export const NavigationPreviewScreen: React.FC = () => {
                   }`}
                 >
                   <Car className="w-4 h-4" />
-                  <span>🚗 वाहन</span>
+                  <span>🚗 वाहन मार्ग</span>
                 </button>
               </div>
             </div>
@@ -216,7 +369,7 @@ export const NavigationPreviewScreen: React.FC = () => {
           <DeoMap
             heightClass="h-full min-h-[300px]"
             routeGeometry={activeRoute?.geometry}
-            showRouteLine={!activeRoute}
+            showRouteLine={Boolean(activeRoute)}
           />
 
           {isLoadingRoute && (
@@ -235,7 +388,7 @@ export const NavigationPreviewScreen: React.FC = () => {
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-black text-sm">इस स्थान तक अभी मार्ग उपलब्ध नहीं है।</p>
+                <p className="font-black text-sm">इस स्थान तक अभी लाइव सड़क मार्ग उपलब्ध नहीं है।</p>
                 <p className="text-[11px] text-stone-600 mt-0.5">{routeError}</p>
               </div>
             </div>
@@ -263,32 +416,52 @@ export const NavigationPreviewScreen: React.FC = () => {
           <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs text-stone-500 font-semibold block">कुल दूरी</span>
+                <span className="text-xs text-stone-500 font-semibold block">कुल सड़क दूरी</span>
                 <span className="text-lg font-black text-stone-900">
                   {activeRoute.distanceDisplay}
                 </span>
               </div>
               <div className="text-right">
-                <span className="text-xs text-stone-500 font-semibold block">अनुमानित समय</span>
+                <span className="text-xs text-stone-500 font-semibold block">
+                  {travelMode === 'WALKING' ? 'पैदल अनुमानित समय' : 'वाहन अनुमानित समय'}
+                </span>
                 <span className="text-lg font-black text-amber-700">
                   {activeRoute.durationDisplay}
                 </span>
               </div>
             </div>
 
-            {/* Chhath Zone Warning Note */}
-            {activeRoute.warning && (
-              <div className="bg-amber-50 border border-amber-300 p-2.5 rounded-xl text-[11px] text-amber-950 font-bold flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
-                <span>{activeRoute.warning}</span>
+            {/* Turn Count Summary & Step Toggle */}
+            <div className="text-[11px] text-stone-500 flex items-center justify-between pt-1 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setShowStepsList(!showStepsList)}
+                className="font-bold text-[#075985] hover:underline flex items-center gap-1"
+              >
+                <span>मोड़ (Maneuvers): {activeRoute.steps.length} निर्देश</span>
+                {showStepsList ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
+              <span className="font-mono text-[10px]">इंजन: {activeRoute.provider}</span>
+            </div>
+
+            {/* Expandable Turn-by-Turn Steps */}
+            {showStepsList && (
+              <div className="max-h-48 overflow-y-auto space-y-1.5 rounded-xl bg-stone-50 p-2.5 border border-stone-200 text-xs">
+                {activeRoute.steps.map((st, i) => (
+                  <div key={st.id || i} className="flex items-start gap-2 py-1 border-b border-stone-200/60 last:border-0">
+                    <span className="w-5 h-5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                      {i + 1}
+                    </span>
+                    <div className="flex-1">
+                      <p className="font-bold text-stone-800">{st.instruction}</p>
+                      {st.distanceMeters > 0 && (
+                        <p className="text-[10px] text-stone-500">{st.distanceMeters} मीटर</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
-
-            {/* Turn Count Summary */}
-            <div className="text-[11px] text-stone-500 flex items-center justify-between pt-1 border-t border-stone-100">
-              <span>मोड़ (Maneuvers): {activeRoute.steps.length} निर्देश</span>
-              <span className="font-mono">प्रदाता: {activeRoute.provider}</span>
-            </div>
 
             {/* Start Navigation Action */}
             <button

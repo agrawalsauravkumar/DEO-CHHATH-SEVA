@@ -6,6 +6,7 @@ import { POIService, POIItem, POICategory, DEO_DEFAULT_CENTER } from '../service
 import { MapFacilityService } from '../services/MapFacilityService';
 import { LocationService } from '../services/LocationService';
 import { MapService } from '../services/MapService';
+import { OfflineMapService } from '../services/OfflineMapService';
 import { LocationItem, MapFacility } from '../types';
 import {
   ZoomIn,
@@ -52,6 +53,7 @@ export const DeoMap: React.FC<Props> = ({
   const userMarkerRef = useRef<L.Marker | null>(null);
   const userAccuracyCircleRef = useRef<L.Circle | null>(null);
   const routeLineRef = useRef<L.Polyline | null>(null);
+  const offlineRoutesLayerRef = useRef<L.LayerGroup | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const centerOnNextLocationRef = useRef(false);
   const previousOnlineRef = useRef(isOnline);
@@ -189,6 +191,33 @@ export const DeoMap: React.FC<Props> = ({
 
     mapInstanceRef.current = map;
 
+    // 1. Setup ResizeObserver for responsive container resizing on mobile
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && mapContainerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        if (mapInstanceRef.current && (mapInstanceRef.current as any)._mapPane) {
+          try {
+            mapInstanceRef.current.invalidateSize();
+          } catch {
+            // Container not ready
+          }
+        }
+      });
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
+    const handleWindowResize = () => {
+      if (mapInstanceRef.current && (mapInstanceRef.current as any)._mapPane) {
+        try {
+          mapInstanceRef.current.invalidateSize();
+        } catch {
+          // ignore
+        }
+      }
+    };
+    window.addEventListener('resize', handleWindowResize);
+    window.addEventListener('orientationchange', handleWindowResize);
+
     // Invalidate size safely after container settles
     const settleTimer = window.setTimeout(() => {
       if (mapInstanceRef.current && (mapInstanceRef.current as any)._mapPane) {
@@ -202,6 +231,11 @@ export const DeoMap: React.FC<Props> = ({
 
     return () => {
       window.clearTimeout(settleTimer);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      window.removeEventListener('resize', handleWindowResize);
+      window.removeEventListener('orientationchange', handleWindowResize);
       if (mapInstanceRef.current) {
         try {
           map.scrollWheelZoom?.disable();
@@ -221,6 +255,33 @@ export const DeoMap: React.FC<Props> = ({
       }
     };
   }, []);
+
+  // Offline walking routes layer
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    const map = mapInstanceRef.current;
+
+    if (offlineRoutesLayerRef.current) {
+      map.removeLayer(offlineRoutesLayerRef.current);
+      offlineRoutesLayerRef.current = null;
+    }
+
+    if (!isOnline && OfflineMapService.isOfflineMapAvailable()) {
+      const offlineLayer = L.layerGroup().addTo(map);
+      const routes = OfflineMapService.getOfflineRoutes();
+      routes.forEach((route) => {
+        const line = L.polyline(route.waypoints, {
+          color: '#F47B20',
+          weight: 4,
+          dashArray: '6, 6',
+          opacity: 0.85,
+        });
+        line.bindPopup(`<b>${route.name}</b><br/>दूरी: ${route.distanceMeters} मी (${route.walkingMinutes} मिनट)`);
+        line.addTo(offlineLayer);
+      });
+      offlineRoutesLayerRef.current = offlineLayer;
+    }
+  }, [isOnline]);
 
   useEffect(() => {
     if (previousOnlineRef.current === isOnline) return;
@@ -610,26 +671,43 @@ export const DeoMap: React.FC<Props> = ({
             <div className="flex items-center gap-2">
               <WifiOff className="w-4 h-4 shrink-0 text-amber-400" />
               <h4 className="text-xs font-black">
-                {isOnline ? 'मैप टाइलें लोड नहीं हो पाईं।' : 'ऑफलाइन — मैप टाइलें उपलब्ध नहीं हैं।'}
+                {isOnline
+                  ? 'ऑनलाइन मैप टाइलें लोड नहीं हो पाईं।'
+                  : OfflineMapService.isOfflineMapAvailable()
+                    ? 'देव ऑफलाइन मैप सक्रिय है'
+                    : 'ऑफलाइन — ऑनलाइन मैप टाइलें अनुपलब्ध'}
               </h4>
             </div>
             <p className="mt-1 text-[11px] text-stone-200">
-              GPS अलग सेवा है। ऑफलाइन मानचित्र डेटा उपलब्ध नहीं है।
+              {OfflineMapService.isOfflineMapAvailable()
+                ? 'देव तीर्थ क्षेत्र के सभी सत्यापित घाट, मंदिर, पार्किंग व आपातकालीन केंद्र प्रदर्शित हैं।'
+                : 'GPS बिना इंटरनेट के भी काम करता है। बिना इंटरनेट देखने हेतु ऑफलाइन मैप डाउनलोड करें।'}
             </p>
-            <button
-              disabled={!isOnline}
-              onClick={() => {
-                const map = mapInstanceRef.current;
-                if (map && (map as any)._mapPane) {
-                  map.invalidateSize();
-                  tileLayerRef.current?.redraw();
-                }
-              }}
-              className="mt-2 min-h-[44px] px-3 bg-amber-600 hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60 text-white text-xs font-bold rounded-xl inline-flex items-center gap-1.5 shadow-md active:scale-95"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>टाइलें फिर से लोड करें</span>
-            </button>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {isOnline && (
+                <button
+                  onClick={() => {
+                    const map = mapInstanceRef.current;
+                    if (map && (map as any)._mapPane) {
+                      map.invalidateSize();
+                      tileLayerRef.current?.redraw();
+                    }
+                  }}
+                  className="min-h-[40px] px-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl inline-flex items-center gap-1.5 shadow-md active:scale-95"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>टाइलें फिर से लोड करें</span>
+                </button>
+              )}
+              {!OfflineMapService.isOfflineMapAvailable() && (
+                <button
+                  onClick={() => navigate('offline-map')}
+                  className="min-h-[40px] px-3 bg-[#075985] hover:bg-[#063B5C] text-white text-xs font-bold rounded-xl inline-flex items-center gap-1.5 shadow-md active:scale-95"
+                >
+                  <span>ऑफलाइन मैप डाउनलोड करें</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 

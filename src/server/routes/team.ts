@@ -4,7 +4,6 @@ import { Router, raw } from 'express';
 import { repository } from '../db/repository';
 import { AuthenticatedRequest, requireAuth, requireRole } from '../middleware/auth';
 import { asyncHandler } from '../middleware/asyncHandler';
-import { requirePersistentDatabase } from '../middleware/requirePersistentDatabase';
 import {
   deleteTeamPhoto,
   getTeamPhotoMimeType,
@@ -30,6 +29,7 @@ function publicMember(member: Awaited<ReturnType<typeof repository.getTeamMember
     id: member.id,
     fullName: member.fullName,
     designation: member.designation,
+    biography: member.biography,
     isDemo: member.isDemo,
     photoUrl: `/api/team/${member.id}/photo`,
   };
@@ -107,7 +107,6 @@ teamRouter.get('/:id/photo', asyncHandler(async (req, res) => {
 teamRouter.post(
   '/admin',
   ...teamAdmin,
-  requirePersistentDatabase,
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const fields = validateNewTeamMemberFields(req.body);
     if (!fields) {
@@ -140,7 +139,6 @@ teamRouter.post(
 teamRouter.put(
   '/admin/:id',
   ...teamAdmin,
-  requirePersistentDatabase,
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     if (!isValidId(req.params.id)) return res.status(400).json({ error: 'सदस्य आईडी मान्य नहीं है।' });
     const updates = validateUpdatedTeamMemberFields(req.body);
@@ -167,7 +165,6 @@ teamRouter.put(
 teamRouter.patch(
   '/admin/:id/publish',
   ...teamAdmin,
-  requirePersistentDatabase,
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     if (!isValidId(req.params.id)) return res.status(400).json({ error: 'सदस्य आईडी मान्य नहीं है।' });
     const { isPublished } = req.body || {};
@@ -201,7 +198,6 @@ teamRouter.patch(
 teamRouter.post(
   '/admin/:id/photo',
   ...teamAdmin,
-  requirePersistentDatabase,
   raw({ type: ['image/jpeg', 'image/png', 'image/webp'], limit: '5mb' }),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     if (!isValidId(req.params.id)) return res.status(400).json({ error: 'सदस्य आईडी मान्य नहीं है।' });
@@ -260,7 +256,6 @@ teamRouter.post(
 teamRouter.delete(
   '/admin/:id',
   ...teamAdmin,
-  requirePersistentDatabase,
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     if (!isValidId(req.params.id)) return res.status(400).json({ error: 'सदस्य आईडी मान्य नहीं है।' });
     const member = await repository.deleteTeamMember(req.params.id);

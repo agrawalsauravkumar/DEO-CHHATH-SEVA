@@ -1,6 +1,7 @@
 export interface NewTeamMemberFields {
   fullName: string;
   designation: string;
+  biography?: string;
 }
 
 export interface UpdatedTeamMemberFields extends Partial<NewTeamMemberFields> {
@@ -13,12 +14,19 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function validateNewTeamMemberFields(value: unknown): NewTeamMemberFields | null {
   if (!isRecord(value)) return null;
-  const { fullName, designation } = value;
+  const { fullName, designation, biography } = value;
   if (
     typeof fullName !== 'string' || !fullName.trim() || fullName.trim().length > 150 ||
     typeof designation !== 'string' || !designation.trim() || designation.trim().length > 120
   ) return null;
-  return { fullName: fullName.trim(), designation: designation.trim() };
+  if (biography !== undefined) {
+    if (typeof biography !== 'string' || biography.trim().length > 1000) return null;
+  }
+  return {
+    fullName: fullName.trim(),
+    designation: designation.trim(),
+    ...(typeof biography === 'string' && biography.trim() ? { biography: biography.trim() } : {}),
+  };
 }
 
 export function validateUpdatedTeamMemberFields(value: unknown): UpdatedTeamMemberFields | null {
@@ -35,6 +43,12 @@ export function validateUpdatedTeamMemberFields(value: unknown): UpdatedTeamMemb
       return null;
     }
     updates.designation = value.designation.trim();
+  }
+  if (value.biography !== undefined) {
+    if (typeof value.biography !== 'string' || value.biography.trim().length > 1000) {
+      return null;
+    }
+    updates.biography = value.biography.trim();
   }
   if (value.isDemo !== undefined) {
     if (typeof value.isDemo !== 'boolean') return null;

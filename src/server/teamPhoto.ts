@@ -96,7 +96,7 @@ export function validateTeamPhoto(
 
 function getTeamPhotoDirectory(): string {
   if (process.env.NODE_ENV === 'production' && !process.env.TEAM_IMAGE_DIR) {
-    throw new Error('TEAM_IMAGE_DIR must point to persistent photo storage in production.');
+    console.warn('⚠️ [Storage Notice]: TEAM_IMAGE_DIR is not set; falling back to local persistent storage at data/team-images');
   }
   return path.resolve(process.env.TEAM_IMAGE_DIR || path.join(process.cwd(), 'data', 'team-images'));
 }

@@ -49,8 +49,10 @@ All sensitive credentials must be managed via production secret management (e.g.
 |---|---|---|---|---|
 | `PORT` | Yes | `3000` | No | Internal port for the Express application server. |
 | `NODE_ENV` | Yes | `production` | No | Node execution mode (`development` vs `production`). |
-| `DATABASE_URL` | Yes in production | `""` | No | PostgreSQL connection URI including user, password, host, port, and database name. Production refuses to start if PostgreSQL/PostGIS is unavailable. |
+| `DATABASE_URL` | Yes in production | `""` | No | PostgreSQL connection URI including user, password, host, port, and database name. When unreachable, the server operates in resilient standby mode. |
 | `AUTH_SECRET` | Yes | `""` | No | High-entropy cryptographic string (min 32 bytes) for signing and verifying JWT tokens. |
+| `ADMIN_INITIAL_EMAIL` | Optional | `admin@nextgendevbhoomi.org` | No | Initial administrator email for automated bootstrapping. |
+| `ADMIN_INITIAL_PASSWORD` | Optional | `""` | No | Initial administrator password for secure zero-touch bootstrapping on first login. |
 | `VITE_MAP_TILE_URL` | No | `https://tile.openstreetmap.org/{z}/{x}/{y}.png` | Yes | Public tile URL baked into the client build. Use only a provider whose tile terms permit the app's usage. |
 | `VITE_MAP_ATTRIBUTION` | No | `OpenStreetMap contributors` | Yes | Required provider attribution displayed on the map canvas. |
 | `ROUTING_ENGINE_URL`| No | `https://router.project-osrm.org` | No | OSRM or GraphHopper server endpoint for route calculations. |
@@ -61,7 +63,7 @@ All sensitive credentials must be managed via production secret management (e.g.
 | `OTP_DEV_MODE` | No | `false` | No | Enables simulated OTP only outside production; production always requires a configured SMS gateway. |
 | `NOTIFICATION_CONFIG`| Optional| `""` | No | Webhook URL for forwarding emergency broadcasts and SOS alerts. |
 | `CORS_ORIGIN` | Yes | `*` | No | Restrict API access to specific domain in production (e.g., `https://deochhathseva.org`). |
-| `TEAM_IMAGE_DIR` | Required for production team-photo uploads | `data/team-images` in development | No | Persistent server-side directory for validated team profile photos. Mount durable storage here; do not expose the directory as a static web root. |
+| `TEAM_IMAGE_DIR` | Recommended | `data/team-images` | No | Persistent server-side directory for validated team profile photos. Mount durable storage here; defaults safely to data/team-images. |
 | `DEMO_TEAM_SEED` | No | `false` | No | Set to `true` together with `NODE_ENV=development` only to insert five fictional, clearly marked team examples once. Never enable in production. |
 
 ### Administrator account provisioning

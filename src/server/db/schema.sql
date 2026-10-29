@@ -233,6 +233,7 @@ CREATE TABLE IF NOT EXISTS team_members (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     full_name VARCHAR(150) NOT NULL,
     designation VARCHAR(120) NOT NULL,
+    biography TEXT,
     photo_path VARCHAR(255),
     photo_permission_confirmed BOOLEAN NOT NULL DEFAULT false,
     is_demo BOOLEAN NOT NULL DEFAULT false,

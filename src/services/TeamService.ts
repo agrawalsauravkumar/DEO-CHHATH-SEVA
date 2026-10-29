@@ -5,6 +5,7 @@ export interface TeamMember {
   id: string;
   fullName: string;
   designation: string;
+  biography?: string;
   isDemo: boolean;
   isPublished?: boolean;
   hasPhoto?: boolean;
@@ -213,7 +214,7 @@ export const TeamService = {
     return { members };
   },
 
-  async createMember(fields: { fullName: string; designation: string }): Promise<TeamMemberResponse> {
+  async createMember(fields: { fullName: string; designation: string; biography?: string }): Promise<TeamMemberResponse> {
     try {
       const result = await apiRequest<TeamMemberResponse>('/api/team/admin', {
         method: 'POST',
@@ -231,6 +232,7 @@ export const TeamService = {
       id: `team-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       fullName: fields.fullName.trim(),
       designation: fields.designation.trim(),
+      biography: fields.biography?.trim() || undefined,
       isDemo: false,
       isPublished: false,
       hasPhoto: false,
@@ -246,7 +248,7 @@ export const TeamService = {
 
   async updateMember(
     id: string,
-    fields: { fullName: string; designation: string; isDemo: boolean }
+    fields: { fullName: string; designation: string; biography?: string; isDemo: boolean }
   ): Promise<TeamMemberResponse> {
     try {
       const result = await apiRequest<TeamMemberResponse>(`/api/team/admin/${id}`, {
@@ -269,6 +271,7 @@ export const TeamService = {
       ...members[index],
       fullName: fields.fullName.trim(),
       designation: fields.designation.trim(),
+      biography: fields.biography?.trim() || undefined,
       isDemo: fields.isDemo,
       updatedAt: new Date().toISOString(),
     };

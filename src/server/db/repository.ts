@@ -155,6 +155,7 @@ interface TeamMemberRow {
   id: string;
   full_name: string;
   designation: string;
+  biography?: string | null;
   photo_path: string | null;
   photo_permission_confirmed: boolean;
   is_demo: boolean;
@@ -167,6 +168,7 @@ const mapTeamMemberRow = (row: TeamMemberRow): DbTeamMember => ({
   id: row.id,
   fullName: row.full_name,
   designation: row.designation,
+  biography: row.biography || undefined,
   photoPath: row.photo_path || undefined,
   photoPermissionConfirmed: row.photo_permission_confirmed,
   isDemo: row.is_demo,
@@ -1480,7 +1482,7 @@ class DataRepository {
   // ================= TEAM =================
   public async getTeamMembers(publishedOnly = false): Promise<DbTeamMember[]> {
     const databaseMembers = await executeQuery<TeamMemberRow>(
-      `SELECT id, full_name, designation, photo_path, photo_permission_confirmed,
+      `SELECT id, full_name, designation, biography, photo_path, photo_permission_confirmed,
               is_demo, is_published, created_at, updated_at
        FROM team_members
        WHERE ($1::boolean = false OR is_published = true)
@@ -1495,7 +1497,7 @@ class DataRepository {
 
   public async getTeamMemberById(id: string): Promise<DbTeamMember | null> {
     const databaseMembers = await executeQuery<TeamMemberRow>(
-      `SELECT id, full_name, designation, photo_path, photo_permission_confirmed,
+      `SELECT id, full_name, designation, biography, photo_path, photo_permission_confirmed,
               is_demo, is_published, created_at, updated_at
        FROM team_members WHERE id = $1`,
       [id]
@@ -1512,15 +1514,16 @@ class DataRepository {
   ): Promise<DbTeamMember> {
     const databaseMembers = await executeQuery<TeamMemberRow>(
       `INSERT INTO team_members (
-         id, full_name, designation, photo_path, photo_permission_confirmed, is_demo,
+         id, full_name, designation, biography, photo_path, photo_permission_confirmed, is_demo,
          is_published, created_by, created_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-       RETURNING id, full_name, designation, photo_path, photo_permission_confirmed,
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       RETURNING id, full_name, designation, biography, photo_path, photo_permission_confirmed,
                  is_demo, is_published, created_at, updated_at`,
       [
         member.id,
         member.fullName,
         member.designation,
+        member.biography || null,
         member.photoPath || null,
         member.photoPermissionConfirmed,
         member.isDemo,
@@ -1540,24 +1543,27 @@ class DataRepository {
 
   public async updateTeamMember(
     id: string,
-    updates: Partial<Pick<DbTeamMember, 'fullName' | 'designation' | 'photoPath' | 'photoPermissionConfirmed' | 'isPublished' | 'isDemo'>>
+    updates: Partial<Pick<DbTeamMember, 'fullName' | 'designation' | 'biography' | 'photoPath' | 'photoPermissionConfirmed' | 'isPublished' | 'isDemo'>>
   ): Promise<DbTeamMember | null> {
     const databaseMembers = await executeQuery<TeamMemberRow>(
       `UPDATE team_members
        SET full_name = COALESCE($2, full_name),
            designation = COALESCE($3, designation),
-           is_published = COALESCE($4, is_published),
-           is_demo = COALESCE($5, is_demo),
-           photo_permission_confirmed = COALESCE($6, photo_permission_confirmed),
-           photo_path = CASE WHEN $7 THEN $8 ELSE photo_path END,
+           biography = CASE WHEN $4 THEN $5 ELSE biography END,
+           is_published = COALESCE($6, is_published),
+           is_demo = COALESCE($7, is_demo),
+           photo_permission_confirmed = COALESCE($8, photo_permission_confirmed),
+           photo_path = CASE WHEN $9 THEN $10 ELSE photo_path END,
            updated_at = NOW()
        WHERE id = $1
-       RETURNING id, full_name, designation, photo_path, photo_permission_confirmed,
+       RETURNING id, full_name, designation, biography, photo_path, photo_permission_confirmed,
                  is_demo, is_published, created_at, updated_at`,
       [
         id,
         updates.fullName ?? null,
         updates.designation ?? null,
+        updates.biography !== undefined,
+        updates.biography || null,
         updates.isPublished ?? null,
         updates.isDemo ?? null,
         updates.photoPermissionConfirmed ?? null,
