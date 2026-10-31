@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 360" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFBEB" />
+      <stop offset="50%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </radialGradient>
+  </defs>
+  <rect width="400" height="360" rx="16" fill="url(#bgGrad)"/>
+  <circle cx="200" cy="180" r="140" fill="none" stroke="#34D399" stroke-width="1.5" stroke-dasharray="6,6" opacity="0.3"/>
+  <circle cx="200" cy="180" r="120" fill="none" stroke="#34D399" stroke-width="1" opacity="0.2"/>
+  <path d="M100 260 Q150 120 300 130 Q220 200 100 260 Z" fill="#10B981" stroke="#34D399" stroke-width="3"/>
+           <path d="M140 220 Q200 160 260 145" stroke="#6EE7B7" stroke-width="2" fill="none"/>
+           <circle cx="230" cy="190" r="22" fill="#F59E0B"/>
+           <circle cx="180" cy="220" r="16" fill="#EF4444"/>
+           <circle cx="260" cy="220" r="14" fill="#FBBF24"/>
+           <path d="M195 240 Q205 225 215 240 Z" fill="#FF8C00"/>
+  <rect x="20" y="295" width="360" height="50" rx="10" fill="#050814" fill-opacity="0.75" stroke="#FDE68A" stroke-width="0.75"/>
+  <text x="200" y="318" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="16" fill="#FDE68A">केलवा के पात पर</text>
+  <text x="200" y="336" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="500" font-size="11" fill="#93C5FD">पवित्र वेदी व ऋतु फल अर्पण</text>
+</svg>

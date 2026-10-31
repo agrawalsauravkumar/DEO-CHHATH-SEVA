@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 360" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181B" />
+      <stop offset="100%" stop-color="#27272A" />
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFBEB" />
+      <stop offset="50%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </radialGradient>
+  </defs>
+  <rect width="400" height="360" rx="16" fill="url(#bgGrad)"/>
+  <circle cx="200" cy="180" r="140" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="6,6" opacity="0.3"/>
+  <circle cx="200" cy="180" r="120" fill="none" stroke="#F59E0B" stroke-width="1" opacity="0.2"/>
+  <ellipse cx="200" cy="200" rx="90" ry="50" fill="#B45309" stroke="#FDE68A" stroke-width="3"/>
+           <ellipse cx="200" cy="190" rx="80" ry="40" fill="#D97706"/>
+           <circle cx="170" cy="180" r="14" fill="#EF4444"/>
+           <circle cx="210" cy="175" r="16" fill="#F59E0B"/>
+           <circle cx="230" cy="190" r="12" fill="#10B981"/>
+           <path d="M190 150 Q200 130 210 150 Z" fill="#FFD54F"/>
+           <circle cx="200" cy="148" r="3" fill="#FFF"/>
+  <rect x="20" y="295" width="360" height="50" rx="10" fill="#050814" fill-opacity="0.75" stroke="#FDE68A" stroke-width="0.75"/>
+  <text x="200" y="318" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="16" fill="#FDE68A">छठी माई के दउरा</text>
+  <text x="200" y="336" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="500" font-size="11" fill="#93C5FD">सूपे सूपे दीप जलावल बा</text>
+</svg>

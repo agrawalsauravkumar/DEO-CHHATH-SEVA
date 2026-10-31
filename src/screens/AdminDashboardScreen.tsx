@@ -15,6 +15,7 @@ import { VolunteerService } from '../services/VolunteerService';
 import { DeoMap } from '../components/DeoMap';
 import { DeoChhathSevaLogo } from '../components/DeoChhathSevaLogo';
 import { TeamManagementPanel } from '../components/TeamManagementPanel';
+import { MusicManagementPanel } from '../components/MusicManagementPanel';
 import {
   AdminRole,
   AdminDashboardStats,
@@ -63,6 +64,7 @@ import {
   Clock,
   Compass,
   Lock,
+  Music,
 } from 'lucide-react';
 
 type AdminTab =
@@ -85,7 +87,8 @@ type AdminTab =
   | 'settings'
   | 'team'
   | 'notifications'
-  | 'analytics';
+  | 'analytics'
+  | 'music';
 
 export const AdminDashboardScreen: React.FC = () => {
   const { navigate } = useApp();
@@ -243,7 +246,10 @@ export const AdminDashboardScreen: React.FC = () => {
     { id: 'route-alerts', label: 'मार्ग प्रतिबंध (Route Alerts)', icon: AlertTriangle },
     { id: 'family', label: 'परिवार / सुरक्षा रिपोर्ट', icon: Users },
     ...(currentAdmin && ['SUPER_ADMIN', 'ADMIN', 'CONTENT_ADMIN'].includes(currentAdmin.role)
-      ? [{ id: 'team' as const, label: 'हमारी टीम प्रबंधन', icon: Users2 }]
+      ? [
+          { id: 'team' as const, label: 'हमारी टीम प्रबंधन', icon: Users2 },
+          { id: 'music' as const, label: 'छठ संगीत प्रबंधन', icon: Music },
+        ]
       : []),
     { id: 'notifications', label: 'सूचनाएँ (Notifications)', icon: Bell },
     { id: 'analytics', label: 'विश्लेषण (Analytics)', icon: LayoutDashboard },
@@ -1367,6 +1373,10 @@ export const AdminDashboardScreen: React.FC = () => {
 
           {activeTab === 'team' && (
             <TeamManagementPanel notify={showToast} />
+          )}
+
+          {activeTab === 'music' && (
+            <MusicManagementPanel notify={showToast} />
           )}
 
           {(activeTab === 'analytics' || activeTab === 'notifications') && (

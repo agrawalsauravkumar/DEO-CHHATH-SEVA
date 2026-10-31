@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 360" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#31102B" />
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFBEB" />
+      <stop offset="50%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </radialGradient>
+  </defs>
+  <rect width="400" height="360" rx="16" fill="url(#bgGrad)"/>
+  <circle cx="200" cy="180" r="140" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="6,6" opacity="0.3"/>
+  <circle cx="200" cy="180" r="120" fill="none" stroke="#F59E0B" stroke-width="1" opacity="0.2"/>
+  <path d="M50 180 Q200 130 350 180" stroke="#FFD54F" stroke-width="8" stroke-linecap="round" fill="none"/>
+           <path d="M70 180 L70 240 M90 180 L90 240 M110 180 L110 240 M50 240 Q90 270 130 240 Z" fill="#F59E0B" stroke="#FFD54F" stroke-width="2"/>
+           <path d="M310 180 L310 240 M330 180 L330 240 M350 180 L350 240 M290 240 Q330 270 370 240 Z" fill="#F59E0B" stroke="#FFD54F" stroke-width="2"/>
+           <circle cx="200" cy="110" r="40" fill="#FFB703" filter="drop-shadow(0 0 16px #FFB703)"/>
+           <path d="M190 240 Q200 220 210 240 Z" fill="#FF4500"/>
+           <circle cx="200" cy="235" r="4" fill="#FFEAA7"/>
+  <rect x="20" y="295" width="360" height="50" rx="10" fill="#050814" fill-opacity="0.75" stroke="#FDE68A" stroke-width="0.75"/>
+  <text x="200" y="318" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="16" fill="#FDE68A">काँच ही बाँस के बहँगिया</text>
+  <text x="200" y="336" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="500" font-size="11" fill="#93C5FD">छठी माई के पावन दउरा व बहँगी</text>
+</svg>

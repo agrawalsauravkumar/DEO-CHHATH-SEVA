@@ -9,3 +9,4 @@ coverage/
 !.env.example
 node_modules
 data/team-images/
+public/audio/chhath/*.mp3
