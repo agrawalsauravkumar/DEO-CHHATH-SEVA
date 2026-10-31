@@ -87,3 +87,4 @@ test('Timestamped lyrics contain chronological timestamps for accurate audio see
     }
   }
 });
+

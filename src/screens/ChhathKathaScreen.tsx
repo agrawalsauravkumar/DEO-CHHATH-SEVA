@@ -200,6 +200,10 @@ export const ChhathKathaScreen: React.FC = () => {
               <img
                 src="/images/chhath/sandhya-arghya.jpg"
                 alt="छठ महापर्व सांध्य अर्घ्य"
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.src = '/branding/chhath-hero-banner.jpg';
+                }}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-3.5">

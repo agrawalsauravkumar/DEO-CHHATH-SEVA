@@ -302,6 +302,10 @@ export const AboutScreen: React.FC = () => {
           <img
             src="/images/chhath/deo-sun-temple.jpg"
             alt="देव सूर्य मंदिर, औरंगाबाद, बिहार"
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.src = '/branding/chhath-hero-banner.jpg';
+            }}
             className="w-full h-52 object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex items-end p-4">

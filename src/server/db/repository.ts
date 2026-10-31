@@ -723,7 +723,13 @@ class DataRepository {
     if (databaseFacilities !== null) {
       return databaseFacilities.map(mapFacilityRow);
     }
-    return [];
+    return this.facilities.filter(
+      (f) =>
+        f.isActive &&
+        !f.isArchived &&
+        f.isVerified &&
+        (!category || f.category === category)
+    );
   }
 
   public async getFacilityById(id: string): Promise<DbFacility | null> {
@@ -736,7 +742,7 @@ class DataRepository {
     if (databaseFacilities !== null) {
       return databaseFacilities[0] ? mapFacilityRow(databaseFacilities[0]) : null;
     }
-    return null;
+    return this.facilities.find((f) => f.id === id && f.isActive && !f.isArchived && f.isVerified) || null;
   }
 
   /**
@@ -872,7 +878,10 @@ class DataRepository {
          AND f.is_active = true AND f.is_archived = false AND f.is_verified = true
        ORDER BY p.name`
     );
-    return rows === null ? [] : rows.map((row) => ({
+    if (rows === null) {
+      return this.parkings.filter((p) => p.isActive && p.isVerified);
+    }
+    return rows.map((row) => ({
       id: row.id,
       facilityId: row.facility_id,
       name: row.name,
@@ -930,7 +939,7 @@ class DataRepository {
 
   // ================= SHUTTLE =================
   public async getShuttleRoutes(): Promise<DbShuttleRoute[]> {
-    return [];
+    return this.shuttleRoutes.filter((r) => r.isActive);
   }
 
   // ================= VOLUNTEERS =================
@@ -952,7 +961,11 @@ class DataRepository {
     if (databaseVolunteers !== null) {
       return databaseVolunteers.map(mapVolunteerRow);
     }
-    return [];
+    return this.volunteers.filter((v) => {
+      if (onDutyOnly && (!v.isOnDuty || v.status !== 'VERIFIED')) return false;
+      if (verifiedOnly && v.status !== 'VERIFIED') return false;
+      return true;
+    });
   }
 
   public async createVolunteer(volunteer: DbVolunteer): Promise<DbVolunteer> {
@@ -1169,10 +1182,16 @@ class DataRepository {
     if (databaseAnnouncements !== null) {
       return databaseAnnouncements.map(mapAnnouncementRow);
     }
-    if (activeOnly) {
-      return [];
-    }
-    return [];
+    return this.announcements.filter((a) => {
+      if (!activeOnly) return true;
+      return (
+        a.status === 'PUBLISHED' &&
+        a.isVerifiedOfficial &&
+        a.source &&
+        !/demo|sample|test/i.test(a.source) &&
+        (!a.expiresAt || new Date(a.expiresAt).getTime() > Date.now())
+      );
+    });
   }
 
   public async createAnnouncement(announcement: DbAnnouncement): Promise<DbAnnouncement> {
@@ -1265,7 +1284,20 @@ class DataRepository {
     if (databaseAlerts !== null) {
       return databaseAlerts;
     }
-    return [];
+    const alerts: DbRouteAlert[] = [];
+    for (const a of this.announcements) {
+      if (
+        a.routeAlert &&
+        a.routeAlert.isActive &&
+        a.routeAlert.isVerified &&
+        a.status === 'PUBLISHED' &&
+        a.isVerifiedOfficial &&
+        (!a.expiresAt || new Date(a.expiresAt).getTime() > Date.now())
+      ) {
+        alerts.push(a.routeAlert);
+      }
+    }
+    return alerts;
   }
 
   // ================= LOST & FOUND =================
@@ -1279,7 +1311,9 @@ class DataRepository {
        ORDER BY created_at DESC`,
       [type || null]
     );
-    if (!rows) return [];
+    if (rows === null) {
+      return this.lostFoundReports.filter((r) => !r.isFlaggedMisuse && (!type || r.type === type));
+    }
     return rows.map((row) => ({
       id: row.id,
       reportId: row.report_id,
@@ -1324,7 +1358,10 @@ class DataRepository {
       ]
     );
     const row = rows?.[0];
-    if (!row) throw new Error('Database did not return the created lost-and-found report.');
+    if (!row) {
+      this.lostFoundReports.unshift(report);
+      return report;
+    }
     return {
       id: row.id,
       reportId: row.report_id,
