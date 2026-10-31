@@ -136,120 +136,96 @@ export const HomeScreen: React.FC = () => {
       </header>
 
       <main className="home-content">
-        <section className="welcome-panel" aria-labelledby="welcome-heading">
-          {/* Sacred Surya Bhagwan & Arghya Vector Scene */}
-          <div className="welcome-panel__devotional-scene" aria-hidden="true">
-            <svg viewBox="0 0 220 200" fill="none" role="presentation" className="w-full h-auto drop-shadow-md">
-              <defs>
-                <radialGradient id="suryaDiscGrad" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#FFFDE7" />
-                  <stop offset="35%" stopColor="#FFF176" />
-                  <stop offset="70%" stopColor="#FFB300" />
-                  <stop offset="90%" stopColor="#FB8C00" />
-                  <stop offset="100%" stopColor="#E65100" />
-                </radialGradient>
-                <radialGradient id="suryaAuraGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#FFD54F" stopOpacity="0.45" />
-                  <stop offset="50%" stopColor="#FF9800" stopOpacity="0.18" />
-                  <stop offset="100%" stopColor="#FF6F00" stopOpacity="0" />
-                </radialGradient>
-                <linearGradient id="waterRipplesGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#0B5E8E" stopOpacity="0.8" />
-                  <stop offset="50%" stopColor="#29B6F6" stopOpacity="0.9" />
-                  <stop offset="100%" stopColor="#0288D1" stopOpacity="0.8" />
-                </linearGradient>
-                <linearGradient id="soopGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#FFE082" />
-                  <stop offset="50%" stopColor="#FFB300" />
-                  <stop offset="100%" stopColor="#FF8F00" />
-                </linearGradient>
-              </defs>
+        {/* GRAND CHHATH DEVOTIONAL HERO BANNER (दिल को छू लेने वाला मुख्य दर्शन) */}
+        <section aria-label="देव छठ सेवा मुख्य दर्शन" className="relative overflow-hidden rounded-3xl border-2 border-amber-400 shadow-xl bg-gradient-to-b from-[#0B2545] to-[#07172B]">
+          {/* Official High-Resolution Chhath Puja Heritage Photo Banner */}
+          <div className="relative aspect-[16/9] w-full overflow-hidden bg-stone-900">
+            <img
+              src="/branding/chhath-hero-banner.jpg"
+              alt="देव छठ महापर्व — भगवान भास्कर अर्घ्य एवं सूर्य मंदिर"
+              className="w-full h-full object-cover object-center"
+              loading="eager"
+            />
+            {/* Subtle Gradient Veil for Text Readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#07172B] via-[#07172B]/40 to-transparent" />
 
-              {/* Radiant Solar Aura */}
-              <circle cx="155" cy="68" r="58" fill="url(#suryaAuraGlow)" />
-
-              {/* 12 Sacred Solar Rays (Aditya Mandalam) */}
-              <g stroke="#FFD54F" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
-                <line x1="155" y1="20" x2="155" y2="6" />
-                <line x1="179" y1="26" x2="189" y2="16" />
-                <line x1="197" y1="44" x2="210" y2="38" />
-                <line x1="203" y1="68" x2="217" y2="68" />
-                <line x1="197" y1="92" x2="210" y2="98" />
-                <line x1="179" y1="110" x2="189" y2="120" />
-                <line x1="155" y1="116" x2="155" y2="130" />
-                <line x1="131" y1="110" x2="121" y2="120" />
-                <line x1="113" y1="92" x2="100" y2="98" />
-                <line x1="107" y1="68" x2="93" y2="68" />
-                <line x1="113" y1="44" x2="100" y2="38" />
-                <line x1="131" y1="26" x2="121" y2="16" />
-              </g>
-
-              {/* Secondary Intermediate Rays */}
-              <g stroke="#FFA000" strokeWidth="1.8" strokeLinecap="round" opacity="0.75">
-                <line x1="168" y1="22" x2="174" y2="12" />
-                <line x1="190" y1="34" x2="200" y2="26" />
-                <line x1="202" y1="56" x2="214" y2="52" />
-                <line x1="202" y1="80" x2="214" y2="84" />
-                <line x1="190" y1="102" x2="200" y2="110" />
-                <line x1="168" y1="114" x2="174" y2="124" />
-                <line x1="142" y1="114" x2="136" y2="124" />
-                <line x1="120" y1="102" x2="110" y2="110" />
-                <line x1="108" y1="80" x2="96" y2="84" />
-                <line x1="108" y1="56" x2="96" y2="52" />
-                <line x1="120" y1="34" x2="110" y2="26" />
-                <line x1="142" y1="22" x2="136" y2="12" />
-              </g>
-
-              {/* Sacred Surya Central Disc */}
-              <circle cx="155" cy="68" r="30" fill="url(#suryaDiscGrad)" stroke="#FFE082" strokeWidth="2.5" />
-              <circle cx="155" cy="68" r="26" fill="none" stroke="#FF8F00" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
-
-              {/* Sacred Tilak / Aditya Symbol */}
-              <g transform="translate(155, 68)" fill="#D84315">
-                <circle cx="0" cy="0" r="2.8" />
-                <path d="M -6, -2 Q 0, -5 6, -2 Q 0, -3.5 -6, -2 Z" />
-                <path d="M 0, -6 L 1.2, -2.5 L -1.2, -2.5 Z" />
-              </g>
-
-              {/* Sacred Holy Waters of Surya Kund */}
-              <path d="M 25,142 C 65,134 115,148 160,138 C 188,132 208,140 220,136 L 220,200 L 25,200 Z" fill="url(#waterRipplesGrad)" opacity="0.5" />
-              <path d="M 15,158 C 60,150 108,162 155,154 C 182,150 204,156 220,153 L 220,200 L 15,200 Z" fill="url(#waterRipplesGrad)" opacity="0.85" />
-              <path d="M 35,150 C 75,144 125,156 165,148" stroke="#E1F5FE" strokeWidth="2" fill="none" opacity="0.75" />
-              <path d="M 55,168 C 100,162 145,172 190,166" stroke="#FFF9C4" strokeWidth="1.8" fill="none" opacity="0.6" />
-
-              {/* Traditional Arghya Soop & Floating Diya */}
-              <g transform="translate(108, 132)">
-                <path d="M 6,24 C 14,14 48,14 56,24 C 58,30 50,38 31,38 C 12,38 4,30 6,24 Z" fill="url(#soopGoldGrad)" stroke="#FFA000" strokeWidth="1.5" />
-                <circle cx="31" cy="22" r="6" fill="#6D4C41" stroke="#4E342E" strokeWidth="1" />
-                <path d="M 24,28 C 27,24 35,24 38,28 C 39,31 35,33 31,33 C 27,33 23,31 24,28 Z" fill="#FFB300" stroke="#E65100" strokeWidth="1" />
-                <path d="M 31,17 C 33,20 34,23 32,25 C 31,26 30,25 30,23 C 30,21 30.5,18 31,17 Z" fill="#FFF9C4" stroke="#FF6F00" strokeWidth="1" />
-              </g>
-            </svg>
-          </div>
-
-          {/* Devotional Welcome Content */}
-          <div className="welcome-panel__content">
-            <div className="welcome-panel__badge-row">
-              <span className="welcome-panel__badge">
-                🚩 {isEnglish ? 'Deoark Dham • Aurangabad (Bihar)' : 'देवार्क धाम • औरंगाबाद (बिहार)'}
+            {/* Top Floating Badges */}
+            <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+              <span className="px-3 py-1 rounded-full bg-[#073B78]/90 text-[#FFD54F] border border-[#FFD54F]/70 text-xs font-black shadow-md backdrop-blur-xs flex items-center gap-1.5">
+                <span>🚩</span>
+                <span>{isEnglish ? 'Deoark Dham • Aurangabad (Bihar)' : 'देवार्क धाम • औरंगाबाद (बिहार)'}</span>
               </span>
-              <span className="welcome-panel__chant">॥ ॐ सूर्याय नमः ॥</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-black/60 text-[#FFD54F] text-[11px] font-black border border-[#FFD54F]/40 backdrop-blur-xs">
+                ॥ जय छठी मईया ॥
+              </span>
             </div>
 
-            <h2 id="welcome-heading" className="welcome-panel__title">
-              {isEnglish ? 'Welcome to Sacred Deoark Dham' : 'देव की पावन धरती पर आपका हार्दिक स्वागत है'}
-            </h2>
+            {/* Bottom Hero Overlay Content */}
+            <div className="absolute bottom-3 left-3.5 right-3.5 text-white">
+              <h2 className="text-lg sm:text-2xl font-black text-[#FFF8E1] drop-shadow-md leading-tight">
+                {isEnglish ? 'Deo Chhath Mahaparv Seva 2026' : 'देव छठ महापर्व सेवा २०२६'}
+              </h2>
+              <p className="text-[11px] sm:text-xs text-amber-200 font-bold drop-shadow-sm mt-0.5">
+                {isEnglish
+                  ? 'Sacred Sun Temple & Surya Kund Mahatirth • Navigation • Help • Service'
+                  : 'विश्व प्रसिद्ध सूर्य मंदिर एवं सूर्य कुंड महातीर्थ • रास्ता भी • सहायता भी • सेवा भी'}
+              </p>
+            </div>
+          </div>
 
-            <p className="welcome-panel__description">
+          {/* Devotional Welcome & Quick Action Bar */}
+          <div className="p-3.5 bg-gradient-to-b from-[#07172B] to-[#0B2545] border-t border-amber-400/40 space-y-3">
+            <div className="flex items-center justify-between gap-2 text-xs">
+              <span className="text-amber-300 font-extrabold flex items-center gap-1.5">
+                <span>☀️</span>
+                <span>{isEnglish ? '॥ Om Suryaya Namah ॥' : '॥ ॐ सूर्याय नमः ॥'}</span>
+              </span>
+              <span className="text-stone-300 font-bold text-[11px]">
+                NEXTGEN DEVBHOOMI FOUNDATION
+              </span>
+            </div>
+
+            <p className="text-xs text-amber-100/90 leading-relaxed font-semibold">
               {isEnglish
-                ? 'Devotional support at every step during this sacred festival of faith, arghya, and seva.'
-                : 'छठ व्रतियों एवं श्रद्धालुओं की सेवा में आपका स्वागत है। आपकी यात्रा सुरक्षित और मंगलमय हो।'}
+                ? 'Welcome to the sacred land of Deo. Dedicated public service for all Chhath Vratis and pilgrims. May your pilgrimage be peaceful and blessed.'
+                : 'देव की पावन धरती पर आपका हार्दिक स्वागत है। छठ व्रतियों एवं श्रद्धालुओं की सेवा में समर्पित। आपकी यात्रा सुरक्षित और मंगलमय हो।'}
             </p>
 
-            <div className="welcome-panel__pills">
-              <span className="welcome-panel__pill">☀️ {isEnglish ? 'Sun Temple (1437 AD)' : '100 फ़ीट सूर्य मंदिर (1437 ई.)'}</span>
-              <span className="welcome-panel__pill">🌊 {isEnglish ? 'Surya Kund Holy Ghat' : 'सूर्य कुंड महातीर्थ'}</span>
-              <span className="welcome-panel__pill">🎋 {isEnglish ? 'Jai Chhathi Maiya' : '॥ जय छठी मईया ॥'}</span>
+            {/* 3 Pilgrimage Quick Navigation Chips */}
+            <div className="grid grid-cols-3 gap-2 pt-0.5">
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.querySelector('[aria-label="देव छठ दर्शन एवं प्रामाणिक इतिहास"]');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  else navigate('map');
+                }}
+                className="p-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 active:scale-95 border border-amber-400/60 text-amber-200 text-center transition-all flex flex-col items-center gap-0.5"
+              >
+                <span className="text-base">🚩</span>
+                <span className="text-[11px] font-black leading-tight">सूर्य मंदिर</span>
+                <span className="text-[9px] text-amber-300/80 font-bold">100 फ़ीट शिखर</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate('map')}
+                className="p-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 active:scale-95 border border-sky-400/60 text-sky-200 text-center transition-all flex flex-col items-center gap-0.5"
+              >
+                <span className="text-base">🌊</span>
+                <span className="text-[11px] font-black leading-tight">सूर्य कुंड</span>
+                <span className="text-[9px] text-sky-300/80 font-bold">अर्घ्य सरोवर</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate('prasad-camps')}
+                className="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 active:scale-95 border border-emerald-400/60 text-emerald-200 text-center transition-all flex flex-col items-center gap-0.5"
+              >
+                <span className="text-base">🎋</span>
+                <span className="text-[11px] font-black leading-tight">सेवा शिविर</span>
+                <span className="text-[9px] text-emerald-300/80 font-bold">सूप, दूध व दउरा</span>
+              </button>
             </div>
           </div>
         </section>
