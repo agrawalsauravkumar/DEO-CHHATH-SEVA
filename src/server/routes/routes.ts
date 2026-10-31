@@ -222,3 +222,4 @@ function decodeGooglePolyline(encoded: string): [number, number][] {
   }
   return points;
 }
+

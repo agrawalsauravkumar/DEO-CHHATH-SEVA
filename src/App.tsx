@@ -252,16 +252,16 @@ const MainRouter: React.FC = () => {
       <div className="app-shell w-full max-w-4xl min-h-[100dvh] relative flex flex-col bg-[#FFF8E1] border-x border-[#FFD54F]/40 shadow-xl">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,213,79,0.14),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.06),transparent_30%)]" />
         <div className="relative z-10 flex min-h-[100dvh] flex-col">
-          {currentScreen !== 'splash' && (!isOnline || networkStatus === 'SYNCING' || networkStatus === 'SYNC_ERROR' || networkStatus === 'SYNCED' || networkRecovered) && (
+          {currentScreen !== 'splash' && (!isOnline || networkStatus === 'SYNCING' || networkStatus === 'SYNC_ERROR' || networkRecovered) && (
             <div
-              className={`flex min-h-10 items-center justify-center gap-2 px-3 py-1.5 text-center text-xs font-bold ${
+              className={`flex min-h-10 items-center justify-center gap-2 px-3 py-1.5 text-center text-xs font-bold border-b transition-all ${
                 !isOnline
-                  ? 'bg-amber-100 text-amber-950'
+                  ? 'bg-amber-100 text-amber-950 border-amber-300'
                   : networkStatus === 'SYNC_ERROR'
-                    ? 'bg-rose-100 text-rose-900'
+                    ? 'bg-rose-100 text-rose-900 border-rose-300'
                     : networkStatus === 'SYNCING'
-                      ? 'bg-sky-100 text-sky-950'
-                      : 'bg-emerald-100 text-emerald-950'
+                      ? 'bg-sky-100 text-sky-950 border-sky-300'
+                      : 'bg-emerald-100 text-emerald-950 border-emerald-300'
               }`}
               role="status"
               aria-live="polite"
@@ -277,12 +277,7 @@ const MainRouter: React.FC = () => {
                       : 'अधिकृत सूचना और सुविधा स्रोत जाँचे जा रहे हैं…'
                     : networkStatus === 'SYNC_ERROR'
                       ? `${isEnglish ? 'Sync failed' : 'सिंक नहीं हुआ'}${syncError ? `: ${syncError}` : ''}`
-                      : networkStatus === 'SYNCED'
-                        ? isEnglish ? '🟢 Authorized data sources checked' : '🟢 अधिकृत डेटा स्रोत जाँचे गए'
-                        : isEnglish ? '🟢 Internet connection restored' : '🟢 Internet वापस आ गया है'}
-                {networkStatus === 'SYNCED' && lastSyncTime
-                  ? ` • ${isEnglish ? 'Last source check' : 'अंतिम स्रोत जाँच'}: ${new Date(lastSyncTime).toLocaleString(isEnglish ? 'en-IN' : 'hi-IN')}`
-                  : ''}
+                      : isEnglish ? '🟢 Internet connection restored' : '🟢 Internet वापस आ गया है'}
               </span>
               {isOnline && networkStatus === 'SYNC_ERROR' && (
                 <button

@@ -95,7 +95,9 @@ export const HomeScreen: React.FC = () => {
             aria-label={isEnglish ? 'About DEO CHHATH SEVA' : 'DEO CHHATH SEVA के बारे में'}
             className="home-brand-header__logo-button"
           >
-            <DeoChhathSevaLogo size={56} className="home-brand-header__logo" />
+            <div className="w-12 h-12 rounded-2xl bg-white/10 p-1 border border-[#FFD54F]/50 shadow-xs flex items-center justify-center backdrop-blur-xs">
+              <DeoChhathSevaLogo size={40} className="home-brand-header__logo rounded-xl" />
+            </div>
           </button>
           <div className="home-brand-header__identity">
             <h1>DEO CHHATH SEVA</h1>
@@ -135,70 +137,120 @@ export const HomeScreen: React.FC = () => {
 
       <main className="home-content">
         <section className="welcome-panel" aria-labelledby="welcome-heading">
-          <div className="welcome-panel__sun" aria-hidden="true" />
+          {/* Sacred Surya Bhagwan & Arghya Vector Scene */}
           <div className="welcome-panel__devotional-scene" aria-hidden="true">
-            <svg viewBox="0 0 280 200" fill="none" role="presentation" className="w-full h-auto drop-shadow-md">
+            <svg viewBox="0 0 220 200" fill="none" role="presentation" className="w-full h-auto drop-shadow-md">
               <defs>
-                <radialGradient id="heroSunGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#FFF8E1" />
-                  <stop offset="35%" stopColor="#FFD54F" />
-                  <stop offset="70%" stopColor="#FF8C42" />
+                <radialGradient id="suryaDiscGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#FFFDE7" />
+                  <stop offset="35%" stopColor="#FFF176" />
+                  <stop offset="70%" stopColor="#FFB300" />
+                  <stop offset="90%" stopColor="#FB8C00" />
                   <stop offset="100%" stopColor="#E65100" />
                 </radialGradient>
-                <linearGradient id="heroWaterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#0B5E8E" />
-                  <stop offset="50%" stopColor="#29B6F6" />
-                  <stop offset="100%" stopColor="#0288D1" />
+                <radialGradient id="suryaAuraGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#FFD54F" stopOpacity="0.45" />
+                  <stop offset="50%" stopColor="#FF9800" stopOpacity="0.18" />
+                  <stop offset="100%" stopColor="#FF6F00" stopOpacity="0" />
+                </radialGradient>
+                <linearGradient id="waterRipplesGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#0B5E8E" stopOpacity="0.8" />
+                  <stop offset="50%" stopColor="#29B6F6" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="#0288D1" stopOpacity="0.8" />
+                </linearGradient>
+                <linearGradient id="soopGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FFE082" />
+                  <stop offset="50%" stopColor="#FFB300" />
+                  <stop offset="100%" stopColor="#FF8F00" />
                 </linearGradient>
               </defs>
-              <g stroke="#FFD54F" strokeWidth="2" opacity="0.85">
-                <line x1="205" y1="58" x2="205" y2="12" />
-                <line x1="205" y1="58" x2="245" y2="18" />
-                <line x1="205" y1="58" x2="165" y2="18" />
-                <line x1="205" y1="58" x2="270" y2="38" />
-                <line x1="205" y1="58" x2="140" y2="38" />
-                <line x1="205" y1="58" x2="278" y2="68" />
-                <line x1="205" y1="58" x2="132" y2="68" />
+
+              {/* Radiant Solar Aura */}
+              <circle cx="155" cy="68" r="58" fill="url(#suryaAuraGlow)" />
+
+              {/* 12 Sacred Solar Rays (Aditya Mandalam) */}
+              <g stroke="#FFD54F" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
+                <line x1="155" y1="20" x2="155" y2="6" />
+                <line x1="179" y1="26" x2="189" y2="16" />
+                <line x1="197" y1="44" x2="210" y2="38" />
+                <line x1="203" y1="68" x2="217" y2="68" />
+                <line x1="197" y1="92" x2="210" y2="98" />
+                <line x1="179" y1="110" x2="189" y2="120" />
+                <line x1="155" y1="116" x2="155" y2="130" />
+                <line x1="131" y1="110" x2="121" y2="120" />
+                <line x1="113" y1="92" x2="100" y2="98" />
+                <line x1="107" y1="68" x2="93" y2="68" />
+                <line x1="113" y1="44" x2="100" y2="38" />
+                <line x1="131" y1="26" x2="121" y2="16" />
               </g>
-              <circle cx="205" cy="58" r="32" fill="url(#heroSunGlow)" stroke="#FFD54F" strokeWidth="2" />
-              <circle cx="205" cy="58" r="26" fill="#FFF8E1" opacity="0.3" />
-              <g transform="translate(142, 45)">
-                <path d="M 28,0 C 24,18 16,38 8,62 L 48,62 C 40,38 32,18 28,0 Z" fill="#8D6E63" stroke="#5D4037" strokeWidth="1.5" />
-                <ellipse cx="28" cy="0" rx="6" ry="2.5" fill="#FFD54F" />
-                <circle cx="28" cy="-3.5" r="2" fill="#FFA000" />
-                <line x1="28" y1="-8" x2="28" y2="-3" stroke="#8D6E63" strokeWidth="1.5" />
-                <polygon points="28,-8 38,-6 28,-4" fill="#FF8C42" />
+
+              {/* Secondary Intermediate Rays */}
+              <g stroke="#FFA000" strokeWidth="1.8" strokeLinecap="round" opacity="0.75">
+                <line x1="168" y1="22" x2="174" y2="12" />
+                <line x1="190" y1="34" x2="200" y2="26" />
+                <line x1="202" y1="56" x2="214" y2="52" />
+                <line x1="202" y1="80" x2="214" y2="84" />
+                <line x1="190" y1="102" x2="200" y2="110" />
+                <line x1="168" y1="114" x2="174" y2="124" />
+                <line x1="142" y1="114" x2="136" y2="124" />
+                <line x1="120" y1="102" x2="110" y2="110" />
+                <line x1="108" y1="80" x2="96" y2="84" />
+                <line x1="108" y1="56" x2="96" y2="52" />
+                <line x1="120" y1="34" x2="110" y2="26" />
+                <line x1="142" y1="22" x2="136" y2="12" />
               </g>
-              <path d="M 60,118 C 110,108 170,126 220,116 C 250,110 270,116 280,114 L 280,200 L 60,200 Z" fill="url(#heroWaterGrad)" opacity="0.9" />
-              <path d="M 60,138 C 120,128 175,142 230,134 C 255,130 275,134 280,132" stroke="#E1F5FE" strokeWidth="2.5" fill="none" opacity="0.85" />
-              <path d="M 80,160 C 140,152 190,164 250,156" stroke="#B3E5FC" strokeWidth="2" fill="none" opacity="0.6" />
-              <g stroke="#2E7D32" strokeWidth="3" fill="none">
-                <path d="M 100,185 Q 115,115 128,75" />
-                <path d="M 265,185 Q 250,115 238,75" />
+
+              {/* Sacred Surya Central Disc */}
+              <circle cx="155" cy="68" r="30" fill="url(#suryaDiscGrad)" stroke="#FFE082" strokeWidth="2.5" />
+              <circle cx="155" cy="68" r="26" fill="none" stroke="#FF8F00" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
+
+              {/* Sacred Tilak / Aditya Symbol */}
+              <g transform="translate(155, 68)" fill="#D84315">
+                <circle cx="0" cy="0" r="2.8" />
+                <path d="M -6, -2 Q 0, -5 6, -2 Q 0, -3.5 -6, -2 Z" />
+                <path d="M 0, -6 L 1.2, -2.5 L -1.2, -2.5 Z" />
               </g>
-              <path d="M 128,75 Q 138,58 132,44 Q 124,62 128,75" fill="#4CAF50" />
-              <path d="M 238,75 Q 228,58 234,44 Q 242,62 238,75" fill="#4CAF50" />
-              <g transform="translate(172, 138)">
-                <path d="M 8,24 C 15,14 55,14 62,24 C 65,31 56,40 35,40 C 14,40 5,31 8,24 Z" fill="#FFD54F" stroke="#FFA000" strokeWidth="2" />
-                <circle cx="35" cy="20" r="8" fill="#8D6E63" />
-                <path d="M 35,6 C 39,11 40,14 37,17 C 35,18 33,16 33,14 C 33,12 34,8 35,6 Z" fill="#FFF9C4" stroke="#FF8C42" strokeWidth="1.5" />
+
+              {/* Sacred Holy Waters of Surya Kund */}
+              <path d="M 25,142 C 65,134 115,148 160,138 C 188,132 208,140 220,136 L 220,200 L 25,200 Z" fill="url(#waterRipplesGrad)" opacity="0.5" />
+              <path d="M 15,158 C 60,150 108,162 155,154 C 182,150 204,156 220,153 L 220,200 L 15,200 Z" fill="url(#waterRipplesGrad)" opacity="0.85" />
+              <path d="M 35,150 C 75,144 125,156 165,148" stroke="#E1F5FE" strokeWidth="2" fill="none" opacity="0.75" />
+              <path d="M 55,168 C 100,162 145,172 190,166" stroke="#FFF9C4" strokeWidth="1.8" fill="none" opacity="0.6" />
+
+              {/* Traditional Arghya Soop & Floating Diya */}
+              <g transform="translate(108, 132)">
+                <path d="M 6,24 C 14,14 48,14 56,24 C 58,30 50,38 31,38 C 12,38 4,30 6,24 Z" fill="url(#soopGoldGrad)" stroke="#FFA000" strokeWidth="1.5" />
+                <circle cx="31" cy="22" r="6" fill="#6D4C41" stroke="#4E342E" strokeWidth="1" />
+                <path d="M 24,28 C 27,24 35,24 38,28 C 39,31 35,33 31,33 C 27,33 23,31 24,28 Z" fill="#FFB300" stroke="#E65100" strokeWidth="1" />
+                <path d="M 31,17 C 33,20 34,23 32,25 C 31,26 30,25 30,23 C 30,21 30.5,18 31,17 Z" fill="#FFF9C4" stroke="#FF6F00" strokeWidth="1" />
               </g>
             </svg>
           </div>
-          <p className="welcome-panel__eyebrow">
-            {isEnglish ? 'Deo • Aurangabad • Bihar' : 'देव • औरंगाबाद • बिहार'}
-          </p>
-          <h2 id="welcome-heading">{isEnglish ? 'Welcome to Deoark Dham' : 'देव की पावन धरती पर आपका हार्दिक स्वागत है'}</h2>
-          <p>
-            {isEnglish
-              ? 'Support at every step during this sacred festival of faith, arghya, and service.'
-              : 'छठ व्रतियों एवं श्रद्धालुओं की सेवा में आपका स्वागत है। आपकी यात्रा सुरक्षित और मंगलमय हो।'}
-          </p>
-          <div className="welcome-panel__waves" aria-hidden="true">
-            <svg viewBox="0 0 600 70" preserveAspectRatio="none">
-              <path d="M0 25 C90 3 150 49 250 25 S410 4 600 28 V70 H0Z" />
-              <path d="M0 42 C100 20 180 62 290 39 S480 22 600 44" />
-            </svg>
+
+          {/* Devotional Welcome Content */}
+          <div className="welcome-panel__content">
+            <div className="welcome-panel__badge-row">
+              <span className="welcome-panel__badge">
+                🚩 {isEnglish ? 'Deoark Dham • Aurangabad (Bihar)' : 'देवार्क धाम • औरंगाबाद (बिहार)'}
+              </span>
+              <span className="welcome-panel__chant">॥ ॐ सूर्याय नमः ॥</span>
+            </div>
+
+            <h2 id="welcome-heading" className="welcome-panel__title">
+              {isEnglish ? 'Welcome to Sacred Deoark Dham' : 'देव की पावन धरती पर आपका हार्दिक स्वागत है'}
+            </h2>
+
+            <p className="welcome-panel__description">
+              {isEnglish
+                ? 'Devotional support at every step during this sacred festival of faith, arghya, and seva.'
+                : 'छठ व्रतियों एवं श्रद्धालुओं की सेवा में आपका स्वागत है। आपकी यात्रा सुरक्षित और मंगलमय हो।'}
+            </p>
+
+            <div className="welcome-panel__pills">
+              <span className="welcome-panel__pill">☀️ {isEnglish ? 'Sun Temple (1437 AD)' : '100 फ़ीट सूर्य मंदिर (1437 ई.)'}</span>
+              <span className="welcome-panel__pill">🌊 {isEnglish ? 'Surya Kund Holy Ghat' : 'सूर्य कुंड महातीर्थ'}</span>
+              <span className="welcome-panel__pill">🎋 {isEnglish ? 'Jai Chhathi Maiya' : '॥ जय छठी मईया ॥'}</span>
+            </div>
           </div>
         </section>
 
@@ -206,17 +258,17 @@ export const HomeScreen: React.FC = () => {
           type="button"
           onClick={() => navigate(HOME_EMERGENCY_SCREEN)}
           className="home-emergency-action"
-          aria-label={isEnglish ? 'Open emergency assistance options' : 'आपातकालीन सहायता विकल्प खोलें'}
+          aria-label={isEnglish ? 'Emergency Assistance 24x7 SOS helpline' : 'आपातकालीन सहायता 24x7 हेल्पलाइन'}
         >
           <span className="home-emergency-action__icon" aria-hidden="true">
-            <Siren className="h-6 w-6" />
+            <Siren className="h-6 w-6 text-white animate-pulse" />
           </span>
           <span className="home-emergency-action__text">
-            <strong>{isEnglish ? 'Emergency assistance' : 'आपातकालीन सहायता'}</strong>
+            <strong>{isEnglish ? 'Emergency Assistance (24×7 SOS)' : 'आपातकालीन सहायता (24×7 हेल्पलाइन)'}</strong>
             <small>
               {isEnglish
-                ? 'View assistance options available in an emergency'
-                : 'आपात स्थिति में उपलब्ध सहायता विकल्प देखें'}
+                ? 'Immediate help • Police, Ambulance, Control Room & Medical Camp'
+                : 'त्वरित सहायता • पुलिस, एम्बुलेंस, कंट्रोल रूम व मेडिकल कैम्प'}
             </small>
           </span>
           <span className="home-emergency-action__arrow" aria-hidden="true">›</span>
