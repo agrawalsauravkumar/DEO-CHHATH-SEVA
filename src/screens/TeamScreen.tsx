@@ -43,17 +43,17 @@ export const TeamScreen: React.FC = () => {
             </span>
             <div>
               <p className="text-xs font-bold tracking-wide text-[#FFF7E5]/80">NEXTGEN DEVBHOOMI FOUNDATION</p>
-              <h1 className="text-2xl font-black sm:text-3xl">हमारी टीम</h1>
+              <h1 className="text-2xl font-black sm:text-3xl">हमारी टीम (१२ प्रमुख सेवा दल)</h1>
             </div>
           </div>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#FFF7E5]">
-            टीम के सार्वजनिक सदस्य विवरण संस्था की स्वीकृति के बाद यहाँ दिखाए जाते हैं।
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#FFF7E5]/90">
+            देव छठ महापर्व में लाखों श्रद्धालुओं की सुरक्षा, सेवा एवं मार्गदर्शन हेतु समर्पित हमारे १२ प्रमुख सेवा दल पदाधिकारी।
           </p>
         </section>
 
         {containsDemo && (
-          <p className="mt-4 rounded-2xl border border-[#A61B29]/25 bg-[#A61B29]/5 px-4 py-3 text-sm font-bold leading-relaxed text-[#7F1D1D]" role="note">
-            प्रदर्शन हेतु नमूना प्रोफ़ाइल दिखाई जा रही हैं। ये वास्तविक संस्था सदस्यों की पुष्टि नहीं हैं।
+          <p className="mt-4 rounded-2xl border border-amber-400/40 bg-amber-500/10 px-4 py-3 text-xs sm:text-sm font-bold leading-relaxed text-amber-900" role="note">
+            ℹ️ प्रदर्शन हेतु संस्था के १२ सेवा दल पदाधिकारियों की रूपरेखा दिखाई जा रही है।
           </p>
         )}
 
@@ -85,26 +85,44 @@ export const TeamScreen: React.FC = () => {
         )}
 
         {state === 'ready' && (
-          <ul className="mt-5 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-            {members.map((member) => (
-              <li key={member.id} className="overflow-hidden rounded-2xl border border-[#075985]/10 bg-white shadow-sm">
-                <img
-                  src={TeamService.getPhotoUrl(member)}
-                  alt={`${member.fullName} का प्रोफ़ाइल चित्र`}
-                  loading="lazy"
-                  className="aspect-[4/5] w-full object-cover"
-                  onError={(event) => {
-                    if (!event.currentTarget.src.endsWith('/team-placeholder.svg')) {
-                      event.currentTarget.src = '/team-placeholder.svg';
-                    }
-                  }}
-                />
-                <div className="border-t-2 border-[#FFB52E] px-3 py-3">
-                  <h2 className="break-words text-base font-black leading-snug text-[#063B5C]">{member.fullName}</h2>
-                  <p className="mt-1 break-words text-sm font-semibold text-[#075985]">{member.designation}</p>
-                  {member.biography && (
-                    <p className="mt-2 break-words text-xs leading-relaxed text-stone-600 border-t border-stone-100 pt-1.5">{member.biography}</p>
-                  )}
+          <ul className="mt-5 grid list-none grid-cols-2 gap-3.5 p-0 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+            {members.map((member, index) => (
+              <li
+                key={member.id}
+                className="group overflow-hidden rounded-2xl border border-amber-300/70 bg-white shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between"
+              >
+                <div className="relative aspect-[4/5] w-full overflow-hidden bg-stone-100">
+                  <img
+                    src={TeamService.getPhotoUrl(member)}
+                    alt={`${member.fullName} का प्रोफ़ाइल चित्र`}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(event) => {
+                      if (!event.currentTarget.src.endsWith('/team-placeholder.svg')) {
+                        event.currentTarget.src = '/team-placeholder.svg';
+                      }
+                    }}
+                  />
+                  <div className="absolute top-2 left-2">
+                    <span className="px-2 py-0.5 rounded-md bg-black/60 text-[#FFD54F] text-[10px] font-black border border-[#FFD54F]/40 backdrop-blur-xs">
+                      #{index + 1}
+                    </span>
+                  </div>
+                </div>
+                <div className="border-t-2 border-[#FFB52E] p-3 flex flex-col flex-1 justify-between bg-gradient-to-b from-white to-amber-50/20">
+                  <div>
+                    <h2 className="break-words text-sm sm:text-base font-black leading-snug text-[#063B5C]">
+                      {member.fullName}
+                    </h2>
+                    <p className="mt-1 break-words text-xs sm:text-sm font-bold text-[#075985] leading-tight">
+                      {member.designation}
+                    </p>
+                    {member.biography && (
+                      <p className="mt-2 break-words text-[11px] leading-relaxed text-stone-600 border-t border-stone-100 pt-1.5 font-medium">
+                        {member.biography}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </li>
             ))}
