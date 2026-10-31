@@ -199,15 +199,15 @@ export const EmergencyScreen: React.FC = () => {
         )}
 
         {/* Emergency Prompt */}
-        <div className="bg-red-950/70 border-2 border-red-600/70 rounded-3xl p-4 text-center space-y-1 shadow-lg">
-          <span className="text-[11px] font-black uppercase tracking-widest text-red-400 block">
-            तत्काल आपातकालीन सेवा
+        <div className="bg-[#C62828] border-2 border-[#EF5350] rounded-3xl p-4 text-center space-y-1 shadow-lg text-white">
+          <span className="text-[11px] font-black uppercase tracking-widest text-[#FFCDD2] block">
+            तत्काल आपातकालीन सहायता • 24x7
           </span>
           <h2 className="text-xl sm:text-2xl font-black text-white">
-            आप किस प्रकार की सहायता चाहते हैं?
+            किसी भी सहायता के लिए हम आपके साथ हैं
           </h2>
-          <p className="text-xs text-red-200">
-            सीधे कॉल करने हेतु नीचे संबंधित सेवा पर टैप करें।
+          <p className="text-xs text-[#FFEBEE]">
+            सीधे कॉल करने हेतु नीचे संबंधित आपातकालीन सेवा पर टैप करें।
           </p>
         </div>
 

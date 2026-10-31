@@ -4,22 +4,24 @@
  */
 
 /**
- * DEO CHHATH SEVA — OFFICIAL DESIGN TOKENS & CHHATH PUJA PALETTE
+ * DEO CHHATH SEVA — OFFICIAL DESIGN SYSTEM & CHHATH PUJA PALETTE
  * NEXTGEN DEVBHOOMI FOUNDATION
  * "रास्ता भी • सहायता भी • सेवा भी"
  *
- * Official Palette:
- * - River Blue: #0B5E8E (पवित्र सूर्य कुंड व पुनपुन नदी का शांत गहरा जल)
- * - Sunrise Saffron: #FF8C42 (प्रातःकालीन अस्ताचलगामी व उदयगामी भगवान सूर्य का सिंदूरी केसरिया)
- * - Marigold Gold: #FFD54F (छठ घाट दीप ज्योति व गेंदा पुष्प)
- * - Leaf Green: #2E7D32 (प्राकृतिक ईख, केला व बांस का दाउरा / सूप)
- * - Earth Brown: #8D6E63 (मिट्टी का चूल्हा, घाट की पाषाण वेदी)
- * - Cream: #FFF8E1 (सात्विक ठेकुआ, शुद्ध कच्चा दूध व पवित्र अर्घ्य प्रसाद)
- * - Emergency Red: #E53935 (आपातकालीन SOS व जीवन रक्षक सहायता)
+ * OFFICIAL COLOR PALETTE:
+ * - Royal Blue:      #073B78 (मुख्य नेविगेशन, टॉप बार व हेडर बार)
+ * - River Blue:      #0B5E8E (पवित्र सूर्य कुंड, पुनपुन नदी का गहरा पावन जल, मैप्स)
+ * - Sunrise Saffron: #FF8C00 (प्रातःकालीन सूर्योदय, प्रमुख एक्शन बटन, एक्टिव बॉर्डर्स)
+ * - Deep Saffron:    #FF6B00 (सायंकालीन अस्ताचलगामी अर्घ्य सिंदूर, बटन ग्रेडिएंट शेड)
+ * - Golden Yellow:   #FFD54F (प्रज्वलित दीप ज्योति, गेंदा पुष्प माला, हाइलाइट्स)
+ * - Cream:           #FFF8E1 (सात्विक ठेकुआ, शुद्ध कच्चा दूध, मुख्य पृष्ठ पृष्ठभूमि)
+ * - Deep Red:        #C62828 (आपातकालीन SOS, एम्बुलेंस 108, पुलिस 112)
+ * - Leaf Green:      #2E7D32 (पवित्र ईख, केला का पत्ता, बांस का सूप/दउरा, ऑनलाइन बैज)
+ * - White:           #FFFFFF (स्वच्छ कार्ड सरफेस, पठन पठनीयता)
  *
- * Typography:
- * - Noto Sans Devanagari (हिन्दी)
- * - Inter (English)
+ * TYPOGRAPHY:
+ * - Hindi Font: Noto Sans Devanagari
+ * - English Font: Inter
  */
 
 export const CHHATH_THEME = {
@@ -29,26 +31,27 @@ export const CHHATH_THEME = {
     organization: 'NEXTGEN DEVBHOOMI FOUNDATION',
     subTitleHi: 'देव छठ सेवा • NEXTGEN DEVBHOOMI FOUNDATION',
     initiativeTitleHi: 'सार्वजनिक सेवा पहल (A Public-Service Initiative)',
+    locationHi: 'देव • औरंगाबाद • बिहार',
   },
 
-  // 7 Official Design Tokens
   tokens: {
+    royalBlue: '#073B78',
     riverBlue: '#0B5E8E',
-    sunriseSaffron: '#FF8C42',
-    marigoldGold: '#FFD54F',
-    leafGreen: '#2E7D32',
-    earthBrown: '#8D6E63',
+    sunriseSaffron: '#FF8C00',
+    deepSaffron: '#FF6B00',
+    goldenYellow: '#FFD54F',
     cream: '#FFF8E1',
-    emergencyRed: '#E53935',
+    deepRed: '#C62828',
+    leafGreen: '#2E7D32',
+    white: '#FFFFFF',
 
-    // Extended Functional Variants
-    deepNavy: '#041E2F',
-    nightSky: '#0B132B',
+    // Supporting neutral surfaces
     softIvory: '#FFFDF7',
     charcoal: '#1C1917',
-    slateMuted: '#57534E',
-    borderGold: 'rgba(255, 213, 79, 0.45)',
-    borderBlue: 'rgba(11, 94, 142, 0.35)',
+    slateMuted: '#44403C',
+    stoneSubtle: '#78716C',
+    borderGold: 'rgba(255, 213, 79, 0.7)',
+    borderBlue: 'rgba(11, 94, 142, 0.25)',
   },
 
   typography: {
@@ -58,31 +61,33 @@ export const CHHATH_THEME = {
   },
 
   colors: {
-    // Primary - River Blue
+    // Navigation & Primary Structure - Royal Blue & River Blue
     primary: {
-      DEFAULT: '#0B5E8E',
-      light: '#1582C0',
-      dark: '#073B5A',
+      DEFAULT: '#073B78',
+      river: '#0B5E8E',
+      light: '#1260A3',
+      dark: '#04244D',
       contrast: '#FFFFFF',
     },
 
-    // Secondary - Sunrise Saffron
+    // Interactive Actions - Sunrise Saffron & Deep Saffron
     secondary: {
-      DEFAULT: '#FF8C42',
-      light: '#FFA66B',
-      dark: '#E65100',
+      DEFAULT: '#FF8C00',
+      deep: '#FF6B00',
+      light: '#FFA633',
+      dark: '#D95700',
       contrast: '#FFFFFF',
     },
 
-    // Accent - Marigold Gold
+    // Highlights & Badges - Golden Yellow
     accent: {
       DEFAULT: '#FFD54F',
       light: '#FFE082',
       dark: '#F59E0B',
-      contrast: '#041E2F',
+      contrast: '#073B78',
     },
 
-    // Nature / Prasad - Leaf Green
+    // Nature & Verification - Leaf Green
     green: {
       DEFAULT: '#2E7D32',
       light: '#4CAF50',
@@ -90,47 +95,39 @@ export const CHHATH_THEME = {
       contrast: '#FFFFFF',
     },
 
-    // Earth - Ghat Earth Brown
-    earth: {
-      DEFAULT: '#8D6E63',
-      light: '#A1887F',
-      dark: '#5D4037',
-      contrast: '#FFFFFF',
-    },
-
-    // Background - Sacred Cream
-    cream: {
+    // Background - Cream & White
+    background: {
       DEFAULT: '#FFF8E1',
       soft: '#FFFDF7',
       card: '#FFFFFF',
     },
 
-    // Emergency - Strictly SOS
+    // Emergency - Deep Red strictly for SOS
     emergency: {
-      DEFAULT: '#E53935',
-      light: '#FF5252',
-      dark: '#C62828',
+      DEFAULT: '#C62828',
+      light: '#E53935',
+      dark: '#8E0000',
       contrast: '#FFFFFF',
     },
 
-    // Functional State Colors
+    // Status Colors
     success: {
       DEFAULT: '#2E7D32',
-      light: '#E8F5E9',
+      badge: '#E8F5E9',
       border: '#81C784',
       text: '#1B5E20',
     },
     warning: {
       DEFAULT: '#F59E0B',
-      light: '#FFFBEB',
+      badge: '#FFFBEB',
       border: '#FCD34D',
       text: '#92400E',
     },
     offline: {
-      DEFAULT: '#8D6E63',
-      badge: '#EFEBE9',
-      border: '#BCAAA4',
-      text: '#4E342E',
+      DEFAULT: '#78716C',
+      badge: '#F5F5F4',
+      border: '#D6D3D1',
+      text: '#44403C',
     },
     online: {
       DEFAULT: '#2E7D32',
@@ -141,7 +138,7 @@ export const CHHATH_THEME = {
     verified: {
       badge: '#E0F2FE',
       border: '#0B5E8E',
-      text: '#073B5A',
+      text: '#073B78',
       icon: '#0B5E8E',
     },
   },

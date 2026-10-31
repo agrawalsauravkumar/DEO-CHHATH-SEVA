@@ -188,11 +188,11 @@ export const HomeScreen: React.FC = () => {
           <p className="welcome-panel__eyebrow">
             {isEnglish ? 'Deo • Aurangabad • Bihar' : 'देव • औरंगाबाद • बिहार'}
           </p>
-          <h2 id="welcome-heading">{isEnglish ? 'Welcome to Deo' : 'देव में आपका स्वागत है'}</h2>
+          <h2 id="welcome-heading">{isEnglish ? 'Welcome to Deoark Dham' : 'देव की पावन धरती पर आपका हार्दिक स्वागत है'}</h2>
           <p>
             {isEnglish
               ? 'Support at every step during this sacred festival of faith, arghya, and service.'
-              : 'आस्था, अर्घ्य और सेवा के इस पावन पर्व में आपकी हर कदम पर सहायता।'}
+              : 'छठ व्रतियों एवं श्रद्धालुओं की सेवा में आपका स्वागत है। आपकी यात्रा सुरक्षित और मंगलमय हो।'}
           </p>
           <div className="welcome-panel__waves" aria-hidden="true">
             <svg viewBox="0 0 600 70" preserveAspectRatio="none">
