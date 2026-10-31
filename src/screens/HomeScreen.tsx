@@ -122,7 +122,19 @@ export const HomeScreen: React.FC = () => {
         </div>
         <div className="home-brand-header__status">
           <OnlineOfflineBadge isOnline={isOnline} />
-          <span className="home-brand-header__location" aria-live="polite">
+          <button
+            type="button"
+            onClick={() => {
+              if (!deviceLocation) {
+                setShowPrePermissionModal(true);
+              } else {
+                navigate('map');
+              }
+            }}
+            className="home-brand-header__location cursor-pointer hover:opacity-90 active:scale-95 transition-all"
+            aria-live="polite"
+            title={!deviceLocation ? (isEnglish ? 'Click to enable GPS' : 'GPS चालू करने हेतु टैप करें') : (isEnglish ? 'View map' : 'नक्शा देखें')}
+          >
             <MapPin aria-hidden className="h-3.5 w-3.5 shrink-0" />
             {deviceLocation
               ? locationStatus === 'low-accuracy'
@@ -130,8 +142,8 @@ export const HomeScreen: React.FC = () => {
                 : locationStatus === 'success'
                   ? `GPS • सटीकता ±${Math.round(deviceLocation.accuracy)} मीटर`
                   : `अंतिम GPS स्थान • सटीकता ±${Math.round(deviceLocation.accuracy)} मीटर`
-              : isEnglish ? 'GPS location unavailable' : 'GPS स्थान उपलब्ध नहीं'}
-          </span>
+              : isEnglish ? 'GPS location off • Tap to enable' : 'GPS स्थान बंद • चालू करें'}
+          </button>
         </div>
       </header>
 

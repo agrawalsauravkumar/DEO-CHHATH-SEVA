@@ -18,7 +18,7 @@ function isHelpRequestStatus(value: unknown): value is DbHelpRequestStatus {
     value === 'ESCALATED' || value === 'RESOLVED' || value === 'CANCELLED';
 }
 
-helpRouter.get('/points', asyncHandler(async (_req, res) => {
+const getHelpOverview = asyncHandler(async (_req, res) => {
   const points = await repository.getFacilities('HELP');
   return res.json({
     helplines: {
@@ -30,7 +30,10 @@ helpRouter.get('/points', asyncHandler(async (_req, res) => {
     },
     helpPoints: points,
   });
-}));
+});
+
+helpRouter.get('/', getHelpOverview);
+helpRouter.get('/points', getHelpOverview);
 
 helpRouter.post('/request', requirePersistentDatabase, asyncHandler(async (req, res) => {
   const { type, description, userName, userPhone, latitude, longitude } = req.body;

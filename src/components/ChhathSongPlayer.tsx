@@ -259,9 +259,11 @@ export const ChhathSongPlayer: React.FC<ChhathSongPlayerProps> = ({
           try {
             await audio.play();
             setIsPlaying(true);
+            setPlaybackError(null);
           } catch (playErr: unknown) {
             console.warn('AutoPlay blocked or failed:', playErr);
             setIsPlaying(false);
+            setPlaybackError('ऑडियो शुरू करने हेतु प्ले (▶) बटन दबाएं');
           }
         }
       } catch (err: unknown) {

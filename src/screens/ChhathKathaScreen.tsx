@@ -98,7 +98,7 @@ export const ChhathKathaScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B132B] text-slate-100 pb-24 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
+    <div className="min-h-screen bg-[#0B132B] text-slate-100 pb-32 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="छठ व्रत कथा, गीत व मंत्र" showBack />
 
       <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-3 sm:p-6 space-y-5">
@@ -137,13 +137,13 @@ export const ChhathKathaScreen: React.FC = () => {
         </div>
 
         {/* Navigation Tabs (4 Pillars) */}
-        <div className="grid grid-cols-4 gap-1.5 bg-[#111A35] p-1.5 rounded-2xl text-[11px] font-black border border-amber-500/30">
+        <div className="grid grid-cols-4 gap-1.5 bg-[#111A35] p-1.5 rounded-2xl text-[11px] font-black border border-amber-500/40 shadow-inner">
           <button
             onClick={() => setActiveTab('KATHA')}
             className={`py-2 px-1 rounded-xl transition-all ${
               activeTab === 'KATHA'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold shadow'
-                : 'text-slate-300 hover:text-white'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-[#041E2F] font-black shadow-md border border-amber-300'
+                : 'text-amber-200/80 hover:text-white hover:bg-white/5'
             }`}
           >
             📖 व्रत कथा
@@ -152,8 +152,8 @@ export const ChhathKathaScreen: React.FC = () => {
             onClick={() => setActiveTab('GEET')}
             className={`py-2 px-1 rounded-xl transition-all ${
               activeTab === 'GEET'
-                ? 'bg-[#075985] text-white shadow-xs'
-                : 'text-stone-700 hover:text-stone-900'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-[#041E2F] font-black shadow-md border border-amber-300'
+                : 'text-amber-200/80 hover:text-white hover:bg-white/5'
             }`}
           >
             🎵 छठ गीत
@@ -162,8 +162,8 @@ export const ChhathKathaScreen: React.FC = () => {
             onClick={() => setActiveTab('MANTRA')}
             className={`py-2 px-1 rounded-xl transition-all ${
               activeTab === 'MANTRA'
-                ? 'bg-[#075985] text-white shadow-xs'
-                : 'text-stone-700 hover:text-stone-900'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-[#041E2F] font-black shadow-md border border-amber-300'
+                : 'text-amber-200/80 hover:text-white hover:bg-white/5'
             }`}
           >
             🕉️ मन्त्र
@@ -172,8 +172,8 @@ export const ChhathKathaScreen: React.FC = () => {
             onClick={() => setActiveTab('AARTI')}
             className={`py-2 px-1 rounded-xl transition-all ${
               activeTab === 'AARTI'
-                ? 'bg-[#075985] text-white shadow-xs'
-                : 'text-stone-700 hover:text-stone-900'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-[#041E2F] font-black shadow-md border border-amber-300'
+                : 'text-amber-200/80 hover:text-white hover:bg-white/5'
             }`}
           >
             🙏 आरती

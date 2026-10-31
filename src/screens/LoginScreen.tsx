@@ -151,7 +151,7 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFF7E5] pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
+    <div className="min-h-screen bg-[#FFF7E5] pb-32 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar
         title={
           step === 'PHONE'
@@ -416,6 +416,22 @@ export const LoginScreen: React.FC = () => {
               ? 'Your mobile number is retained only to provide necessary assistance and safety services during Chhath. Private data is not shared for commercial purposes.'
               : 'आपका मोबाइल नंबर केवल छठ महापर्व में आवश्यक सहायता व सुरक्षा हेतु सुरक्षित रखा जाता है। कोई भी निजी डेटा व्यावसायिक उद्देश्यों के लिए साझा नहीं किया जाता।'}
           </p>
+        </div>
+
+        {/* Dedicated Admin Portal Access */}
+        <div className="pt-2 pb-4 text-center">
+          <button
+            type="button"
+            onClick={() => navigate('admin-login')}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-[#075985] text-xs font-black border border-amber-400/50 transition-all active:scale-95 shadow-2xs"
+          >
+            <Shield className="w-4 h-4 text-[#075985]" />
+            <span>
+              {isEnglish
+                ? 'Authorized Organizer? Administrator Login'
+                : 'अधिकृत संस्था व्यवस्थापक? प्रशासक लॉगिन यहाँ से करें'}
+            </span>
+          </button>
         </div>
       </main>
     </div>
