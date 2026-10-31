@@ -19,13 +19,13 @@ class RouteServiceManager {
     return this.provider.name;
   }
 
-  // 1. Calculate Real Road / Walking Route
+  // 1. Calculate Real Road / Walking Route (with resilient offline road graph fallback)
   public async calculateRoute(params: RouteRequestParams): Promise<RouteResult> {
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       return OfflineRouteService.calculateRoute(params);
     }
     if (!this.provider.isConfigured()) {
-      throw new Error('रूट सेवा अभी उपलब्ध नहीं है।');
+      return OfflineRouteService.calculateRoute(params);
     }
 
     const coordinates = [
@@ -43,13 +43,18 @@ class RouteServiceManager {
     try {
       result = await this.provider.calculateRoute(params);
     } catch (error) {
-      console.error('Route provider request failed:', error);
-      const message = error instanceof Error ? error.message : '';
-      throw new Error(
-        /[\u0900-\u097F]/.test(message)
-          ? message
-          : 'रूट सेवा अभी उपलब्ध नहीं है। वास्तविक सड़क मार्ग प्राप्त नहीं हो सका।'
-      );
+      console.warn('Online route provider failed, falling back to local Deo road graph:', error);
+      try {
+        return await OfflineRouteService.calculateRoute(params);
+      } catch (offlineErr) {
+        console.error('Both online and offline route providers failed:', offlineErr);
+        const message = error instanceof Error ? error.message : '';
+        throw new Error(
+          /[\u0900-\u097F]/.test(message)
+            ? message
+            : 'रूट सेवा अभी उपलब्ध नहीं है। वास्तविक सड़क मार्ग प्राप्त नहीं हो सका।'
+        );
+      }
     }
 
     if (
@@ -64,7 +69,9 @@ class RouteServiceManager {
       !Number.isFinite(result.durationSeconds) ||
       result.durationSeconds < 0
     ) {
-      throw new Error('रूट सेवा ने मान्य सड़क मार्ग नहीं दिया।');
+      // Fallback to offline road graph if result geometry was invalid
+      console.warn('Invalid geometry from provider, falling back to OfflineRouteService');
+      return OfflineRouteService.calculateRoute(params);
     }
     return result;
   }
