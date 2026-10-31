@@ -4,7 +4,8 @@
  */
 
 /* ========================================================
-   DEO CHHATH SEVA - OFFICIAL LOGO DESIGN THEME
+   DEO CHHATH SEVA - THEME 3: SANDHYA ARGHYA DIVINE GLOW
+   "संध्या-अर्घ्य दिव्य डार्क मोड"
    NEXTGEN DEVBHOOMI FOUNDATION
    "रास्ता भी • सहायता भी • सेवा भी"
    ======================================================== */
@@ -25,33 +26,51 @@
   --chhath-logo-cream: #FFF8E1;
   --chhath-logo-ivory: #FFFDF7;
 
-  /* Global Application Colors Harmonized with Official Logo */
-  --chhath-river-blue: #0B5E8E;
-  --chhath-deep-river-blue: #041E2F;
-  --chhath-sunrise-saffron: #FF8C42;
-  --chhath-orange: #FF8C42;
-  --chhath-gold: #FFD54F;
-  --chhath-marigold-gold: #FFA000;
-  --chhath-leaf-green: #2E7D32;
-  --chhath-earth-brown: #8D6E63;
-  --chhath-cream: #FFF8E1;
-  --chhath-white: #FFFFFF;
-  --chhath-emergency-red: #A61B29;
+  /* Theme 3: Sandhya Arghya Divine Dark Mode Tokens */
+  --chhath-sky-dark: #070B19;         /* Celestial Night Sky */
+  --chhath-page: #0B132B;             /* Deep Sacred Twilight Page Background */
+  --chhath-surface: #111A35;          /* Deep Obsidian Sacred Card Surface */
+  --chhath-surface-elevated: #162244; /* Elevated Ghat Platform & Modals */
+  --chhath-card: #131E3D;             /* Card Dark Surface */
+
+  --chhath-gold: #FFD54F;             /* Luminous Diya Gold */
+  --chhath-gold-light: #FFE082;       /* Soft Diya Starlight */
+  --chhath-marigold-gold: #F59E0B;    /* Sacred Marigold Garland */
+  --chhath-diya: #FBBF24;             /* Radiant Deepam Flame */
+
+  --chhath-river-blue: #38BDF8;       /* Surya Kund Sacred Reflection Blue */
+  --chhath-deep-river-blue: #0284C7;  /* Deep Holy Water Cyan */
+  --chhath-royal-navy: #0B132B;       /* Cosmic Night Indigo */
+  --chhath-temple-blue: #162244;      /* Temple Night Stone */
+  --chhath-water: #38BDF8;
+
+  --chhath-sunrise-saffron: #FB923C;  /* Sunset Crimson Horizon */
+  --chhath-orange: #F97316;
+  --chhath-leaf-green: #34D399;       /* Fresh Daura & Bamboo Green */
+  --chhath-earth-brown: #A8A29E;
+  --chhath-cream: #0B132B;            /* Mapped to Night Sky for seamless dark transitions */
+  --chhath-ivory: #111A35;
+  --chhath-white: #F8FAFC;            /* Crisp Starlight Text */
+  --chhath-emergency-red: #EF4444;    /* High-contrast Emergency SOS Red */
+
   --chhath-blue: var(--chhath-river-blue);
   --chhath-saffron: var(--chhath-sunrise-saffron);
   --chhath-green: var(--chhath-leaf-green);
   --chhath-earth: var(--chhath-earth-brown);
   --chhath-red: var(--chhath-emergency-red);
   --chhath-emergency: var(--chhath-emergency-red);
-  --chhath-page: var(--chhath-cream);
-  --chhath-surface: #FFFDF7;
-  --chhath-text: #1F2A37;
-  --chhath-muted: #5F6B70;
-  --chhath-border: rgba(255, 213, 79, 0.55);
+
+  --chhath-text: #F8FAFC;             /* Radiant Starlight Text */
+  --chhath-text-secondary: #CBD5E1;   /* Soft Lunar Text */
+  --chhath-muted: #94A3B8;            /* Celestial Muted Slate */
+  --chhath-border: rgba(255, 213, 79, 0.28); /* Golden Deepam Border */
+  --chhath-border-glow: rgba(255, 213, 79, 0.55);
+
   --app-shell-bg:
-    radial-gradient(ellipse at 10% 95%, rgba(255, 140, 66, 0.06), transparent 28rem),
-    linear-gradient(180deg, #FFF8E1 0%, #FFFDF7 100%);
-  --app-shell-shadow: 0 22px 60px rgba(4, 30, 47, 0.16);
+    radial-gradient(ellipse at 85% 8%, rgba(255, 213, 79, 0.14), transparent 28rem),
+    radial-gradient(ellipse at 15% 92%, rgba(56, 189, 248, 0.12), transparent 25rem),
+    linear-gradient(180deg, #070B19 0%, #0B132B 50%, #080D1F 100%);
+  --app-shell-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
 }
 
 .app-shell {
@@ -61,11 +80,71 @@
 }
 
 .theme-card,
-.app-surface {
+.app-surface,
+.royal-card {
   color: var(--chhath-text);
   background: var(--chhath-surface);
   border: 1.5px solid var(--chhath-border);
-  box-shadow: 0 10px 28px rgba(4, 30, 47, 0.08);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55), 0 0 1px rgba(255, 213, 79, 0.25);
+  border-radius: 1.25rem;
+}
+
+/* Sandhya Arghya Midnight Banner & Card */
+.royal-navy-card,
+.sandhya-card {
+  color: #F8FAFC;
+  background: linear-gradient(135deg, #070B19 0%, #111A35 50%, #162244 100%);
+  border: 2px solid #FFD54F;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 213, 79, 0.15);
+  border-radius: 1.5rem;
+}
+
+/* Glowing Gold Diya Badge */
+.royal-gold-badge,
+.diya-badge {
+  background: linear-gradient(135deg, #FFE082, #FFD54F);
+  color: #070B19;
+  border: 1px solid #FFA000;
+  font-weight: 900;
+  box-shadow: 0 2px 10px rgba(255, 213, 79, 0.45);
+}
+
+/* Glowing Gold Diya Primary Button */
+.royal-gold-button,
+.diya-button {
+  background: linear-gradient(135deg, #FFE082 0%, #FFD54F 50%, #FFA000 100%);
+  color: #070B19;
+  font-weight: 900;
+  border: 1px solid #FFE082;
+  box-shadow: 0 4px 16px rgba(255, 213, 79, 0.4);
+  transition: all 150ms ease;
+}
+.royal-gold-button:active,
+.diya-button:active {
+  transform: scale(0.97);
+}
+
+/* Glowing Sandhya Navy Button */
+.royal-navy-button,
+.sandhya-button {
+  background: linear-gradient(135deg, #111A35 0%, #162244 60%, #1A2850 100%);
+  color: #F8FAFC;
+  font-weight: 800;
+  border: 1.5px solid rgba(255, 213, 79, 0.5);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition: all 150ms ease;
+}
+.royal-navy-button:active,
+.sandhya-button:active {
+  transform: scale(0.97);
+}
+
+.gold-glow {
+  box-shadow: 0 0 20px rgba(255, 213, 79, 0.45);
+}
+
+.water-glow {
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
 }
 
 .bg-chhath-blue { background-color: var(--chhath-blue); }
@@ -85,6 +164,24 @@
 .border-chhath-orange { border-color: var(--chhath-orange); }
 
 .bg-chhath-gold { background-color: var(--chhath-gold); }
+.text-chhath-gold { color: var(--chhath-gold); }
+.border-chhath-gold { border-color: var(--chhath-gold); }
+
+.bg-chhath-green { background-color: var(--chhath-green); }
+.text-chhath-green { color: var(--chhath-green); }
+.border-chhath-green { border-color: var(--chhath-green); }
+
+.bg-chhath-earth { background-color: var(--chhath-earth); }
+.text-chhath-earth { color: var(--chhath-earth); }
+.border-chhath-earth { border-color: var(--chhath-earth); }
+
+.bg-chhath-cream { background-color: var(--chhath-cream); }
+.text-chhath-cream { color: var(--chhath-cream); }
+.border-chhath-cream { border-color: var(--chhath-cream); }
+
+.bg-chhath-red { background-color: var(--chhath-red); }
+.text-chhath-red { color: var(--chhath-red); }
+.border-chhath-red { border-color: var(--chhath-red); }
 .text-chhath-gold { color: var(--chhath-gold); }
 .border-chhath-gold { border-color: var(--chhath-gold); }
 

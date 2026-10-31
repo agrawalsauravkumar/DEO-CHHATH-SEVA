@@ -102,7 +102,7 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
     : title || SCREEN_TITLES[currentScreen] || 'देव छठ सेवा';
 
   return (
-    <header className="sticky top-0 z-40 bg-gradient-to-r from-[#041E2F] via-[#073B5A] to-[#041E2F] text-white border-b-[3px] border-[#FFD54F] shadow-[0_4px_16px_rgba(4,30,47,0.3)] px-3 sm:px-4 py-2 font-['Mukta',sans-serif]">
+    <header className="sticky top-0 z-40 bg-gradient-to-r from-[#070B19] via-[#0B132B] to-[#070B19] text-white border-b-[3px] border-[#FFD54F] shadow-[0_4px_24px_rgba(0,0,0,0.65)] px-3 sm:px-4 py-2 font-['Mukta',sans-serif]">
       <div className="max-w-3xl sm:max-w-4xl mx-auto flex items-center justify-between min-h-[46px]">
         {/* Left Slot: Back or Official NGO Seal Logo */}
         <div className="flex min-w-0 flex-1 items-center gap-2.5">
@@ -134,15 +134,15 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
             </h1>
             {isHome ? (
               <>
-                <span className="text-[10px] font-semibold text-[#FFF7E5]/90 tracking-wide truncate">
+                <span className="text-[10px] font-semibold text-[#FFD54F]/90 tracking-wide truncate">
                   {isEnglish ? 'Navigation • Assistance • Service' : 'रास्ता भी • सहायता भी • सेवा भी'}
                 </span>
-                <span className="text-[9px] font-black text-[#FFB52E] tracking-wider truncate uppercase">
+                <span className="text-[9px] font-black text-[#FFD54F] tracking-wider truncate uppercase">
                   NEXTGEN DEVBHOOMI FOUNDATION
                 </span>
               </>
             ) : subtitle ? (
-              <span className="text-[11px] text-[#FFF7E5]/90 truncate">{subtitle}</span>
+              <span className="text-[11px] text-[#FFD54F]/90 truncate">{subtitle}</span>
             ) : null}
           </div>
         </div>
@@ -166,7 +166,7 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
             onClick={() => navigate('announcements')}
             title={isEnglish ? 'Announcements' : 'सूचनाएं'}
             aria-label={isEnglish ? 'Announcements' : 'सूचनाएं'}
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[#FFB52E] hover:text-amber-100 active:scale-95 relative"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[#FFD54F] hover:text-amber-100 active:scale-95 relative"
           >
             <Bell className="w-5 h-5" />
           </button>
@@ -185,8 +185,8 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
             aria-label={isEnglish ? 'Senior mode' : 'वरिष्ठ नागरिक मोड'}
             className={`min-h-[44px] min-w-[44px] px-2.5 flex items-center gap-1 rounded-xl text-xs font-bold transition-all active:scale-95 border ${
               seniorMode
-                ? 'bg-[#FFB52E] text-stone-950 border-amber-300 shadow-sm'
-                : 'bg-white/10 text-[#FFB52E] hover:bg-white/20 border-white/10'
+                ? 'bg-[#FFD54F] text-stone-950 border-amber-300 shadow-sm'
+                : 'bg-white/10 text-[#FFD54F] hover:bg-white/20 border-white/10'
             }`}
           >
             <Accessibility className="w-4 h-4" />
@@ -196,7 +196,7 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
           <button
             onClick={() => navigate('emergency')}
             aria-label={isEnglish ? 'Emergency SOS assistance' : 'आपातकालीन SOS सहायता'}
-            className="min-h-[44px] px-3 bg-[#A61B29] hover:bg-[#C62828] active:scale-95 text-white font-black rounded-xl text-xs flex items-center gap-1 shadow-md transition-colors border border-[#A61B29]"
+            className="min-h-[44px] px-3 bg-[#EF4444] hover:bg-[#DC2626] active:scale-95 text-white font-black rounded-xl text-xs flex items-center gap-1 shadow-md transition-colors border border-[#EF4444]"
           >
             <PhoneCall className="w-3.5 h-3.5 fill-white" />
             <span>SOS</span>

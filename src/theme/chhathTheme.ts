@@ -8,15 +8,15 @@
  * NEXTGEN DEVBHOOMI FOUNDATION
  * "रास्ता भी • सहायता भी • सेवा भी"
  *
+ * Theme 3: संध्या-अर्घ्य दिव्य डार्क मोड (Divine Evening Sandhya Arghya Glow)
  * Primary Visual Inspiration:
- * - Chhath Puja Sunrise (सूर्योदय)
- * - Surya Kund & River Ghats (पवित्र घाट व अर्घ्य)
- * - Deep River Blue / Navy Blue (पवित्र जल)
- * - Sunrise Orange / Saffron (केसरिया व सिंदूर)
- * - Marigold & Golden (गेंदा पुष्प व धूप)
- * - Natural Green (केला, गन्ना व प्रकृति)
- * - Cream / Ivory (स्वच्छता व सात्विकता)
- * - Red reserved strictly for Emergency & Critical SOS
+ * - Sacred Sandhya Arghya at Surya Kund & Rudra Kund (अस्ताचलगामी सूर्य को अर्घ्य)
+ * - Deep Celestial Evening Twilight Sky (गहरा शाम का आकाश: #0B132B / #070B19)
+ * - Flickering Diya Gold & Deepam Flame (प्रज्वलित दीप ज्योति: #FFD54F / #FBBF24 / #F59E0B)
+ * - Luminous Water Reflection (सूर्यकुंड पावन जल परावर्तन: #38BDF8 / #0284C7)
+ * - Sacred Marigold & Saffron (गेंदा पुष्प व सिंदूरी केसरिया)
+ * - Starlight White Text (शीतल श्वेत तारा नक्षत्र)
+ * - Emergency Red reserved strictly for SOS assistance (#EF4444)
  */
 
 export const CHHATH_THEME = {
@@ -28,46 +28,50 @@ export const CHHATH_THEME = {
     initiativeTitleHi: 'सार्वजनिक सेवा पहल (A Public-Service Initiative)',
   },
 
-  // Part 10 Official Color Tokens
+  // Theme 3: Sandhya Arghya Divine Dark Mode Color Tokens
   tokens: {
-    riverBlue: '#075985',
-    deepRiverBlue: '#063B5C',
-    sunriseSaffron: '#F47B20',
-    chhathOrange: '#F57C00',
-    marigoldGold: '#FFB52E',
-    leafGreen: '#2E7D32',
-    earthBrown: '#8D6E63',
-    cream: '#FFF7E5',
-    white: '#FFFFFF',
-    emergencyRed: '#A61B29',
+    nightSky: '#0B132B',
+    deepObsidian: '#070B19',
+    surfaceNight: '#111A35',
+    riverBlue: '#38BDF8',
+    deepRiverBlue: '#0284C7',
+    sunriseSaffron: '#FB923C',
+    chhathOrange: '#F97316',
+    marigoldGold: '#F59E0B',
+    diyaGold: '#FFD54F',
+    leafGreen: '#34D399',
+    earthBrown: '#A8A29E',
+    cream: '#0B132B',
+    white: '#F8FAFC',
+    emergencyRed: '#EF4444',
   },
 
   colors: {
-    // Primary - Deep River Blue & Navy
+    // Primary - Sacred River Reflection Blue & Twilight Navy
     primary: {
-      DEFAULT: '#075985',
-      light: '#063B5C',
-      dark: '#041E2F',
-      contrast: '#FFFFFF',
+      DEFAULT: '#38BDF8',
+      light: '#7DD3FC',
+      dark: '#0284C7',
+      contrast: '#070B19',
     },
 
-    // Secondary - Sunrise Orange / Saffron
+    // Secondary - Sunset Saffron & Diya Flame
     secondary: {
-      DEFAULT: '#F57C00',
-      light: '#F47B20',
-      dark: '#C2410C',
-      contrast: '#FFFFFF',
+      DEFAULT: '#FB923C',
+      light: '#FDBA74',
+      dark: '#EA580C',
+      contrast: '#070B19',
     },
 
-    // Accent - Golden / Marigold
+    // Accent - Radiant Diya Gold
     accent: {
-      DEFAULT: '#FFB52E',
-      light: '#FBBF24',
-      dark: '#D97706',
-      gold: '#EAB308',
-      amber50: '#FFF7E5',
-      amber100: '#FEF3C7',
-      amber200: '#FDE68A',
+      DEFAULT: '#FFD54F',
+      light: '#FFE082',
+      dark: '#F59E0B',
+      gold: '#FBBF24',
+      amber50: '#1A233D',
+      amber100: '#232D4C',
+      amber200: '#313E67',
       amber500: '#F59E0B',
       amber600: '#D97706',
       amber700: '#B45309',
@@ -76,61 +80,61 @@ export const CHHATH_THEME = {
       amber950: '#451A03',
     },
 
-    // Surfaces & Backgrounds (Ivory / Warm Stone)
-    background: '#FFF7E5', // Warm Ivory / Cream Chhath Paper Tone
-    surface: '#FFFFFF',
-    surfaceSubtle: '#FAF8F5',
+    // Surfaces & Backgrounds (Sandhya Arghya Night Sky)
+    background: '#0B132B', // Deep Sacred Night Sky
+    surface: '#111A35',    // Deep Obsidian Ghat Card Surface
+    surfaceSubtle: '#162244',
 
-    // Text hierarchy
+    // Text hierarchy (Crisp Starlight on Deep Indigo)
     text: {
-      primary: '#1C1917',
-      secondary: '#44403C',
-      muted: '#78716C',
-      inverse: '#FFFFFF',
+      primary: '#F8FAFC',
+      secondary: '#CBD5E1',
+      muted: '#94A3B8',
+      inverse: '#070B19',
     },
 
-    // Borders
+    // Borders (Golden Lamp Accents)
     border: {
-      DEFAULT: '#E7E5E4',
-      subtle: '#F5F2EB',
-      accent: '#FDE68A',
-      strong: '#D6D3D1',
+      DEFAULT: 'rgba(255, 213, 79, 0.28)',
+      subtle: 'rgba(255, 213, 79, 0.15)',
+      accent: '#FFD54F',
+      strong: 'rgba(255, 213, 79, 0.55)',
     },
 
     // Functional State Colors
     success: {
-      DEFAULT: '#2E7D32',
-      light: '#DCFCE7',
-      dark: '#14532D',
-      contrast: '#FFFFFF',
+      DEFAULT: '#34D399',
+      light: '#064E3B',
+      dark: '#047857',
+      contrast: '#F8FAFC',
     },
     warning: {
-      DEFAULT: '#D97706',
-      light: '#FEF3C7',
-      dark: '#78350F',
+      DEFAULT: '#F59E0B',
+      light: '#451A03',
+      dark: '#B45309',
     },
     // RED is reserved exclusively for Emergency / SOS / Critical warnings
     emergency: {
-      DEFAULT: '#A61B29',
-      light: '#FEE2E2',
-      dark: '#991B1B',
+      DEFAULT: '#EF4444',
+      light: '#450A0A',
+      dark: '#B91C1C',
       contrast: '#FFFFFF',
     },
     offline: {
-      DEFAULT: '#D97706',
-      badge: '#FEF3C7',
-      text: '#92400E',
+      DEFAULT: '#F59E0B',
+      badge: '#451A03',
+      text: '#FDE68A',
     },
     online: {
-      DEFAULT: '#16A34A',
-      badge: '#DCFCE7',
-      text: '#14532D',
+      DEFAULT: '#34D399',
+      badge: '#064E3B',
+      text: '#A7F3D0',
     },
     verified: {
-      badge: '#DCFCE7',
-      border: '#86EFAC',
-      text: '#15803D',
-      icon: '#16A34A',
+      badge: '#064E3B',
+      border: '#059669',
+      text: '#6EE7B7',
+      icon: '#34D399',
     },
   },
 } as const;

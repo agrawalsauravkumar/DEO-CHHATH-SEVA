@@ -2,25 +2,25 @@
 @import "./theme/chhathTheme.css";
 
 @theme {
-  --color-chhath-navy: #041E2F;
-  --color-chhath-river-blue: #0B5E8E;
-  --color-chhath-deep-river-blue: #041E2F;
-  --color-chhath-sunrise: #FF8C42;
-  --color-chhath-orange: #FF8C42;
+  --color-chhath-navy: #0B132B;
+  --color-chhath-river-blue: #38BDF8;
+  --color-chhath-deep-river-blue: #0284C7;
+  --color-chhath-sunrise: #FB923C;
+  --color-chhath-orange: #F97316;
   --color-chhath-gold: #FFD54F;
-  --color-chhath-marigold: #FFA000;
-  --color-chhath-green: #2E7D32;
-  --color-chhath-earth: #8D6E63;
-  --color-chhath-cream: #FFF8E1;
-  --color-chhath-ivory: #FFFDF7;
-  --color-chhath-red: #A61B29;
+  --color-chhath-marigold: #F59E0B;
+  --color-chhath-green: #34D399;
+  --color-chhath-earth: #A8A29E;
+  --color-chhath-cream: #0B132B;
+  --color-chhath-ivory: #111A35;
+  --color-chhath-red: #EF4444;
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   font-family: "Mukta", "Noto Sans Devanagari", "Segoe UI", sans-serif;
-  background: var(--chhath-cream);
-  color: #263238;
+  background: var(--chhath-page);
+  color: var(--chhath-text);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -30,7 +30,7 @@
 html {
   min-width: 0;
   min-height: 100%;
-  background: var(--chhath-cream);
+  background: var(--chhath-page);
   scroll-behavior: smooth;
   scroll-padding-bottom: calc(7rem + env(safe-area-inset-bottom));
   overflow-x: clip;
@@ -40,8 +40,8 @@ body {
   min-width: 0;
   min-height: 100vh;
   margin: 0;
-  background: var(--chhath-cream);
-  color: #263238;
+  background: var(--chhath-page);
+  color: var(--chhath-text);
   overflow-x: clip;
 }
 
@@ -83,9 +83,10 @@ summary:focus-visible {
 
 .app-surface,
 .theme-card {
-  background: var(--chhath-white);
-  border: 1px solid rgba(6, 59, 92, 0.1);
-  box-shadow: 0 10px 28px rgba(6, 59, 92, 0.07);
+  color: var(--chhath-text);
+  background: var(--chhath-surface);
+  border: 1.5px solid var(--chhath-border);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55), 0 0 1px rgba(255, 213, 79, 0.25);
 }
 
 img {
@@ -109,9 +110,9 @@ img {
   color: var(--chhath-white);
   background:
     radial-gradient(circle at 88% 0%, rgba(255, 213, 79, 0.28), transparent 9rem),
-    linear-gradient(135deg, #041E2F 0%, #073B5A 50%, #0B5E8E 100%);
+    linear-gradient(135deg, #070B19 0%, #0B132B 50%, #162244 100%);
   border-bottom: 3px solid var(--chhath-gold);
-  box-shadow: 0 6px 20px rgba(4, 30, 47, 0.22);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
 }
 
 .map-screen__header-inner {
@@ -191,14 +192,15 @@ img {
   min-height: 44px;
   flex: 0 0 auto;
   padding: 0.5rem 0.85rem;
-  color: var(--chhath-deep-river-blue);
-  background: var(--chhath-marigold-gold);
-  border: 1px solid rgba(255, 248, 225, 0.55);
+  color: #070B19;
+  background: linear-gradient(135deg, #FFE082, #FFD54F);
+  border: 1px solid #FFA000;
   border-radius: 0.85rem;
   font-size: 0.82rem;
   font-weight: 900;
   cursor: pointer;
   white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(255, 213, 79, 0.4);
 }
 
 .home-brand-header__status {
@@ -210,7 +212,7 @@ img {
   max-width: 64rem;
   min-height: 34px;
   margin: 0.4rem auto 0;
-  color: var(--chhath-cream);
+  color: #FFD54F;
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -243,11 +245,11 @@ img {
   padding: 1.3rem 1.15rem 2.5rem;
   color: var(--chhath-white);
   background:
-    radial-gradient(circle at 82% 22%, rgba(255, 248, 225, 0.95) 0 0.8rem, rgba(255, 213, 79, 0.75) 0.9rem 1.8rem, rgba(230, 81, 0, 0.45) 1.9rem 2.8rem, transparent 3rem),
-    linear-gradient(150deg, #073B5A 0%, #041E2F 100%);
+    radial-gradient(circle at 82% 22%, rgba(255, 213, 79, 0.35) 0 1.2rem, rgba(251, 146, 60, 0.22) 1.5rem 3.5rem, transparent 4.5rem),
+    linear-gradient(150deg, #111A35 0%, #070B19 100%);
   border: 2px solid #FFD54F;
   border-radius: 1.6rem;
-  box-shadow: 0 16px 36px rgba(4, 30, 47, 0.22);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 20px rgba(255, 213, 79, 0.15);
 }
 
 .welcome-panel__sun {
@@ -393,14 +395,16 @@ img {
 
 .home-section-heading p {
   margin: 0;
-  color: var(--chhath-earth-brown);
+  color: #FFD54F;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .home-section-heading h2 {
   margin: 0.08rem 0 0;
-  color: var(--chhath-deep-river-blue);
+  color: #F8FAFC;
   font-size: 1.2rem;
   font-weight: 900;
 }
@@ -414,12 +418,13 @@ img {
   width: 2.5rem;
   height: 2.5rem;
   place-items: center;
-  color: var(--chhath-deep-river-blue);
-  background: var(--chhath-cream);
-  border: 1px solid rgba(141, 110, 99, 0.18);
+  color: #FFD54F;
+  background: #162244;
+  border: 1px solid rgba(255, 213, 79, 0.35);
   border-radius: 50%;
   font-size: 1.6rem;
   line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 213, 79, 0.6);
 }
 
 .home-service-grid {
@@ -437,28 +442,30 @@ img {
   justify-content: center;
   padding: 0.85rem;
   text-align: left;
-  border: 1px solid rgba(6, 59, 92, 0.14);
+  background: #111A35;
+  border: 1.5px solid rgba(255, 213, 79, 0.24);
   border-radius: 1.1rem;
-  box-shadow: 0 3px 8px rgba(6, 59, 92, 0.06);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   cursor: pointer;
   scroll-margin-bottom: calc(7rem + env(safe-area-inset-bottom));
-  transition: transform 140ms ease, box-shadow 140ms ease;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
 }
 
 .home-service-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(6, 59, 92, 0.1);
+  border-color: #FFD54F;
+  box-shadow: 0 8px 24px rgba(255, 213, 79, 0.2);
 }
 
 .home-service-card:active {
   transform: scale(0.98);
 }
 
-.home-service-card--blue { --service-accent: #0b5e8e; color: #063b5c; background: #edf6fa; border-color: #c7dfe9; }
-.home-service-card--gold { --service-accent: #8a6500; color: #573d00; background: #fff8e1; border-color: #eedb9c; }
-.home-service-card--green { --service-accent: #2e7d32; color: #1e5123; background: #eff7ee; border-color: #c8dfc5; }
-.home-service-card--orange { --service-accent: #c85d1b; color: #713800; background: #fff3e8; border-color: #f2cda9; }
-.home-service-card--earth { --service-accent: #8d6e63; color: #4f352b; background: #f6f0ec; border-color: #dac8bd; }
+.home-service-card--blue { --service-accent: #38BDF8; color: #F0F9FF; background: #101E36; border-color: rgba(56, 189, 248, 0.35); }
+.home-service-card--gold { --service-accent: #FFD54F; color: #FFFBEB; background: #1B1E34; border-color: rgba(255, 213, 79, 0.35); }
+.home-service-card--green { --service-accent: #34D399; color: #F0FDF4; background: #0E2228; border-color: rgba(52, 211, 153, 0.3); }
+.home-service-card--orange { --service-accent: #FB923C; color: #FFF7ED; background: #221A30; border-color: rgba(251, 146, 60, 0.35); }
+.home-service-card--earth { --service-accent: #E2B170; color: #FAFAF9; background: #1C192E; border-color: rgba(226, 177, 112, 0.3); }
 
 .home-service-card__icon {
   display: grid;
@@ -466,9 +473,9 @@ img {
   height: 2.5rem;
   margin-bottom: 0.5rem;
   place-items: center;
-  color: var(--service-accent, var(--chhath-river-blue));
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(6, 59, 92, 0.08);
+  color: var(--service-accent, #38BDF8);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 0.85rem;
   font-size: 1.5rem;
   line-height: 1;
@@ -478,11 +485,12 @@ img {
   font-size: 1rem;
   font-weight: 900;
   line-height: 1.2;
+  color: #F8FAFC;
 }
 
 .home-service-card__description {
   margin-top: 0.18rem;
-  color: #42545f;
+  color: #CBD5E1;
   font-size: 0.78rem;
   font-weight: 600;
   line-height: 1.35;
@@ -496,18 +504,18 @@ img {
   gap: 0.8rem;
   margin-top: 0.9rem;
   padding: 0.8rem 1rem;
-  color: #64201e;
-  background: #fff1f0;
-  border: 2px solid var(--chhath-emergency-red);
+  color: #FEE2E2;
+  background: linear-gradient(135deg, #3A0C11 0%, #541117 100%);
+  border: 2px solid #EF4444;
   border-radius: 1.1rem;
-  box-shadow: 0 5px 14px rgba(143, 33, 29, 0.12);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
   text-align: left;
   cursor: pointer;
   transition: background-color 140ms ease, transform 140ms ease;
 }
 
 .home-emergency-action:hover {
-  background: #ffe3e0;
+  background: linear-gradient(135deg, #4A1017 0%, #63141C 100%);
 }
 
 .home-emergency-action:active {
@@ -521,9 +529,10 @@ img {
   flex: 0 0 auto;
   place-items: center;
   color: #fff;
-  background: var(--chhath-emergency-red);
-  border: 1px solid #bc2e2a;
+  background: #EF4444;
+  border: 1px solid #F87171;
   border-radius: 0.85rem;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
 }
 
 .home-emergency-action__text {
@@ -720,4 +729,97 @@ img {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+
+/* ========================================================
+   THEME 3: SANDHYA ARGHYA DIVINE DARK HARMONY
+   Surfaces, Cards, Text, Modals & Forms
+   ======================================================== */
+
+.app-shell {
+  background: var(--app-shell-bg);
+  box-shadow: var(--app-shell-shadow);
+  border-left: 1px solid rgba(255, 213, 79, 0.28);
+  border-right: 1px solid rgba(255, 213, 79, 0.28);
+}
+
+.home-services {
+  position: relative;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: #111A35;
+  border: 1.5px solid rgba(255, 213, 79, 0.28);
+  border-radius: 1.4rem;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55), 0 0 16px rgba(255, 213, 79, 0.08);
+}
+
+/* All cards, modals, and white surfaces in dark mode */
+.bg-white {
+  background-color: var(--chhath-surface) !important;
+  color: var(--chhath-text) !important;
+  border-color: rgba(255, 213, 79, 0.22);
+}
+
+/* Starlight text hierarchy */
+.text-stone-900,
+.text-stone-800 {
+  color: #F8FAFC !important;
+}
+
+.text-stone-700,
+.text-stone-600 {
+  color: #CBD5E1 !important;
+}
+
+.text-stone-500,
+.text-stone-400 {
+  color: #94A3B8 !important;
+}
+
+/* Diya Borders */
+.border-stone-100,
+.border-stone-200,
+.border-stone-300 {
+  border-color: rgba(255, 213, 79, 0.2) !important;
+}
+
+/* Darker subtle layers */
+.bg-stone-50,
+.bg-stone-100 {
+  background-color: #0E162B !important;
+  color: #F8FAFC !important;
+}
+
+.bg-stone-200,
+.bg-stone-200\/80 {
+  background-color: #162244 !important;
+}
+
+/* Form inputs & textareas */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  background-color: #0B132B !important;
+  color: #F8FAFC !important;
+  border: 1px solid rgba(255, 213, 79, 0.35) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #64748B !important;
+}
+
+/* Secondary neutral buttons */
+button.bg-stone-100,
+button.bg-stone-200 {
+  background-color: #162244 !important;
+  color: #F8FAFC !important;
+  border: 1px solid rgba(255, 213, 79, 0.25) !important;
+}
+
+button.bg-stone-100:hover,
+button.bg-stone-200:hover {
+  background-color: #1E2D5A !important;
+  border-color: #FFD54F !important;
 }

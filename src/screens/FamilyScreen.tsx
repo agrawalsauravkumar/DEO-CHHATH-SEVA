@@ -299,35 +299,35 @@ export const FamilyScreen: React.FC = () => {
         {/* ======================================================== */}
         {/* HEADER HERO RIBBON                                       */}
         {/* ======================================================== */}
-        <div className="bg-gradient-to-br from-[#075985] via-[#063B5C] to-[#04243A] text-white rounded-3xl p-4 shadow-md space-y-2 border border-[#FFB52E]/40">
+        <div className="bg-gradient-to-br from-[#041E2F] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-4 shadow-md space-y-2 border-2 border-[#FFD54F]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <span className="text-2xl">👨👩👧</span>
               <div>
-                <h2 className="text-base sm:text-lg font-black tracking-tight">
+                <h2 className="text-base sm:text-lg font-black tracking-tight text-[#FFD54F]">
                   {group ? group.name : 'मेरा परिवार'}
                 </h2>
-                <span className="text-xs text-[#FFF7E5]/90 block">
+                <span className="text-xs text-[#FFF8E1]/90 block">
                   “अपने परिवार के सदस्यों से सुरक्षित रूप से जुड़े रहें।”
                 </span>
               </div>
             </div>
 
             {group && (
-              <span className="text-[11px] font-mono font-black bg-[#FFB52E]/20 border border-[#FFB52E]/60 px-2.5 py-1 rounded-xl text-[#FFB52E] shadow-xs">
+              <span className="text-[11px] font-mono font-black bg-[#FFD54F]/20 border border-[#FFD54F] px-2.5 py-1 rounded-xl text-[#FFD54F] shadow-xs">
                 {group.inviteCode}
               </span>
             )}
           </div>
 
-          <p className="text-[11px] text-[#FFF7E5]/80 leading-relaxed pt-0.5">
+          <p className="text-[11px] text-[#FFF8E1]/80 leading-relaxed pt-0.5">
             छठ मेले की अपार भीड़ में परिजनों के साथ सुरक्षित रहें। स्थान साझा केवल आपके द्वारा अनुमोदित सदस्यों को ही दिखाई देता है।
           </p>
 
           {/* Offline Sync Banner if offline */}
           {!isOnline && (
-            <div className="bg-[#031B2B]/90 border border-[#FFB52E]/40 p-2.5 rounded-2xl text-[11px] text-[#FFB52E] flex items-center gap-2">
-              <WifiOff className="w-4 h-4 text-[#FFB52E] shrink-0" />
+            <div className="bg-[#041E2F]/90 border border-[#FFD54F]/40 p-2.5 rounded-2xl text-[11px] text-[#FFD54F] flex items-center gap-2">
+              <WifiOff className="w-4 h-4 text-[#FFD54F] shrink-0" />
               <span>Offline Mode: Location update इंटरनेट कनेक्शन उपलब्ध होने पर sync होगी।</span>
             </div>
           )}
