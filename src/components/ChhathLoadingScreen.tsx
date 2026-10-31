@@ -16,7 +16,7 @@ export const ChhathLoadingScreen: React.FC<Props> = ({
   subText = 'भगवान भास्कर के पावन धाम में आपका स्वागत है',
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#041E2F] via-[#073B5A] to-[#075985] text-white flex flex-col justify-between items-center select-none font-['Mukta',sans-serif] relative overflow-hidden p-6 text-center">
+    <div className="min-h-screen bg-gradient-to-b from-[#041E2F] via-[#073B5A] to-[#075985] text-white flex flex-col justify-between items-center select-none font-['Noto_Sans_Devanagari','Inter',sans-serif] relative overflow-hidden p-6 text-center">
       {/* 1. Radiating Surya Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-amber-500/25 rounded-full blur-3xl animate-pulse pointer-events-none" />
 

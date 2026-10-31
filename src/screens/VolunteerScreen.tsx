@@ -43,7 +43,7 @@ export const VolunteerScreen: React.FC = () => {
   const isPending = profile?.verificationStatus === 'PENDING';
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="NextGen सेवा दल (स्वयंसेवक)" showBack />
 
       <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 sm:p-6 space-y-5">

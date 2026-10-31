@@ -61,7 +61,7 @@ export const LanguageScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFF7E5]/60 flex flex-col justify-between font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[#FFF7E5]/60 flex flex-col justify-between font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="भाषा चयन / Select Language" showBack />
 
       <main className="flex-1 max-w-2xl sm:max-w-3xl mx-auto w-full p-4 sm:p-5 space-y-4">

@@ -30,7 +30,7 @@ export const ChhathVratiModeSection: React.FC = () => {
   };
 
   return (
-    <section aria-label="श्रद्धालु सहायता" className="space-y-2.5 font-['Mukta',sans-serif]">
+    <section aria-label="श्रद्धालु सहायता" className="space-y-2.5 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       {/* Devotee Banner Strip */}
       <div className="bg-gradient-to-r from-[#075985] via-[#073B5A] to-[#041E2F] text-white rounded-3xl p-4 border-2 border-[#FFB52E]/70 shadow-md">
         <div className="flex items-center justify-between gap-3">

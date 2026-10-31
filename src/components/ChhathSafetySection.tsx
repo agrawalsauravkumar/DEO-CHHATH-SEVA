@@ -11,7 +11,7 @@ export const ChhathSafetySection: React.FC = () => {
   const { navigate } = useApp();
 
   return (
-    <section aria-label="छठ सुरक्षा एवं सहायता" className="space-y-3 font-['Mukta',sans-serif]">
+    <section aria-label="छठ सुरक्षा एवं सहायता" className="space-y-3 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">

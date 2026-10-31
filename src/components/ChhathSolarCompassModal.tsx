@@ -79,7 +79,7 @@ export const ChhathSolarCompassModal: React.FC<Props> = ({ isOpen, onClose }) =>
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs font-['Mukta',sans-serif] animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs font-['Noto_Sans_Devanagari','Inter',sans-serif] animate-fade-in">
       <div className="w-full max-w-lg max-h-[92vh] bg-gradient-to-b from-[#063B5C] via-[#075985] to-[#041E2F] text-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border-2 border-amber-400">
         {/* Header */}
         <div className="bg-[#031B2B] p-4 flex items-center justify-between border-b border-amber-400/40">

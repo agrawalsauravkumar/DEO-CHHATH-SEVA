@@ -140,7 +140,7 @@ export const SearchScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white border-b border-stone-200 px-4 py-3 shadow-xs">
         <div className="max-w-3xl sm:max-w-4xl mx-auto flex items-center justify-between min-h-[44px]">

@@ -103,7 +103,7 @@ export const ChhathDevotionalPlayer: React.FC<{ isOpen: boolean; onClose: () => 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md font-['Mukta',sans-serif] animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md font-['Noto_Sans_Devanagari','Inter',sans-serif] animate-fade-in">
       {/* Real HTML5 Audio Element */}
       <audio
         ref={audioRef}
@@ -207,7 +207,7 @@ export const ChhathDevotionalPlayer: React.FC<{ isOpen: boolean; onClose: () => 
             {currentTrack.lyrics.map((line, idx) => (
               <p
                 key={idx}
-                className="text-base sm:text-lg font-bold text-amber-100 leading-relaxed font-['Mukta',sans-serif]"
+                className="text-base sm:text-lg font-bold text-amber-100 leading-relaxed font-['Noto_Sans_Devanagari','Inter',sans-serif]"
               >
                 {line}
               </p>

@@ -123,7 +123,7 @@ export const SeniorModeScreen: React.FC = () => {
 
   return (
     <div
-      className={`min-h-screen pb-24 flex flex-col font-['Mukta',sans-serif] select-none ${
+      className={`min-h-screen pb-24 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif] select-none ${
         prefs.highContrast
           ? 'bg-black text-yellow-300'
           : 'bg-amber-50/70 text-stone-950'

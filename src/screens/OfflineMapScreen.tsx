@@ -67,7 +67,7 @@ export const OfflineMapScreen: React.FC = () => {
   const isReady = meta.status === 'ready';
 
   return (
-    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="ऑफलाइन मैप (Offline Map)" showBack />
 
       <main className="mx-auto flex max-w-3xl sm:max-w-4xl flex-col gap-4 p-4 sm:p-5">

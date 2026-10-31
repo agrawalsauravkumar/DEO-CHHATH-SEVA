@@ -242,7 +242,7 @@ export const HelpScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="🆘 सहायता" showBack />
       <DataFreshnessNotice />
 

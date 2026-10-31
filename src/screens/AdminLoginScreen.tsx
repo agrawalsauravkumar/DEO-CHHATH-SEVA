@@ -48,7 +48,7 @@ export const AdminLoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#041E2F] via-[#073B5A] to-[#075985] text-stone-100 flex flex-col justify-between font-['Mukta',sans-serif] p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#041E2F] via-[#073B5A] to-[#075985] text-stone-100 flex flex-col justify-between font-['Noto_Sans_Devanagari','Inter',sans-serif] p-4 sm:p-6">
       {/* Top Header */}
       <div className="max-w-md w-full mx-auto flex items-center justify-between">
         <button

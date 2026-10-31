@@ -18,7 +18,7 @@ export const BrandFooter: React.FC<{
 }> = ({ className = '', language = 'hi' }) => {
   const isEnglish = language === 'en';
   return (
-    <footer className={`pt-6 pb-4 text-center space-y-1.5 select-none font-['Mukta',sans-serif] ${className}`}>
+    <footer className={`pt-6 pb-4 text-center space-y-1.5 select-none font-['Noto_Sans_Devanagari','Inter',sans-serif] ${className}`}>
       <DeoChhathSevaLogo size={44} className="mx-auto" />
       <div className="flex items-center justify-center gap-2">
         <span className="w-8 h-px bg-amber-400/60" />
@@ -132,7 +132,7 @@ export const EmergencyActionButton: React.FC<{
   return (
     <button
       onClick={onClick}
-      className={`w-full bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 active:scale-98 text-white rounded-2xl p-4 shadow-lg flex items-center justify-between gap-3 text-left transition-all border-2 border-red-500 font-['Mukta',sans-serif] ${className}`}
+      className={`w-full bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 active:scale-98 text-white rounded-2xl p-4 shadow-lg flex items-center justify-between gap-3 text-left transition-all border-2 border-red-500 font-['Noto_Sans_Devanagari','Inter',sans-serif] ${className}`}
     >
       <div className="flex items-center gap-3">
         <div className="w-12 h-12 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-2xl shrink-0">
@@ -193,7 +193,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left p-3.5 rounded-2xl border-2 transition-all active:scale-97 flex flex-col justify-between min-h-[96px] font-['Mukta',sans-serif] ${getVariantStyles()} ${className}`}
+      className={`w-full text-left p-3.5 rounded-2xl border-2 transition-all active:scale-97 flex flex-col justify-between min-h-[96px] font-['Noto_Sans_Devanagari','Inter',sans-serif] ${getVariantStyles()} ${className}`}
     >
       <div className="flex items-start justify-between w-full">
         <span className="text-2xl sm:text-3xl leading-none">{icon}</span>

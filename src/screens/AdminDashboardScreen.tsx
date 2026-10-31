@@ -358,7 +358,7 @@ export const AdminDashboardScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-100 flex font-['Mukta',sans-serif] text-stone-900 select-none overflow-x-hidden">
+    <div className="min-h-screen bg-stone-100 flex font-['Noto_Sans_Devanagari','Inter',sans-serif] text-stone-900 select-none overflow-x-hidden">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-4 right-4 z-50 bg-stone-900 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 border border-amber-400 animate-fade-in">

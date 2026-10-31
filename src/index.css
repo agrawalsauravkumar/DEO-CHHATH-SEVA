@@ -2,24 +2,23 @@
 @import "./theme/chhathTheme.css";
 
 @theme {
-  --color-chhath-navy: #0B132B;
-  --color-chhath-river-blue: #38BDF8;
-  --color-chhath-deep-river-blue: #0284C7;
-  --color-chhath-sunrise: #FB923C;
-  --color-chhath-orange: #F97316;
+  --color-chhath-navy: #041E2F;
+  --color-chhath-river-blue: #0B5E8E;
+  --color-chhath-deep-river-blue: #073B5A;
+  --color-chhath-sunrise: #FF8C42;
+  --color-chhath-orange: #E65100;
   --color-chhath-gold: #FFD54F;
-  --color-chhath-marigold: #F59E0B;
-  --color-chhath-green: #34D399;
-  --color-chhath-earth: #A8A29E;
-  --color-chhath-cream: #0B132B;
-  --color-chhath-ivory: #111A35;
-  --color-chhath-red: #EF4444;
+  --color-chhath-marigold: #FFA000;
+  --color-chhath-green: #2E7D32;
+  --color-chhath-earth: #8D6E63;
+  --color-chhath-cream: #FFF8E1;
+  --color-chhath-ivory: #FFFDF7;
+  --color-chhath-red: #E53935;
 }
 
 :root {
-  color-scheme: dark;
-  font-family: "Mukta", "Noto Sans Devanagari", "Segoe UI", sans-serif;
-  background: var(--chhath-page);
+  font-family: "Noto Sans Devanagari", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--chhath-cream);
   color: var(--chhath-text);
   font-synthesis: none;
   text-rendering: optimizeLegibility;

@@ -102,7 +102,7 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
     : title || SCREEN_TITLES[currentScreen] || 'देव छठ सेवा';
 
   return (
-    <header className="sticky top-0 z-40 bg-gradient-to-r from-[#070B19] via-[#0B132B] to-[#070B19] text-white border-b-[3px] border-[#FFD54F] shadow-[0_4px_24px_rgba(0,0,0,0.65)] px-3 sm:px-4 py-2 font-['Mukta',sans-serif]">
+    <header className="sticky top-0 z-40 bg-gradient-to-r from-[#070B19] via-[#0B132B] to-[#070B19] text-white border-b-[3px] border-[#FFD54F] shadow-[0_4px_24px_rgba(0,0,0,0.65)] px-3 sm:px-4 py-2 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <div className="max-w-3xl sm:max-w-4xl mx-auto flex items-center justify-between min-h-[46px]">
         {/* Left Slot: Back or Official NGO Seal Logo */}
         <div className="flex min-w-0 flex-1 items-center gap-2.5">

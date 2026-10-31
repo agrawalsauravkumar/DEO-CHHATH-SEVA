@@ -4,19 +4,22 @@
  */
 
 /**
- * DEO CHHATH SEVA — DESIGN TOKENS & CHHATH PUJA THEME
+ * DEO CHHATH SEVA — OFFICIAL DESIGN TOKENS & CHHATH PUJA PALETTE
  * NEXTGEN DEVBHOOMI FOUNDATION
  * "रास्ता भी • सहायता भी • सेवा भी"
  *
- * Theme 3: संध्या-अर्घ्य दिव्य डार्क मोड (Divine Evening Sandhya Arghya Glow)
- * Primary Visual Inspiration:
- * - Sacred Sandhya Arghya at Surya Kund & Rudra Kund (अस्ताचलगामी सूर्य को अर्घ्य)
- * - Deep Celestial Evening Twilight Sky (गहरा शाम का आकाश: #0B132B / #070B19)
- * - Flickering Diya Gold & Deepam Flame (प्रज्वलित दीप ज्योति: #FFD54F / #FBBF24 / #F59E0B)
- * - Luminous Water Reflection (सूर्यकुंड पावन जल परावर्तन: #38BDF8 / #0284C7)
- * - Sacred Marigold & Saffron (गेंदा पुष्प व सिंदूरी केसरिया)
- * - Starlight White Text (शीतल श्वेत तारा नक्षत्र)
- * - Emergency Red reserved strictly for SOS assistance (#EF4444)
+ * Official Palette:
+ * - River Blue: #0B5E8E (पवित्र सूर्य कुंड व पुनपुन नदी का शांत गहरा जल)
+ * - Sunrise Saffron: #FF8C42 (प्रातःकालीन अस्ताचलगामी व उदयगामी भगवान सूर्य का सिंदूरी केसरिया)
+ * - Marigold Gold: #FFD54F (छठ घाट दीप ज्योति व गेंदा पुष्प)
+ * - Leaf Green: #2E7D32 (प्राकृतिक ईख, केला व बांस का दाउरा / सूप)
+ * - Earth Brown: #8D6E63 (मिट्टी का चूल्हा, घाट की पाषाण वेदी)
+ * - Cream: #FFF8E1 (सात्विक ठेकुआ, शुद्ध कच्चा दूध व पवित्र अर्घ्य प्रसाद)
+ * - Emergency Red: #E53935 (आपातकालीन SOS व जीवन रक्षक सहायता)
+ *
+ * Typography:
+ * - Noto Sans Devanagari (हिन्दी)
+ * - Inter (English)
  */
 
 export const CHHATH_THEME = {
@@ -28,113 +31,118 @@ export const CHHATH_THEME = {
     initiativeTitleHi: 'सार्वजनिक सेवा पहल (A Public-Service Initiative)',
   },
 
-  // Theme 3: Sandhya Arghya Divine Dark Mode Color Tokens
+  // 7 Official Design Tokens
   tokens: {
+    riverBlue: '#0B5E8E',
+    sunriseSaffron: '#FF8C42',
+    marigoldGold: '#FFD54F',
+    leafGreen: '#2E7D32',
+    earthBrown: '#8D6E63',
+    cream: '#FFF8E1',
+    emergencyRed: '#E53935',
+
+    // Extended Functional Variants
+    deepNavy: '#041E2F',
     nightSky: '#0B132B',
-    deepObsidian: '#070B19',
-    surfaceNight: '#111A35',
-    riverBlue: '#38BDF8',
-    deepRiverBlue: '#0284C7',
-    sunriseSaffron: '#FB923C',
-    chhathOrange: '#F97316',
-    marigoldGold: '#F59E0B',
-    diyaGold: '#FFD54F',
-    leafGreen: '#34D399',
-    earthBrown: '#A8A29E',
-    cream: '#0B132B',
-    white: '#F8FAFC',
-    emergencyRed: '#EF4444',
+    softIvory: '#FFFDF7',
+    charcoal: '#1C1917',
+    slateMuted: '#57534E',
+    borderGold: 'rgba(255, 213, 79, 0.45)',
+    borderBlue: 'rgba(11, 94, 142, 0.35)',
+  },
+
+  typography: {
+    hindiFont: "'Noto Sans Devanagari', sans-serif",
+    englishFont: "'Inter', sans-serif",
+    fontFamily: "'Noto Sans Devanagari', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
 
   colors: {
-    // Primary - Sacred River Reflection Blue & Twilight Navy
+    // Primary - River Blue
     primary: {
-      DEFAULT: '#38BDF8',
-      light: '#7DD3FC',
-      dark: '#0284C7',
-      contrast: '#070B19',
+      DEFAULT: '#0B5E8E',
+      light: '#1582C0',
+      dark: '#073B5A',
+      contrast: '#FFFFFF',
     },
 
-    // Secondary - Sunset Saffron & Diya Flame
+    // Secondary - Sunrise Saffron
     secondary: {
-      DEFAULT: '#FB923C',
-      light: '#FDBA74',
-      dark: '#EA580C',
-      contrast: '#070B19',
+      DEFAULT: '#FF8C42',
+      light: '#FFA66B',
+      dark: '#E65100',
+      contrast: '#FFFFFF',
     },
 
-    // Accent - Radiant Diya Gold
+    // Accent - Marigold Gold
     accent: {
       DEFAULT: '#FFD54F',
       light: '#FFE082',
       dark: '#F59E0B',
-      gold: '#FBBF24',
-      amber50: '#1A233D',
-      amber100: '#232D4C',
-      amber200: '#313E67',
-      amber500: '#F59E0B',
-      amber600: '#D97706',
-      amber700: '#B45309',
-      amber800: '#92400E',
-      amber900: '#78350F',
-      amber950: '#451A03',
+      contrast: '#041E2F',
     },
 
-    // Surfaces & Backgrounds (Sandhya Arghya Night Sky)
-    background: '#0B132B', // Deep Sacred Night Sky
-    surface: '#111A35',    // Deep Obsidian Ghat Card Surface
-    surfaceSubtle: '#162244',
-
-    // Text hierarchy (Crisp Starlight on Deep Indigo)
-    text: {
-      primary: '#F8FAFC',
-      secondary: '#CBD5E1',
-      muted: '#94A3B8',
-      inverse: '#070B19',
+    // Nature / Prasad - Leaf Green
+    green: {
+      DEFAULT: '#2E7D32',
+      light: '#4CAF50',
+      dark: '#1B5E20',
+      contrast: '#FFFFFF',
     },
 
-    // Borders (Golden Lamp Accents)
-    border: {
-      DEFAULT: 'rgba(255, 213, 79, 0.28)',
-      subtle: 'rgba(255, 213, 79, 0.15)',
-      accent: '#FFD54F',
-      strong: 'rgba(255, 213, 79, 0.55)',
+    // Earth - Ghat Earth Brown
+    earth: {
+      DEFAULT: '#8D6E63',
+      light: '#A1887F',
+      dark: '#5D4037',
+      contrast: '#FFFFFF',
+    },
+
+    // Background - Sacred Cream
+    cream: {
+      DEFAULT: '#FFF8E1',
+      soft: '#FFFDF7',
+      card: '#FFFFFF',
+    },
+
+    // Emergency - Strictly SOS
+    emergency: {
+      DEFAULT: '#E53935',
+      light: '#FF5252',
+      dark: '#C62828',
+      contrast: '#FFFFFF',
     },
 
     // Functional State Colors
     success: {
-      DEFAULT: '#34D399',
-      light: '#064E3B',
-      dark: '#047857',
-      contrast: '#F8FAFC',
+      DEFAULT: '#2E7D32',
+      light: '#E8F5E9',
+      border: '#81C784',
+      text: '#1B5E20',
     },
     warning: {
       DEFAULT: '#F59E0B',
-      light: '#451A03',
-      dark: '#B45309',
-    },
-    // RED is reserved exclusively for Emergency / SOS / Critical warnings
-    emergency: {
-      DEFAULT: '#EF4444',
-      light: '#450A0A',
-      dark: '#B91C1C',
-      contrast: '#FFFFFF',
+      light: '#FFFBEB',
+      border: '#FCD34D',
+      text: '#92400E',
     },
     offline: {
-      DEFAULT: '#F59E0B',
-      badge: '#451A03',
-      text: '#FDE68A',
+      DEFAULT: '#8D6E63',
+      badge: '#EFEBE9',
+      border: '#BCAAA4',
+      text: '#4E342E',
     },
     online: {
-      DEFAULT: '#34D399',
-      badge: '#064E3B',
-      text: '#A7F3D0',
+      DEFAULT: '#2E7D32',
+      badge: '#E8F5E9',
+      border: '#A5D6A7',
+      text: '#1B5E20',
     },
     verified: {
-      badge: '#064E3B',
-      border: '#059669',
-      text: '#6EE7B7',
-      icon: '#34D399',
+      badge: '#E0F2FE',
+      border: '#0B5E8E',
+      text: '#073B5A',
+      icon: '#0B5E8E',
     },
   },
 } as const;

@@ -214,7 +214,7 @@ export const AnnouncementsScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-100/70 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-stone-100/70 pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="📢 महत्वपूर्ण सूचनाएँ" showBack />
 
       {/* Toast popup */}

@@ -103,7 +103,7 @@ export const MyParkingScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="🚗 मेरी गाड़ी" showBack />
 
       <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 space-y-4">

@@ -25,7 +25,7 @@ export const ChhathFloatingSOS: React.FC = () => {
   return (
     <>
       {/* Floating SOS Trigger Button */}
-      <div className="fixed bottom-20 right-3.5 z-40 select-none font-['Mukta',sans-serif]">
+      <div className="fixed bottom-20 right-3.5 z-40 select-none font-['Noto_Sans_Devanagari','Inter',sans-serif]">
         <button
           onClick={() => setShowQuickModal(true)}
           aria-label="24x7 आपातकालीन सहायता (Emergency SOS)"
@@ -42,7 +42,7 @@ export const ChhathFloatingSOS: React.FC = () => {
 
       {/* Quick SOS Emergency Sheet / Modal */}
       {showQuickModal && (
-        <div className="fixed inset-0 z-50 bg-[#041E2F]/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 sm:p-4 animate-fade-in font-['Mukta',sans-serif]">
+        <div className="fixed inset-0 z-50 bg-[#041E2F]/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 sm:p-4 animate-fade-in font-['Noto_Sans_Devanagari','Inter',sans-serif]">
           <div className="bg-[#FFFDF7] rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl border-2 border-[#FFD54F] animate-slide-up">
             <div className="flex items-center justify-between border-b border-stone-200 pb-3">
               <div className="flex items-center gap-2">

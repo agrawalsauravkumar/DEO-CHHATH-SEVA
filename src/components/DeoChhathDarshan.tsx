@@ -68,7 +68,7 @@ export const DeoChhathDarshan: React.FC = () => {
   ];
 
   return (
-    <section aria-label="देव छठ दर्शन एवं प्रामाणिक इतिहास" className="space-y-3 font-['Mukta',sans-serif]">
+    <section aria-label="देव छठ दर्शन एवं प्रामाणिक इतिहास" className="space-y-3 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">

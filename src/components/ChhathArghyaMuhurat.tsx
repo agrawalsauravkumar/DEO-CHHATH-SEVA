@@ -103,7 +103,7 @@ export const ChhathArghyaMuhurat: React.FC<{ language?: string }> = ({ language 
   }, [activeDayIndex, currentDay.targetTimestamp]);
 
   return (
-    <section aria-label="छठ अर्घ्य मुहूर्त व समय" className="font-['Mukta',sans-serif]">
+    <section aria-label="छठ अर्घ्य मुहूर्त व समय" className="font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <div className="bg-gradient-to-br from-[#0B5E8E] via-[#084265] to-[#041E2F] text-white rounded-3xl p-4 sm:p-5 border-2 border-[#FFD54F]/60 shadow-xl relative overflow-hidden">
         {/* Divine Sunrise Aura Backdrop */}
         <div className="pointer-events-none absolute -right-10 -top-10 w-44 h-44 rounded-full bg-[#FF8C42]/25 blur-3xl" />

@@ -24,7 +24,7 @@ export const SplashScreen: React.FC = () => {
   const isEnglish = language === 'en';
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-b from-[#031525] via-[#072846] via-[#0A3D66] to-[#041D33] text-white flex flex-col justify-between select-none font-['Mukta',sans-serif] relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-gradient-to-b from-[#031525] via-[#072846] via-[#0A3D66] to-[#041D33] text-white flex flex-col justify-between select-none font-['Noto_Sans_Devanagari','Inter',sans-serif] relative overflow-hidden">
       {/* ======================================================== */}
       {/* 1. ATMOSPHERIC CHHATH PUJA SUNRISE & GLOWING AURA        */}
       {/* ======================================================== */}

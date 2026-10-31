@@ -35,7 +35,7 @@ export const ErrorScreen: React.FC<{
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-stone-50 pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="त्रुटि सुधार" showBack />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 flex flex-col items-center justify-center text-center space-y-5">

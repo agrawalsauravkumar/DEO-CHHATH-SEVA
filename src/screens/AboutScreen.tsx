@@ -33,7 +33,7 @@ export const AboutScreen: React.FC = () => {
   const isEnglish = language === 'en';
 
   return (
-    <div lang={language} className="min-h-screen bg-[#FFF8E1] pb-24 font-['Mukta',sans-serif]">
+    <div lang={language} className="min-h-screen bg-[#FFF8E1] pb-24 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title={copy.title} showBack />
 
       <main className="mx-auto w-full max-w-4xl space-y-4 p-4 sm:space-y-5 sm:p-6">

@@ -188,7 +188,7 @@ export const ParkingScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="Parking" showBack />
       <DataFreshnessNotice />
 

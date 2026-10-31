@@ -86,7 +86,7 @@ export const HomeScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[var(--chhath-cream)] pb-24 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-[100dvh] bg-[var(--chhath-cream)] pb-24 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <header className="home-brand-header">
         <div className="home-brand-header__top">
           <button

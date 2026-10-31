@@ -41,11 +41,11 @@ function makeSvgAvatar(initials: string, titleShort: string, primaryColor: strin
   <rect width="400" height="500" fill="url(#g_${initials})"/>
   <circle cx="200" cy="175" r="90" fill="#FFF7E5" opacity="0.95"/>
   <circle cx="200" cy="175" r="80" fill="${secondaryColor}" opacity="0.12"/>
-  <text x="200" y="193" font-family="'Mukta', sans-serif, system-ui" font-size="44" font-weight="900" fill="${secondaryColor}" text-anchor="middle">${initials}</text>
+  <text x="200" y="193" font-family="'Noto Sans Devanagari', 'Inter', sans-serif, system-ui" font-size="44" font-weight="900" fill="${secondaryColor}" text-anchor="middle">${initials}</text>
   <path d="M70 440 C70 295, 330 295, 330 440 Z" fill="#FFF7E5" opacity="0.95"/>
   <path d="M95 440 C95 320, 305 320, 305 440 Z" fill="${secondaryColor}" opacity="0.18"/>
   <rect x="25" y="435" width="350" height="45" rx="14" fill="${secondaryColor}" opacity="0.9"/>
-  <text x="200" y="463" font-family="'Mukta', sans-serif, system-ui" font-size="16" font-weight="bold" fill="#FFB52E" text-anchor="middle">${titleShort}</text>
+  <text x="200" y="463" font-family="'Noto Sans Devanagari', 'Inter', sans-serif, system-ui" font-size="16" font-weight="bold" fill="#FFB52E" text-anchor="middle">${titleShort}</text>
 </svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }

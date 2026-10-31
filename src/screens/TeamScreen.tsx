@@ -33,7 +33,7 @@ export const TeamScreen: React.FC = () => {
   }, [loadMembers]);
 
   return (
-    <div className="min-h-[100dvh] bg-[var(--chhath-cream)] pb-24 font-['Mukta',sans-serif]">
+    <div className="min-h-[100dvh] bg-[var(--chhath-cream)] pb-24 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="हमारी टीम" showBack />
       <main className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6">
         <section className="overflow-hidden rounded-3xl border border-[#FFB52E]/60 bg-gradient-to-br from-[#075985] via-[#075985] to-[#063B5C] p-5 text-white shadow-lg sm:p-7">

@@ -27,7 +27,7 @@ export const MapScreen: React.FC = () => {
   };
 
   return (
-    <div className="map-screen min-h-[100dvh] bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="map-screen min-h-[100dvh] bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       {/* Top Header matching Chhath Puja official logo identity */}
       <header className="sticky top-0 z-30 bg-gradient-to-r from-[#041E2F] via-[#073B5A] to-[#041E2F] border-b-2 border-[#FFD54F] px-3 sm:px-4 py-2.5 shadow-md text-white">
         <div className="map-screen__header-inner flex items-center justify-between min-h-[44px]">

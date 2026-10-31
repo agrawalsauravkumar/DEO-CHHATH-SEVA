@@ -366,7 +366,7 @@ export const LostFoundScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-100/70 pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-stone-100/70 pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="खोया-पाया सहायता" showBack />
 
       {/* Toast Notice */}

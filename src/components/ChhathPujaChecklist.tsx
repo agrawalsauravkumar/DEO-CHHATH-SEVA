@@ -94,7 +94,7 @@ export const ChhathPujaChecklist: React.FC<{ isOpen: boolean; onClose: () => voi
       : PUJA_ITEMS.filter((item) => item.category === activeTab);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs font-['Mukta',sans-serif] animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs font-['Noto_Sans_Devanagari','Inter',sans-serif] animate-fade-in">
       <div className="w-full max-w-lg max-h-[90vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border-2 border-amber-400">
         {/* Modal Header */}
         <div className="bg-gradient-to-r from-[#075985] via-[#073B5A] to-[#041E2F] text-white p-4 flex items-center justify-between">

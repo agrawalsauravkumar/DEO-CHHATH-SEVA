@@ -256,7 +256,7 @@ export const FamilyScreen: React.FC = () => {
 
   if (!FAMILY_SAFETY_BACKEND_AVAILABLE) {
     return (
-      <div className="min-h-screen bg-[#FFF7E5] px-4 py-8 font-['Mukta',sans-serif]">
+      <div className="min-h-screen bg-[#FFF7E5] px-4 py-8 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
         <TopBar title="मेरा परिवार" showBack />
         <main className="mx-auto mt-6 max-w-lg rounded-3xl border border-[#075985]/15 bg-white p-6 text-center shadow-lg">
           <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-[#FFF7E5] text-3xl">
@@ -284,7 +284,7 @@ export const FamilyScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="मेरा परिवार" showBack />
 
       {/* Toast Notification */}

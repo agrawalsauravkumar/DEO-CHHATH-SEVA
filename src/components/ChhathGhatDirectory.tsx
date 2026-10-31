@@ -117,7 +117,7 @@ export const ChhathGhatDirectory: React.FC = () => {
   };
 
   return (
-    <section aria-label="छठ घाट निर्देशिका" className="space-y-3 font-['Mukta',sans-serif]">
+    <section aria-label="छठ घाट निर्देशिका" className="space-y-3 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       {/* Section Header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">

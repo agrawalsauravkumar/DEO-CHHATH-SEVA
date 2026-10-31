@@ -248,7 +248,7 @@ const MainRouter: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[var(--chhath-cream)] flex justify-center px-0 py-0 font-['Mukta',sans-serif]">
+    <div className="min-h-[100dvh] bg-[var(--chhath-cream)] flex justify-center px-0 py-0 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <div className="app-shell w-full max-w-6xl min-h-[100dvh] relative flex flex-col bg-[var(--chhath-cream)] border-x border-[#FFB52E]/30 shadow-md">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,213,79,0.18),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.08),transparent_30%)]" />
         <div className="relative z-10 flex min-h-[100dvh] flex-col">

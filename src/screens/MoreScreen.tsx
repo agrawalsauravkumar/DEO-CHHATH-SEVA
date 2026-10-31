@@ -245,7 +245,7 @@ export const MoreScreen: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--chhath-cream)] pb-24 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-24 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="सभी सेवाएँ एवं मेनू" showBack />
 
       <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 sm:p-6 space-y-6">

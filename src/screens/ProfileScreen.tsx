@@ -43,7 +43,7 @@ export const ProfileScreen: React.FC = () => {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
+      <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
         <TopBar title="उपयोगकर्ता प्रोफ़ाइल" showBack />
         <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 flex flex-col items-center justify-center text-center space-y-4">
           <div className="w-16 h-16 rounded-full bg-stone-200 text-stone-500 flex items-center justify-center text-2xl">
@@ -101,7 +101,7 @@ export const ProfileScreen: React.FC = () => {
   const roleInfo = getRoleBadge(currentUser.role);
 
   return (
-    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Mukta',sans-serif]">
+    <div className="min-h-screen bg-[var(--chhath-cream)] pb-20 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       <TopBar title="मेरी प्रोफ़ाइल (User Profile)" showBack />
 
       <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-4 space-y-4">

@@ -183,7 +183,7 @@ export const NavigationScreen: React.FC = () => {
   const routeAvailable = Boolean(activeRoute && currentStep);
 
   return (
-    <div className="min-h-screen bg-stone-950 text-white pb-6 flex flex-col font-['Mukta',sans-serif] select-none">
+    <div className="min-h-screen bg-stone-950 text-white pb-6 flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif] select-none">
       {/* Top Header: ← वापस | 🧭 Navigation */}
       <header className="bg-stone-900 border-b border-stone-800 px-4 py-2.5 shadow-md sticky top-0 z-30">
         <div className="max-w-3xl sm:max-w-4xl mx-auto flex items-center justify-between min-h-[44px]">

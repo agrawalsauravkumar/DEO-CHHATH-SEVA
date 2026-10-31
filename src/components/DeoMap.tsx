@@ -557,7 +557,7 @@ export const DeoMap: React.FC<Props> = ({
   };
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-stone-300 bg-stone-100 shadow-md flex flex-col font-['Mukta',sans-serif]">
+    <div className="relative w-full rounded-2xl overflow-hidden border border-stone-300 bg-stone-100 shadow-md flex flex-col font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       {/* ============================================================ */}
       {/* TOP FLOATING STRIP: Internet Status & ☰ सुविधाएँ Filter      */}
       {/* ============================================================ */}

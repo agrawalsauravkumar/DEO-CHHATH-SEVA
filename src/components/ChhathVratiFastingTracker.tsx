@@ -87,7 +87,7 @@ export const ChhathVratiFastingTracker: React.FC<Props> = ({ onOpenCompass, onOp
   };
 
   return (
-    <section aria-label="छठ व्रती 36-घंटे निर्जला व्रत ट्रैकर" className="rounded-3xl border-2 border-amber-400 bg-gradient-to-br from-[#063B5C] via-[#075985] to-[#041E2F] p-4 text-white shadow-lg space-y-3 font-['Mukta',sans-serif]">
+    <section aria-label="छठ व्रती 36-घंटे निर्जला व्रत ट्रैकर" className="rounded-3xl border-2 border-amber-400 bg-gradient-to-br from-[#063B5C] via-[#075985] to-[#041E2F] p-4 text-white shadow-lg space-y-3 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-amber-400/30 pb-3">
         <div className="flex items-center gap-2.5">
