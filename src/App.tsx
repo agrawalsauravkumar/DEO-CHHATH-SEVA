@@ -248,11 +248,11 @@ const MainRouter: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[var(--chhath-cream)] flex justify-center px-0 py-0 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
-      <div className="app-shell w-full max-w-6xl min-h-[100dvh] relative flex flex-col bg-[var(--chhath-cream)] border-x border-[#FFB52E]/30 shadow-md">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,213,79,0.18),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.08),transparent_30%)]" />
+    <div className="min-h-[100dvh] bg-[#FFF8E1] flex justify-center px-0 py-0 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
+      <div className="app-shell w-full max-w-4xl min-h-[100dvh] relative flex flex-col bg-[#FFF8E1] border-x border-[#FFD54F]/40 shadow-xl">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,213,79,0.14),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.06),transparent_30%)]" />
         <div className="relative z-10 flex min-h-[100dvh] flex-col">
-          {(!isOnline || networkStatus === 'SYNCING' || networkStatus === 'SYNC_ERROR' || networkStatus === 'SYNCED' || networkRecovered) && (
+          {currentScreen !== 'splash' && (!isOnline || networkStatus === 'SYNCING' || networkStatus === 'SYNC_ERROR' || networkStatus === 'SYNCED' || networkRecovered) && (
             <div
               className={`flex min-h-10 items-center justify-center gap-2 px-3 py-1.5 text-center text-xs font-bold ${
                 !isOnline

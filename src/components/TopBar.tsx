@@ -41,6 +41,8 @@ const SCREEN_TITLES: Partial<Record<ScreenId, string>> = {
   language: 'भाषा चुनें',
   'location-permission': 'लोकेशन अनुमति',
   'offline-map': 'ऑफलाइन नक्शा डाउनलोड',
+  'chhath-katha': 'छठ व्रत कथा व गीत',
+  'prasad-camps': 'निःशुल्क प्रसाद शिविर',
 };
 
 const ENGLISH_SCREEN_TITLES: Partial<Record<ScreenId, string>> = {
@@ -77,6 +79,8 @@ const ENGLISH_SCREEN_TITLES: Partial<Record<ScreenId, string>> = {
   'session-expired': 'Session expired',
   offline: 'Offline status',
   error: 'Error',
+  'chhath-katha': 'Chhath Katha & Songs',
+  'prasad-camps': 'Free Prasad Camps',
 };
 
 export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) => {
@@ -92,6 +96,7 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
   } = useApp();
 
   const isHome = currentScreen === 'home';
+  const isEmergency = currentScreen === 'emergency';
   const isEnglish = language === 'en';
   const displayTitle = isEnglish
     ? (currentScreen === 'login' ? title : undefined) ||
@@ -102,31 +107,31 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
     : title || SCREEN_TITLES[currentScreen] || 'देव छठ सेवा';
 
   return (
-    <header className="sticky top-0 z-40 bg-gradient-to-r from-[#073B78] via-[#0B5E8E] to-[#073B78] text-white border-b-2 border-[#FFD54F] shadow-md px-3 sm:px-4 py-2 font-['Noto_Sans_Devanagari','Inter',sans-serif]">
-      <div className="max-w-3xl sm:max-w-4xl mx-auto flex items-center justify-between min-h-[46px]">
+    <header className="sticky top-0 z-40 bg-gradient-to-r from-[#073B78] via-[#0B5E8E] to-[#073B78] text-white border-b-2 border-[#FFD54F] shadow-md px-3 sm:px-4 py-2 select-none font-['Noto_Sans_Devanagari','Inter',sans-serif]">
+      <div className="max-w-4xl mx-auto flex items-center justify-between min-h-[46px] gap-2">
         {/* Left Slot: Back or Official NGO Seal Logo */}
-        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           {showBack || canGoBack ? (
             <button
               onClick={onBack ? onBack : goBack}
               aria-label={isEnglish ? 'Go back' : 'पीछे जाएं'}
-              className="min-h-[44px] min-w-[44px] -ml-1 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors active:scale-95 border border-white/10"
+              className="min-h-[44px] min-w-[44px] -ml-1 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors active:scale-95 border border-white/10 shrink-0"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
             </button>
           ) : (
             <button
               onClick={() => navigate('about')}
-              className="flex items-center gap-1.5 text-left active:scale-95 transition-transform"
+              className="flex items-center gap-1.5 text-left active:scale-95 transition-transform shrink-0"
               title="DEO CHHATH SEVA - NEXTGEN DEVBHOOMI FOUNDATION"
             >
               <DeoChhathSevaLogo size={38} className="drop-shadow-md" />
             </button>
           )}
 
-          <div className="flex flex-col min-w-0">
+          <div className="flex flex-col min-w-0 flex-1">
             <h1
-              className={`font-black tracking-tight text-white truncate max-w-[clamp(5rem,30vw,12rem)] sm:max-w-xs ${
+              className={`font-black tracking-tight text-white leading-tight truncate ${
                 seniorMode ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'
               }`}
             >
@@ -142,35 +147,41 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
                 </span>
               </>
             ) : subtitle ? (
-              <span className="text-[11px] text-[#FFD54F]/90 truncate">{subtitle}</span>
+              <span className="text-[11px] text-[#FFD54F]/90 truncate leading-tight">{subtitle}</span>
             ) : null}
           </div>
         </div>
 
-        {/* Right Slot: Senior Mode, Emergency SOS, or Offline Status */}
+        {/* Right Slot: Balanced, Responsive Action Controls */}
         <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
-          <LanguageSwitcher compact />
           {!isOnline && (
             <button
               onClick={() => navigate('offline')}
               title={isEnglish ? 'Offline status' : 'ऑफ़लाइन स्थिति'}
               aria-label={isEnglish ? 'Offline status' : 'ऑफ़लाइन स्थिति'}
-              className="min-h-[44px] rounded-xl bg-amber-400 px-2 text-stone-950 flex items-center gap-1 font-black text-[10px]"
+              className="min-h-[38px] rounded-xl bg-amber-400 px-2 text-stone-950 flex items-center gap-1 font-black text-[10px] shadow-xs active:scale-95"
             >
-              <DownloadCloud className="w-4 h-4" />
+              <DownloadCloud className="w-3.5 h-3.5" />
               <span>Offline</span>
             </button>
           )}
 
+          {/* Language Switcher */}
+          <div className="shrink-0">
+            <LanguageSwitcher compact />
+          </div>
+
+          {/* Announcements Bell on Tablet / Desktop */}
           <button
             onClick={() => navigate('announcements')}
             title={isEnglish ? 'Announcements' : 'सूचनाएं'}
             aria-label={isEnglish ? 'Announcements' : 'सूचनाएं'}
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[#FFD54F] hover:text-amber-100 active:scale-95 relative"
+            className="hidden sm:flex min-h-[40px] min-w-[40px] items-center justify-center text-[#FFD54F] hover:text-amber-100 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/10"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-4 h-4" />
           </button>
 
+          {/* Senior Mode Toggle on Tablet / Desktop */}
           <button
             onClick={toggleSeniorMode}
             title={
@@ -183,24 +194,27 @@ export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) =
                   : 'वरिष्ठ नागरिक मोड'
             }
             aria-label={isEnglish ? 'Senior mode' : 'वरिष्ठ नागरिक मोड'}
-            className={`min-h-[44px] min-w-[44px] px-2.5 flex items-center gap-1 rounded-xl text-xs font-bold transition-all active:scale-95 border ${
+            className={`hidden sm:flex min-h-[40px] px-2.5 items-center gap-1 rounded-xl text-xs font-bold transition-all active:scale-95 border ${
               seniorMode
                 ? 'bg-[#FFD54F] text-stone-950 border-amber-300 shadow-sm'
                 : 'bg-white/10 text-[#FFD54F] hover:bg-white/20 border-white/10'
             }`}
           >
             <Accessibility className="w-4 h-4" />
-            <span className="hidden xs:inline">{isEnglish ? 'Senior' : 'वरिष्ठ'}</span>
+            <span>{isEnglish ? 'Senior' : 'वरिष्ठ'}</span>
           </button>
 
-          <button
-            onClick={() => navigate('emergency')}
-            aria-label={isEnglish ? 'Emergency SOS assistance' : 'आपातकालीन SOS सहायता'}
-            className="min-h-[44px] px-3 bg-[#EF4444] hover:bg-[#DC2626] active:scale-95 text-white font-black rounded-xl text-xs flex items-center gap-1 shadow-md transition-colors border border-[#EF4444]"
-          >
-            <PhoneCall className="w-3.5 h-3.5 fill-white" />
-            <span>SOS</span>
-          </button>
+          {/* Emergency SOS Button (Hidden when on Emergency screen itself) */}
+          {!isEmergency && (
+            <button
+              onClick={() => navigate('emergency')}
+              aria-label={isEnglish ? 'Emergency SOS assistance' : 'आपातकालीन SOS सहायता'}
+              className="min-h-[38px] px-2.5 sm:px-3 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] hover:from-[#B91C1C] hover:to-[#991B1B] active:scale-95 text-white font-black rounded-xl text-xs flex items-center gap-1 shadow-md transition-all border border-[#EF4444]"
+            >
+              <PhoneCall className="w-3.5 h-3.5 fill-white" />
+              <span>SOS</span>
+            </button>
+          )}
         </div>
       </div>
     </header>
