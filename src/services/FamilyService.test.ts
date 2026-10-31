@@ -6,7 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { FamilyService } from './FamilyService';
-import { CHHATH_FOLK_PLAYLIST } from '../components/ChhathSongPlayer';
+import { CHHATH_DEFAULT_PLAYLIST } from '../data/chhathSongsData';
 
 // Mock simple localStorage for Node.js test environment if not present
 if (typeof globalThis.localStorage === 'undefined') {
@@ -49,15 +49,15 @@ test('FamilyService allows a member to join via invite code', () => {
   assert.ok(members.length >= 1);
 });
 
-test('CHHATH_FOLK_PLAYLIST contains all 4 traditional folk tracks with valid melodies and lyrics', () => {
-  assert.equal(CHHATH_FOLK_PLAYLIST.length, 4, 'Must have 4 sacred tracks');
+test('CHHATH_DEFAULT_PLAYLIST contains all 10 authentic devotional tracks with valid audio and lyrics', () => {
+  assert.equal(CHHATH_DEFAULT_PLAYLIST.length, 10, 'Must have 10 sacred tracks');
 
-  for (const track of CHHATH_FOLK_PLAYLIST) {
+  for (const track of CHHATH_DEFAULT_PLAYLIST) {
     assert.ok(track.title, 'Track title must be non-empty');
     assert.ok(track.singer, 'Singer note must be non-empty');
     assert.ok(track.lyrics.length > 0, 'Must have lyrics');
-    assert.ok(track.melodyNotes.length > 0, 'Must have melody frequency notes');
-    assert.ok(track.youtubeQuery.includes('शारदा सिन्हा'), 'YouTube query must feature Sharda Sinha');
+    assert.ok(track.audioUrl.endsWith('.mp3'), 'Must have audio MP3 url');
+    assert.ok(track.duration > 0, 'Must have duration greater than 0');
   }
 });
 

@@ -21,8 +21,8 @@ if (typeof globalThis.localStorage === 'undefined') {
   } as unknown as Storage;
 }
 
-test('CHHATH_DEFAULT_PLAYLIST contains all 6 authentic full audio tracks', () => {
-  assert.equal(CHHATH_DEFAULT_PLAYLIST.length, 6, 'Must contain 6 full audio tracks');
+test('CHHATH_DEFAULT_PLAYLIST contains all 10 authentic full audio tracks', () => {
+  assert.equal(CHHATH_DEFAULT_PLAYLIST.length, 10, 'Must contain 10 full audio tracks');
 
   for (const track of CHHATH_DEFAULT_PLAYLIST) {
     assert.ok(track.id, 'Track ID must be present');
@@ -65,7 +65,7 @@ test('ChhathSongsService allows adding, retrieving and deleting admin custom son
 
   // 2. Retrieve
   const allSongs = ChhathSongsService.getAllSongs();
-  assert.equal(allSongs.length, 7, 'Should now have 7 songs (1 custom + 6 default)');
+  assert.equal(allSongs.length, 11, 'Should now have 11 songs (1 custom + 10 default)');
   const found = ChhathSongsService.getSongById('test-custom-track-99');
   assert.ok(found, 'Added custom song must be retrievable by ID');
   assert.equal(found?.title, 'देव सूर्य देव वंदना');
@@ -73,7 +73,7 @@ test('ChhathSongsService allows adding, retrieving and deleting admin custom son
   // 3. Delete song
   ChhathSongsService.deleteSong('test-custom-track-99');
   const remaining = ChhathSongsService.getAllSongs();
-  assert.equal(remaining.length, 6, 'Should be back to 6 default songs after deletion');
+  assert.equal(remaining.length, 10, 'Should be back to 10 default songs after deletion');
   assert.equal(ChhathSongsService.getSongById('test-custom-track-99'), undefined);
 });
 
