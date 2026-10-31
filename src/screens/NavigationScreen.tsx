@@ -20,7 +20,9 @@ import {
   RefreshCw,
   MapPin,
   WifiOff,
+  Footprints,
 } from 'lucide-react';
+import { DEO_LOCATIONS } from '../data/deoData';
 
 export const NavigationScreen: React.FC = () => {
   const {
@@ -30,6 +32,8 @@ export const NavigationScreen: React.FC = () => {
     activeRoute,
     setActiveRoute,
     travelMode,
+    setTravelMode,
+    startNavigation,
     isOnline,
     stopNavigation,
     goBack,
@@ -288,6 +292,31 @@ export const NavigationScreen: React.FC = () => {
                 {destination.name} • देव, औरंगाबाद
               </p>
             </div>
+            {(destination.category === 'parking' || destination.id.includes('parking') || travelMode === 'DRIVING') && (
+              <div className="bg-amber-950/70 border-2 border-amber-400 rounded-2xl p-3.5 space-y-2.5 text-left">
+                <div className="flex items-center gap-2 text-amber-300 font-black text-xs">
+                  <span className="text-base">🚶</span>
+                  <span>वाहन पार्क करने के बाद अगला कदम (Next Step):</span>
+                </div>
+                <p className="text-[11px] text-stone-200 leading-snug">
+                  आंतरिक मेला क्षेत्र में निजी वाहन प्रतिबंधित हैं। यहाँ से सूर्य कुंड मुख्य अर्घ्य सरोवर तक सुरक्षित पैदल मार्ग उपलब्ध है।
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const suryaKund = DEO_LOCATIONS.find((l) => l.id === 'surya-kund') || DEO_LOCATIONS[1];
+                    setTravelMode('WALKING');
+                    startNavigation(suryaKund);
+                    navigate('navigation-preview');
+                  }}
+                  className="w-full min-h-[44px] bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-stone-950 font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-md active:scale-98 transition-all"
+                >
+                  <Footprints className="w-4 h-4 text-stone-950" />
+                  <span>सूर्य कुंड घाट तक पैदल नेविगेशन शुरू करें (Walk to Ghat)</span>
+                </button>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-2 pt-2">
               <button
                 onClick={handleStopNavigation}

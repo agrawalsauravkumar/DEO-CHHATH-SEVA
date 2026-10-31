@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Compass,
   Layers,
+  X,
 } from 'lucide-react';
 import { OfflineMapService, OfflinePackageMetadata } from '../services/OfflineMapService';
 
@@ -27,6 +28,7 @@ export const OfflineMapScreen: React.FC = () => {
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [storageInfo, setStorageInfo] = useState<string>('जाँच हो रही है…');
 
   const refreshStatus = () => {
     setMeta(OfflineMapService.getOfflineDataStatus());
@@ -34,6 +36,7 @@ export const OfflineMapScreen: React.FC = () => {
 
   useEffect(() => {
     refreshStatus();
+    OfflineMapService.getAvailableStorageEstimate().then(setStorageInfo);
   }, []);
 
   const handleDownload = async () => {
@@ -106,12 +109,20 @@ export const OfflineMapScreen: React.FC = () => {
               <p className="font-black text-[#063B5C]">{meta.dataSizeDisplay}</p>
             </div>
             <div>
+              <span className="font-bold text-stone-500">उपलब्ध स्टोरेज:</span>
+              <p className="font-black text-[#063B5C]">{storageInfo}</p>
+            </div>
+            <div>
               <span className="font-bold text-stone-500">सत्यापित स्थल:</span>
-              <p className="font-black text-[#063B5C]">{meta.poiCount} स्थान (Ghats & Facilities)</p>
+              <p className="font-black text-[#063B5C]">{meta.poiCount} स्थान (14 श्रेणियाँ)</p>
             </div>
             <div>
               <span className="font-bold text-stone-500">पैदल कॉरिडोर:</span>
               <p className="font-black text-[#063B5C]">{meta.routeCount} मुख्य मार्ग</p>
+            </div>
+            <div>
+              <span className="font-bold text-stone-500">संस्करण:</span>
+              <p className="font-black text-emerald-800">v{meta.version} (अद्यतन)</p>
             </div>
             {meta.downloadedAt && (
               <div className="col-span-2 border-t border-stone-200/60 pt-2 text-stone-500">
@@ -138,7 +149,7 @@ export const OfflineMapScreen: React.FC = () => {
 
         {/* Downloading Progress Bar */}
         {isDownloading && (
-          <div className="rounded-2xl border border-sky-300 bg-sky-50 p-4 space-y-2">
+          <div className="rounded-2xl border border-sky-300 bg-sky-50 p-4 space-y-3">
             <div className="flex justify-between text-xs font-bold text-[#075985]">
               <span className="flex items-center gap-1.5">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -152,6 +163,19 @@ export const OfflineMapScreen: React.FC = () => {
                 style={{ width: `${downloadProgress}%` }}
               />
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                OfflineMapService.cancelDownload();
+                setIsDownloading(false);
+                setDownloadProgress(0);
+                setDownloadError('डाउनलोड रद्द किया गया।');
+              }}
+              className="w-full py-2 rounded-xl border border-rose-300 bg-white hover:bg-rose-50 text-rose-700 text-xs font-black flex items-center justify-center gap-1.5 transition-all"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>डाउनलोड रद्द करें (Cancel Download)</span>
+            </button>
           </div>
         )}
 

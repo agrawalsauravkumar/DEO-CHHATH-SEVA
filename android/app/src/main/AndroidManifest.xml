@@ -33,6 +33,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <!-- Google Maps Android SDK API Key (Restricted to org.nextgendevbhoomi.deochhathseva) -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
     </application>
 
     <!-- Android 11+ Package Visibility Queries for Dialing and Maps -->

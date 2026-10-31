@@ -76,6 +76,14 @@ export const DeoMap: React.FC<Props> = ({
     TOILET: true,
     WATER: true,
     HELP: true,
+    POLICE: true,
+    ENTRY_GATE: true,
+    EXIT_GATE: true,
+    PEDESTRIAN: true,
+    VEHICLE: true,
+    RESTRICTED: true,
+    EMERGENCY: true,
+    LOST_FOUND: true,
   });
 
   // Selected POI item
@@ -662,13 +670,21 @@ export const DeoMap: React.FC<Props> = ({
 
           <div className="grid grid-cols-1 gap-1 text-xs font-bold text-stone-800">
             {[
-              { key: 'RELIGIOUS' as POICategory, label: '☀️ धार्मिक स्थल' },
-              { key: 'PARKING' as POICategory, label: '🅿️ Parking' },
-              { key: 'SHUTTLE' as POICategory, label: '🛺 Shuttle' },
-              { key: 'MEDICAL' as POICategory, label: '🚑 Medical' },
-              { key: 'TOILET' as POICategory, label: '🚻 Toilet' },
-              { key: 'WATER' as POICategory, label: '💧 Water' },
-              { key: 'HELP' as POICategory, label: '🆘 सहायता' },
+              { key: 'RELIGIOUS' as POICategory, label: '☀️ मंदिर व घाट (Ghats)' },
+              { key: 'PARKING' as POICategory, label: '🅿️ पार्किंग (Parking)' },
+              { key: 'HELP' as POICategory, label: '🆘 सहायता केंद्र (Help Desk)' },
+              { key: 'MEDICAL' as POICategory, label: '🚑 अस्पताल व फर्स्ट एड' },
+              { key: 'POLICE' as POICategory, label: '👮 पुलिस व सुरक्षा पोस्ट' },
+              { key: 'TOILET' as POICategory, label: '🚻 सार्वजनिक शौचालय' },
+              { key: 'WATER' as POICategory, label: '💧 शुद्ध पेयजल केंद्र' },
+              { key: 'SHUTTLE' as POICategory, label: '🛺 ई-रिक्शा शटल स्टैंड' },
+              { key: 'ENTRY_GATE' as POICategory, label: '⛩️ मुख्य प्रवेश द्वार' },
+              { key: 'EXIT_GATE' as POICategory, label: '🚪 निकास द्वार' },
+              { key: 'PEDESTRIAN' as POICategory, label: '🚶 केवल पैदल मार्ग' },
+              { key: 'VEHICLE' as POICategory, label: '🚗 अधिकृत वाहन मार्ग' },
+              { key: 'RESTRICTED' as POICategory, label: '⛔ प्रतिबंधित / बंद मार्ग' },
+              { key: 'EMERGENCY' as POICategory, label: '🚨 आपातकालीन निकासी' },
+              { key: 'LOST_FOUND' as POICategory, label: '📢 खोया-पाया केंद्र' },
             ].map((f) => {
               const active = enabledCategories[f.key];
               return (

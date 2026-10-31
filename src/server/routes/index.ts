@@ -24,6 +24,7 @@ import { syncRouter } from './sync';
 import { adminRouter } from './admin';
 import { auditRouter } from './audit';
 import { teamRouter } from './team';
+import { routesRouter } from './routes';
 import { getDatabaseStatus } from '../db/connection';
 import { requirePersistentDatabase } from '../middleware/requirePersistentDatabase';
 
@@ -31,8 +32,8 @@ export const apiRouter = Router();
 
 apiRouter.use((req, res, next) => {
   if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
-  // Auth routes (OTP send/verify, password login) and team routes handle their own memory fallbacks
-  if (req.path.startsWith('/auth') || req.path.startsWith('/team')) return next();
+  // Auth routes (OTP send/verify, password login), team routes, and routing engine handle their own memory fallbacks
+  if (req.path.startsWith('/auth') || req.path.startsWith('/team') || req.path.startsWith('/routes')) return next();
   return requirePersistentDatabase(req, res, next);
 });
 
@@ -98,6 +99,7 @@ apiRouter.use('/sync', syncRouter);
 apiRouter.use('/admin', adminRouter);
 apiRouter.use('/audit', auditRouter);
 apiRouter.use('/team', teamRouter);
+apiRouter.use('/routes', routesRouter);
 apiRouter.use('/', rolesRouter); // mounts /roles and /permissions
 
 // 404 handler for undefined API endpoints (prevents falling through to HTML index)

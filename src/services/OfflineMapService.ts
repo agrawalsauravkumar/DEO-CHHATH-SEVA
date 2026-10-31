@@ -132,8 +132,35 @@ export const DEO_OFFLINE_WALKING_ROUTES: OfflineRouteItem[] = [
   },
 ];
 
+let activeAbortController: AbortController | null = null;
+
 export const OfflineMapService = {
   TARGET_AREA: 'देव, औरंगाबाद, बिहार (Deo Shrine Area)',
+
+  cancelDownload: (): void => {
+    if (activeAbortController) {
+      activeAbortController.abort();
+      activeAbortController = null;
+    }
+  },
+
+  getAvailableStorageEstimate: async (): Promise<string> => {
+    if (typeof navigator !== 'undefined' && navigator.storage && navigator.storage.estimate) {
+      try {
+        const estimate = await navigator.storage.estimate();
+        if (estimate.quota !== undefined && estimate.usage !== undefined) {
+          const availableBytes = Math.max(0, estimate.quota - estimate.usage);
+          if (availableBytes > 1024 * 1024 * 1024) {
+            return (availableBytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB उपलब्ध';
+          }
+          return Math.round(availableBytes / (1024 * 1024)) + ' MB उपलब्ध';
+        }
+      } catch {
+        // fallback
+      }
+    }
+    return 'पर्याप्त डिस्क स्टोरेज उपलब्ध';
+  },
 
   isOfflineMapAvailable: (): boolean => {
     if (typeof window === 'undefined') return false;
@@ -183,9 +210,14 @@ export const OfflineMapService = {
   downloadOfflineData: async (
     onProgress: (percent: number) => void
   ): Promise<{ success: boolean; error?: string }> => {
+    activeAbortController = new AbortController();
+    const signal = activeAbortController.signal;
+
     try {
+      if (signal.aborted) throw new Error('डाउनलोड रद्द किया गया।');
       onProgress(10);
       await new Promise((r) => setTimeout(r, 150));
+      if (signal.aborted) throw new Error('डाउनलोड रद्द किया गया।');
 
       // 1. Fetch & persist verified facilities in local cache
       onProgress(30);

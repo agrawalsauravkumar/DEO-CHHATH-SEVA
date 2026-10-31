@@ -20,7 +20,7 @@ export interface RouteRequestParams {
 
 export interface RoutingProvider {
   name: string;
-  providerId: 'OSRM' | 'GRAPHHOPPER' | 'VALHALLA' | 'NONE';
+  providerId: 'GOOGLE' | 'OSRM' | 'GRAPHHOPPER' | 'VALHALLA' | 'NONE';
   isConfigured(): boolean;
   calculateRoute(params: RouteRequestParams): Promise<RouteResult>;
 }
@@ -394,50 +394,98 @@ export class ValhallaProvider implements RoutingProvider {
   }
 }
 
-// 4. Multi-engine resilient provider with auto-fallback
-export class CompositeRoutingProvider implements RoutingProvider {
-  name = 'Multi-Engine Routing Service (Valhalla / OSRM)';
-  providerId = 'VALHALLA' as const;
-  private primary: RoutingProvider;
-  private fallback: RoutingProvider;
-
-  constructor(primary: RoutingProvider, fallback: RoutingProvider) {
-    this.primary = primary;
-    this.fallback = fallback;
-  }
+// 4. Google Routes API Provider (Secured via server proxy endpoint)
+export class GoogleRoutesProvider implements RoutingProvider {
+  name = 'Google Routes API (ऑनलाइन)';
+  providerId = 'GOOGLE' as const;
 
   isConfigured(): boolean {
-    return this.primary.isConfigured() || this.fallback.isConfigured();
+    return true;
   }
 
   async calculateRoute(params: RouteRequestParams): Promise<RouteResult> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+    try {
+      const response = await fetch('/api/routes/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Google Routes calculation error: ${response.status}`);
+      }
+
+      const result: RouteResult = await response.json();
+      return result;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+}
+
+// 5. Multi-engine resilient provider with auto-fallback
+export class CompositeRoutingProvider implements RoutingProvider {
+  name = 'Hybrid Routing System (Google / Valhalla / OSRM)';
+  providerId = 'GOOGLE' as const;
+  private primary: RoutingProvider;
+  private secondary: RoutingProvider;
+  private tertiary: RoutingProvider;
+
+  constructor(primary: RoutingProvider, secondary: RoutingProvider, tertiary: RoutingProvider) {
+    this.primary = primary;
+    this.secondary = secondary;
+    this.tertiary = tertiary;
+  }
+
+  isConfigured(): boolean {
+    return this.primary.isConfigured() || this.secondary.isConfigured() || this.tertiary.isConfigured();
+  }
+
+  async calculateRoute(params: RouteRequestParams): Promise<RouteResult> {
+    // 1. Try Primary Engine (Google Routes API)
     if (this.primary.isConfigured()) {
       try {
         return await this.primary.calculateRoute(params);
       } catch (primaryErr) {
-        console.warn('Primary routing engine failed, attempting fallback engine:', primaryErr);
+        console.warn('[Routing] Primary Google Routes API engine failed, attempting secondary:', primaryErr);
       }
     }
 
-    if (this.fallback.isConfigured()) {
+    // 2. Try Secondary Engine (Valhalla OpenStreetMap)
+    if (this.secondary.isConfigured()) {
       try {
-        return await this.fallback.calculateRoute(params);
-      } catch (fallbackErr) {
-        console.warn('Fallback online engine failed, attempting Deo Road Network fallback:', fallbackErr);
+        return await this.secondary.calculateRoute(params);
+      } catch (secErr) {
+        console.warn('[Routing] Secondary Valhalla engine failed, attempting tertiary:', secErr);
       }
     }
 
-    // High-resilience tertiary fallback: Local Deo Road Network
+    // 3. Try Tertiary Engine (OSRM)
+    if (this.tertiary.isConfigured()) {
+      try {
+        return await this.tertiary.calculateRoute(params);
+      } catch (tertErr) {
+        console.warn('[Routing] Tertiary OSRM engine failed, attempting Deo Road Network:', tertErr);
+      }
+    }
+
+    // 4. High-resilience Quaternary fallback: Deo Surveyed Road Network
     return await OfflineRouteService.calculateRoute(params);
   }
 }
 
-// 5. Factory to instantiate the active routing provider
+// 6. Factory to instantiate the active routing provider
 export class RoutingProviderFactory {
   static getProvider(): RoutingProvider {
-    const configuredType = (import.meta.env.VITE_ROUTING_PROVIDER || 'VALHALLA').toUpperCase();
+    const configuredType = (import.meta.env.VITE_ROUTING_PROVIDER || 'HYBRID').toUpperCase();
     const baseUrl = import.meta.env.VITE_ROUTING_ENGINE_URL?.trim();
 
+    const google = new GoogleRoutesProvider();
     const val = new ValhallaProvider(undefined, baseUrl);
     const osrm = new OSRMProvider(baseUrl && baseUrl.includes('osrm') ? baseUrl : undefined);
 
@@ -451,8 +499,12 @@ export class RoutingProviderFactory {
       return osrm.isConfigured() ? osrm : new UnavailableRoutingProvider();
     }
 
-    // Default: Multi-engine resilient provider (Valhalla primary, OSRM fallback)
-    return new CompositeRoutingProvider(val, osrm);
+    if (configuredType === 'VALHALLA') {
+      return new CompositeRoutingProvider(val, osrm, google);
+    }
+
+    // Default 'HYBRID': Google primary -> Valhalla secondary -> OSRM tertiary -> Deo local graph quaternary
+    return new CompositeRoutingProvider(google, val, osrm);
   }
 }
 

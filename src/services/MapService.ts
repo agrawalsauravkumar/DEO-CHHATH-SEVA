@@ -53,6 +53,46 @@ export const MapService = {
         bgColor = '#b91c1c';
         ringColor = '#fecaca';
         break;
+      case 'POLICE':
+        iconEmoji = '👮';
+        bgColor = '#0B3B60';
+        ringColor = '#bfdbfe';
+        break;
+      case 'ENTRY_GATE':
+        iconEmoji = '⛩️';
+        bgColor = '#d97706';
+        ringColor = '#fef3c7';
+        break;
+      case 'EXIT_GATE':
+        iconEmoji = '🚪';
+        bgColor = '#b45309';
+        ringColor = '#fed7aa';
+        break;
+      case 'PEDESTRIAN':
+        iconEmoji = '🚶';
+        bgColor = '#059669';
+        ringColor = '#a7f3d0';
+        break;
+      case 'VEHICLE':
+        iconEmoji = '🚗';
+        bgColor = '#475569';
+        ringColor = '#cbd5e1';
+        break;
+      case 'RESTRICTED':
+        iconEmoji = '⛔';
+        bgColor = '#dc2626';
+        ringColor = '#fecaca';
+        break;
+      case 'EMERGENCY':
+        iconEmoji = '🚨';
+        bgColor = '#b91c1c';
+        ringColor = '#fecdd3';
+        break;
+      case 'LOST_FOUND':
+        iconEmoji = '📢';
+        bgColor = '#7c3aed';
+        ringColor = '#ddd6fe';
+        break;
     }
 
     const size = isSelected ? 42 : 36;

@@ -188,7 +188,15 @@ export type FacilityCategory =
   | 'WATER'
   | 'PARKING'
   | 'HELP'
-  | 'RELIGIOUS';
+  | 'RELIGIOUS'
+  | 'POLICE'
+  | 'ENTRY_GATE'
+  | 'EXIT_GATE'
+  | 'PEDESTRIAN'
+  | 'VEHICLE'
+  | 'RESTRICTED'
+  | 'EMERGENCY'
+  | 'LOST_FOUND';
 
 export type FacilitySource = 'ADMIN_VERIFIED' | 'DISTRICT_ADMINISTRATION' | 'DEMO_DATA';
 

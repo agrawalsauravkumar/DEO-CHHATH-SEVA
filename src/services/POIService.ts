@@ -5,7 +5,15 @@ export type POICategory =
   | 'MEDICAL'
   | 'TOILET'
   | 'WATER'
-  | 'HELP';
+  | 'HELP'
+  | 'POLICE'
+  | 'ENTRY_GATE'
+  | 'EXIT_GATE'
+  | 'PEDESTRIAN'
+  | 'VEHICLE'
+  | 'RESTRICTED'
+  | 'EMERGENCY'
+  | 'LOST_FOUND';
 
 export interface POIItem {
   id: string;
