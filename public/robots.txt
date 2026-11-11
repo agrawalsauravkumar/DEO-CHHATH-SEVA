@@ -7,4 +7,4 @@ Allow: /
 Disallow: /api/
 Disallow: /admin-dashboard
 
-Sitemap: https://deochhathseva.org/sitemap.xml
+Sitemap: https://seva.nextgendevbhoomi.org/sitemap.xml
