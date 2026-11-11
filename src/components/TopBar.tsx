@@ -43,6 +43,11 @@ const SCREEN_TITLES: Partial<Record<ScreenId, string>> = {
   'offline-map': 'ऑफलाइन नक्शा डाउनलोड',
   'chhath-katha': 'छठ व्रत कथा व गीत',
   'prasad-camps': 'निःशुल्क प्रसाद शिविर',
+  'live-darshan': 'देव सूर्य मंदिर लाइव दर्शन',
+  'surya-stotra': 'आदित्य हृदय स्तोत्र व मंत्र',
+  sankalp: 'देवार्क धाम दूरस्थ ई-संकल्प',
+  accommodation: 'रैन बसेरा व धर्मशाला',
+  'puja-samagri': 'पूजा सामग्री दर व निःशुल्क शिविर',
 };
 
 const ENGLISH_SCREEN_TITLES: Partial<Record<ScreenId, string>> = {
@@ -81,6 +86,11 @@ const ENGLISH_SCREEN_TITLES: Partial<Record<ScreenId, string>> = {
   error: 'Error',
   'chhath-katha': 'Chhath Katha & Songs',
   'prasad-camps': 'Free Prasad Camps',
+  'live-darshan': 'Deo Surya Mandir Live Darshan',
+  'surya-stotra': 'Aditya Hridaya & Mantras',
+  sankalp: 'Devotee Virtual Sankalp',
+  accommodation: 'Dharamshala & Shelters',
+  'puja-samagri': 'Puja Materials & Free Camps',
 };
 
 export const TopBar: React.FC<Props> = ({ title, subtitle, showBack, onBack }) => {

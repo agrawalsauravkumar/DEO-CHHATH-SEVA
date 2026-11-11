@@ -125,6 +125,21 @@ const ChhathKathaScreen = React.lazy(() =>
 const PrasadCampsScreen = React.lazy(() =>
   import('./screens/PrasadCampsScreen').then(({ PrasadCampsScreen }) => ({ default: PrasadCampsScreen }))
 );
+const LiveDarshanScreen = React.lazy(() =>
+  import('./screens/LiveDarshanScreen').then(({ LiveDarshanScreen }) => ({ default: LiveDarshanScreen }))
+);
+const SuryaStotraScreen = React.lazy(() =>
+  import('./screens/SuryaStotraScreen').then(({ SuryaStotraScreen }) => ({ default: SuryaStotraScreen }))
+);
+const SankalpScreen = React.lazy(() =>
+  import('./screens/SankalpScreen').then(({ SankalpScreen }) => ({ default: SankalpScreen }))
+);
+const AccommodationScreen = React.lazy(() =>
+  import('./screens/AccommodationScreen').then(({ AccommodationScreen }) => ({ default: AccommodationScreen }))
+);
+const PujaSamagriScreen = React.lazy(() =>
+  import('./screens/PujaSamagriScreen').then(({ PujaSamagriScreen }) => ({ default: PujaSamagriScreen }))
+);
 
 const ScreenLoadingFallback = () => (
   <div
@@ -242,6 +257,16 @@ const MainRouter: React.FC = () => {
         return <ChhathKathaScreen />;
       case 'prasad-camps':
         return <PrasadCampsScreen />;
+      case 'live-darshan':
+        return <LiveDarshanScreen />;
+      case 'surya-stotra':
+        return <SuryaStotraScreen />;
+      case 'sankalp':
+        return <SankalpScreen />;
+      case 'accommodation':
+        return <AccommodationScreen />;
+      case 'puja-samagri':
+        return <PujaSamagriScreen />;
       default:
         return <HomeScreen />;
     }

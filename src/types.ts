@@ -36,6 +36,11 @@ export type ScreenId =
   | 'error'
   | 'chhath-katha'
   | 'prasad-camps'
+  | 'live-darshan'
+  | 'surya-stotra'
+  | 'sankalp'
+  | 'accommodation'
+  | 'puja-samagri'
   | 'admin-login'
   | 'admin-dashboard';
 

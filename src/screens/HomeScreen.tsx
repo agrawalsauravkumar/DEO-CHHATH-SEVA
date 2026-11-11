@@ -262,6 +262,51 @@ export const HomeScreen: React.FC = () => {
           <span className="home-emergency-action__arrow" aria-hidden="true">›</span>
         </button>
 
+        {/* Divine Live Darshan & Aarti Direct Access Banner */}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate('live-darshan')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              navigate('live-darshan');
+            }
+          }}
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#041E2F] via-[#07476F] to-[#0B5E8E] p-4 text-white shadow-lg border-2 border-amber-400 cursor-pointer active:scale-[0.99] transition-all"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-400/20 border border-amber-300 text-2xl shadow-inner">
+                🏛️
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </span>
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
+                    LIVE HD
+                  </span>
+                  <span className="text-[11px] font-bold text-amber-300">
+                    {isEnglish ? 'Deo Sanctum & Surya Kund' : 'मुख्य गर्भगृह व सूर्य कुंड'}
+                  </span>
+                </div>
+                <h3 className="text-base font-black text-white leading-tight">
+                  {isEnglish ? 'Deo Sun Temple Live Darshan' : 'देव सूर्य मंदिर व सूर्य कुंड लाइव दर्शन'}
+                </h3>
+                <p className="text-[11px] text-amber-100/90 font-medium">
+                  {isEnglish ? 'Daily 4-Prahar Maha-Aarti, Bell chime & Virtual Puja' : 'दैनिक चार पहर महाआरती, घंटी-शंख वादन व ई-पूजा'}
+                </p>
+              </div>
+            </div>
+            <span className="shrink-0 rounded-xl bg-amber-400 px-3 py-2 text-xs font-black text-stone-950 shadow-md">
+              {isEnglish ? 'Watch Live ›' : 'दर्शन करें ›'}
+            </span>
+          </div>
+        </div>
+
         {/* Chhath Arghya Timings & Live Sun Countdown */}
         <ChhathArghyaMuhurat language={language} />
 
@@ -271,7 +316,7 @@ export const HomeScreen: React.FC = () => {
           onOpenChecklist={() => setShowChecklistModal(true)}
         />
 
-        {/* 4 Unique Spiritual & Pilgrim Companion Action Cards */}
+        {/* Unique Spiritual & Pilgrim Companion Action Cards */}
         <section aria-label="छठ महापर्व विशेष सेवाएँ" className="home-special-tools">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <button
@@ -292,6 +337,70 @@ export const HomeScreen: React.FC = () => {
 
             <button
               type="button"
+              onClick={() => navigate('surya-stotra')}
+              className="p-3 bg-gradient-to-br from-amber-500/20 via-yellow-500/15 to-transparent border-2 border-amber-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-amber-500 active:scale-95 transition-all"
+            >
+              <div className="w-9 h-9 rounded-xl bg-amber-500/25 text-amber-950 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
+                📜
+              </div>
+              <span className="text-xs font-black text-stone-900 leading-tight">
+                {isEnglish ? 'Aditya Hridaya' : 'आदित्य हृदय'}
+              </span>
+              <span className="text-[10px] text-stone-600 font-semibold mt-0.5">
+                {isEnglish ? 'Stotra & Mantras' : 'स्तोत्र, चालीसा व 12 मंत्र'}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('sankalp')}
+              className="p-3 bg-gradient-to-br from-orange-500/20 via-amber-500/15 to-transparent border-2 border-orange-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-orange-500 active:scale-95 transition-all"
+            >
+              <div className="w-9 h-9 rounded-xl bg-orange-500/25 text-orange-950 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
+                🙏
+              </div>
+              <span className="text-xs font-black text-stone-900 leading-tight">
+                {isEnglish ? 'Virtual Sankalp' : 'दूरस्थ ई-संकल्प'}
+              </span>
+              <span className="text-[10px] text-stone-600 font-semibold mt-0.5">
+                {isEnglish ? 'Digital Blessing' : 'डिजिटल आशीर्वाद पत्र'}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('accommodation')}
+              className="p-3 bg-gradient-to-br from-sky-500/20 via-blue-500/15 to-transparent border-2 border-sky-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-sky-500 active:scale-95 transition-all"
+            >
+              <div className="w-9 h-9 rounded-xl bg-sky-500/25 text-sky-950 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
+                ⛺
+              </div>
+              <span className="text-xs font-black text-stone-900 leading-tight">
+                {isEnglish ? 'Tent City & Shelter' : 'रैन बसेरा व टेंट सिटी'}
+              </span>
+              <span className="text-[10px] text-stone-600 font-semibold mt-0.5">
+                {isEnglish ? 'Free Stay Finder' : 'धर्मशाला व आश्रय स्थल'}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('puja-samagri')}
+              className="p-3 bg-gradient-to-br from-indigo-500/20 via-sky-500/15 to-transparent border-2 border-indigo-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-indigo-500 active:scale-95 transition-all"
+            >
+              <div className="w-9 h-9 rounded-xl bg-indigo-500/25 text-indigo-950 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
+                🛒
+              </div>
+              <span className="text-xs font-black text-stone-900 leading-tight">
+                {isEnglish ? 'Fair Rates & Camps' : 'सामग्री दर व शिविर'}
+              </span>
+              <span className="text-[10px] text-stone-600 font-semibold mt-0.5">
+                {isEnglish ? 'Official Price List' : 'प्रशासनिक मूल्य सूची'}
+              </span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => navigate('prasad-camps')}
               className="p-3 bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-transparent border-2 border-emerald-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-emerald-500 active:scale-95 transition-all"
             >
@@ -299,7 +408,7 @@ export const HomeScreen: React.FC = () => {
                 🎋
               </div>
               <span className="text-xs font-black text-stone-900 leading-tight">
-                {isEnglish ? 'Prasad Camps' : 'निःशुल्क शिविर'}
+                {isEnglish ? 'Free Camps' : 'निःशुल्क शिविर'}
               </span>
               <span className="text-[10px] text-stone-600 font-semibold mt-0.5">
                 {isEnglish ? 'Soop, Milk, Daura' : 'सूप, दूध व ठेकुआ'}
@@ -309,9 +418,9 @@ export const HomeScreen: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowChecklistModal(true)}
-              className="p-3 bg-gradient-to-br from-sky-500/20 via-blue-500/15 to-transparent border-2 border-sky-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-sky-500 active:scale-95 transition-all"
+              className="p-3 bg-gradient-to-br from-teal-500/20 via-emerald-500/15 to-transparent border-2 border-teal-400/70 rounded-2xl flex flex-col items-center text-center shadow-xs hover:border-teal-500 active:scale-95 transition-all"
             >
-              <div className="w-9 h-9 rounded-xl bg-sky-500/25 text-sky-950 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
+              <div className="w-9 h-9 rounded-xl bg-teal-500/25 text-teal-950 flex items-center justify-center text-lg mb-1 shrink-0 font-bold">
                 🧺
               </div>
               <span className="text-xs font-black text-stone-900 leading-tight">
