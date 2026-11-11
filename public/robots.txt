@@ -1,0 +1,10 @@
+# Robots.txt for DEO CHHATH SEVA
+# Organization: NEXTGEN DEVBHOOMI FOUNDATION
+# Location: Deo, Aurangabad, Bihar, India
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin-dashboard
+
+Sitemap: https://deochhathseva.org/sitemap.xml

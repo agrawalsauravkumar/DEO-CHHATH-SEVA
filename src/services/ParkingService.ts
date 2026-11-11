@@ -3,7 +3,86 @@ import { LocationService } from './LocationService';
 import { apiRequest } from './apiClient';
 
 const STORAGE_SAVED_PARKING_KEY = 'deo_chhath_user_saved_parking';
-let currentParkings: ParkingLocation[] = [];
+
+const DEFAULT_VERIFIED_PARKINGS: ParkingLocation[] = [
+  {
+    id: 'p1',
+    name: 'पार्किंग 1 - राजा जगन्नाथ हाई स्कूल मैदान',
+    nameEn: 'Parking 1 - Raja Jagannath High School Ground',
+    latitude: 24.6508,
+    longitude: 84.4325,
+    landmark: 'हाई स्कूल रोड, देव (सूर्य मंदिर से 900 मी)',
+    description: 'चार पहिया एवं दोपहिया वाहनों हेतु विशाल अधिकृत पार्किंग स्थल।',
+    capacity: 'अनुमानित 800 वाहन',
+    status: 'AVAILABLE',
+    isDemo: false,
+    updatedAt: 'आधिकारिक मेला व्यवस्था',
+    isActive: true,
+    vehicleTypes: ['fourWheeler', 'twoWheeler'],
+  },
+  {
+    id: 'p2',
+    name: 'पार्किंग 2 - देव डिग्री कॉलेज परिसर मैदान',
+    nameEn: 'Parking 2 - Deo Degree College Ground',
+    latitude: 24.6465,
+    longitude: 84.4280,
+    landmark: 'अंबा-देव बाईपास मार्ग (कॉलेज मुख्य गेट)',
+    description: 'बड़ी बसें, मिनी बस व चार पहिया वाहनों हेतु। निःशुल्क ई-रिक्शा शटल उपलब्ध।',
+    capacity: 'बड़ी बसें व 1200 गाड़ियाँ',
+    status: 'AVAILABLE',
+    isDemo: false,
+    updatedAt: 'आधिकारिक मेला व्यवस्था',
+    isActive: true,
+    vehicleTypes: ['bus', 'fourWheeler'],
+  },
+  {
+    id: 'p3',
+    name: 'पार्किंग 3 - अंबा मोड़ स्वागत गेट पार्किंग',
+    nameEn: 'Parking 3 - Amba Mod Welcome Gate Parking',
+    latitude: 24.6410,
+    longitude: 84.4215,
+    landmark: 'औरंगाबाद-देव मुख्य प्रवेश द्वार चेक पोस्ट',
+    description: 'बाहरी जिलों से आने वाले भारी वाहनों व बसों हेतु मुख्य पड़ाव।',
+    capacity: '1500 चार पहिया वाहन',
+    status: 'AVAILABLE',
+    isDemo: false,
+    updatedAt: 'आधिकारिक मेला व्यवस्था',
+    isActive: true,
+    vehicleTypes: ['bus', 'fourWheeler', 'twoWheeler'],
+  },
+  {
+    id: 'p4',
+    name: 'पार्किंग 4 - कंचन बाग मैदान (दोपहिया विशेष)',
+    nameEn: 'Parking 4 - Kanchan Bagh Two-Wheeler Parking',
+    latitude: 24.6545,
+    longitude: 84.4380,
+    landmark: 'रुद्र कुंड मार्ग के समीप, देव',
+    description: 'केवल मोटरसाइकिल, स्कूटर व साइकिल हेतु समर्पित सुरक्षित स्टैंड।',
+    capacity: '3000 दोपहिया वाहन',
+    status: 'AVAILABLE',
+    isDemo: false,
+    updatedAt: 'आधिकारिक मेला व्यवस्था',
+    isActive: true,
+    vehicleTypes: ['twoWheeler'],
+  },
+  {
+    id: 'p5',
+    name: 'पार्किंग 5 - देव प्रखंड कार्यालय परिसर स्टैंड',
+    nameEn: 'Parking 5 - Block Office Campus Parking',
+    latitude: 24.6515,
+    longitude: 84.4360,
+    landmark: 'प्रशासनिक कैंप व ब्लॉक कार्यालय, देव',
+    description: 'प्रशासनिक व आधिकारिक सेवा वाहनों हेतु अधिकृत पार्किंग स्थल।',
+    capacity: '200 चार पहिया वाहन',
+    status: 'AVAILABLE',
+    isDemo: false,
+    updatedAt: 'आधिकारिक मेला व्यवस्था',
+    isActive: true,
+    vehicleTypes: ['fourWheeler'],
+  },
+];
+
+let currentParkings: ParkingLocation[] = [...DEFAULT_VERIFIED_PARKINGS];
 
 interface ApiParking {
   id: string;

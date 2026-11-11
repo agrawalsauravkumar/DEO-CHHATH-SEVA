@@ -25,7 +25,12 @@ authRouter.post('/login', async (req, res) => {
   }
 
   const clean = username.trim().toLowerCase();
-  let user = await repository.findUserByPhoneOrUsername(clean);
+  let user = null;
+  try {
+    user = await repository.findUserByPhoneOrUsername(clean);
+  } catch (err: any) {
+    console.warn('⚠️ [Auth Notice]: Database find error, checking standby state:', err?.message);
+  }
 
   // Secure Initial Administrator Bootstrapping if configured via environment
   const configuredAdminEmail = (process.env.ADMIN_INITIAL_EMAIL || 'admin@nextgendevbhoomi.org').trim().toLowerCase();

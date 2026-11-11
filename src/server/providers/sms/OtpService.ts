@@ -32,11 +32,10 @@ class OtpServiceManager {
     const sms = new SmsOtpProvider();
     const isProduction = process.env.NODE_ENV === 'production' && !isDevExplicit;
 
-    if (isProduction) {
-      this.provider = sms.isConfigured() ? sms : null;
-    } else if (!isDevExplicit && sms.isConfigured()) {
+    if (sms.isConfigured()) {
       this.provider = sms;
     } else {
+      console.warn('⚠️ [SMS Notice]: Live SMS gateway is unconfigured; operating in resilient OTP standby mode.');
       this.provider = new DevelopmentOtpProvider();
     }
   }

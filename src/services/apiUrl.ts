@@ -1,6 +1,10 @@
 import { Capacitor } from '@capacitor/core';
 
-const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+const configuredApiBaseUrl = (
+  typeof import.meta !== 'undefined' && import.meta.env
+    ? import.meta.env.VITE_API_BASE_URL
+    : process.env.VITE_API_BASE_URL
+)?.trim();
 
 export const apiUrl = (path: `/api/${string}`): string => {
   if (!configuredApiBaseUrl) {

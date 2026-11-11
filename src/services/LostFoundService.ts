@@ -10,6 +10,8 @@ import {
   LostFoundMatch,
   LostFoundHandover,
 } from '../types';
+import { apiRequest } from './apiClient';
+import { OfflineDataService } from './OfflineDataService';
 
 const STORAGE_KEYS = {
   REPORTS: 'deo_lost_found_reports',
@@ -104,7 +106,74 @@ class LostFoundServiceManager {
     // Auto trigger matching logic
     this.checkMatchesForReport(newReport);
 
+    // Dispatch to central server or enqueue offline
+    const payload = {
+      type: data.type,
+      category: data.category,
+      title: data.title.trim(),
+      description: data.description.trim(),
+      locationName: data.location.trim(),
+      latitude: data.latitude,
+      longitude: data.longitude,
+      contactName: data.contactName?.trim(),
+      contactPhone: data.contactPhone?.trim(),
+      identifyingFeatures: data.identifyingFeatures?.trim(),
+    };
+
+    if (typeof navigator !== 'undefined' && navigator.onLine) {
+      apiRequest<{ success: boolean; report?: { reportId: string } }>('/api/lost-found', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }).catch(() => {
+        if (typeof indexedDB !== 'undefined') {
+          void OfflineDataService.enqueueAction({
+            id: newReport.id,
+            type: 'SUBMIT_LOST_FOUND',
+            payload,
+          }).catch(() => {});
+        }
+      });
+    } else if (typeof indexedDB !== 'undefined') {
+      void OfflineDataService.enqueueAction({
+        id: newReport.id,
+        type: 'SUBMIT_LOST_FOUND',
+        payload,
+      }).catch(() => {});
+    }
+
     return newReport;
+  }
+
+  public async syncReportsWithServer(): Promise<void> {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) return;
+    try {
+      const res = await apiRequest<{ reports: Array<{ reportId: string; type: LostFoundType; category: string; status: LostFoundStatus; createdAt: string }> }>('/api/lost-found');
+      if (res && Array.isArray(res.reports)) {
+        const local = this.getAllReports();
+        const existingIds = new Set(local.map((r) => r.reportId));
+        for (const r of res.reports) {
+          if (!existingIds.has(r.reportId)) {
+            local.push({
+              id: 'srv_' + r.reportId,
+              reportId: r.reportId,
+              type: r.type,
+              category: r.category,
+              title: `${r.type === 'LOST_PERSON' || r.type === 'FOUND_PERSON' ? 'व्यक्ति' : 'सामान'} रिपोर्ट (${r.category})`,
+              description: 'अधिकृत खोया-पाया नियंत्रण कक्ष द्वारा सत्यापित विवरण।',
+              location: 'देव सूर्य मंदिर मेला परिसर',
+              createdBy: 'system_official',
+              createdAt: new Date(r.createdAt).toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
+              updatedAt: new Date(r.createdAt).toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' }),
+              status: r.status,
+              verificationStatus: 'VERIFIED',
+            });
+          }
+        }
+        this.saveReports(local);
+      }
+    } catch {
+      // Offline fallback
+    }
   }
 
   public getAllReports(): LostFoundReport[] {

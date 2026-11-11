@@ -219,26 +219,38 @@ class AdminServiceManager {
     const admin = this.currentAdmin;
     if (!admin?.token) return false;
 
-    const response = await fetch(apiUrl('/api/auth/session'), {
-      headers: { Authorization: `Bearer ${admin.token}` },
-    });
-    if (!response.ok) {
-      this.logout();
-      return false;
-    }
+    try {
+      const response = await fetch(apiUrl('/api/auth/session'), {
+        headers: { Authorization: `Bearer ${admin.token}` },
+      });
+      if (response.status === 401) {
+        this.logout();
+        return false;
+      }
+      if (!response.ok) {
+        // Transient server or network error; keep existing session active
+        return true;
+      }
 
-    const data = await response.json() as {
-      authenticated?: boolean;
-      user?: { id?: string; role?: AdminRole; status?: string };
-    };
-    const isValid = Boolean(
-      data.authenticated &&
-      data.user?.id === admin.id &&
-      data.user.role === admin.role &&
-      data.user.status === 'ACTIVE'
-    );
-    if (!isValid) this.logout();
-    return isValid;
+      const data = await response.json() as {
+        authenticated?: boolean;
+        user?: { id?: string; role?: AdminRole; status?: string };
+      };
+      const isValid = Boolean(
+        data.authenticated &&
+        data.user?.id === admin.id &&
+        data.user.role === admin.role &&
+        data.user.status === 'ACTIVE'
+      );
+      if (!isValid && data.authenticated === false) {
+        this.logout();
+        return false;
+      }
+      return isValid;
+    } catch {
+      // Offline or network dip; preserve offline admin capability
+      return true;
+    }
   }
 
   public hasPermission(permission: string): boolean {

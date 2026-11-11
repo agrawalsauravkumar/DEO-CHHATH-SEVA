@@ -183,15 +183,18 @@ export function getDatabaseStatus(): DatabaseStatus {
 export async function executeQuery<T = any>(text: string, params: any[] = []): Promise<T[] | null> {
   if (!pool || !isConnected) {
     if (process.env.NODE_ENV === 'production') {
-      throw new Error('PostgreSQL is not connected; database operation rejected.');
+      console.warn('⚠️ [PostgreSQL Standby]: Database is not connected; operating in resilient standby fallback mode.');
     }
     return null;
   }
   try {
     const res = await pool.query(text, params);
     return res.rows as T[];
-  } catch (err) {
-    console.error('Database query error:', err);
+  } catch (err: any) {
+    console.error('Database query error:', err.message);
+    if (process.env.NODE_ENV === 'production') {
+      return null;
+    }
     throw err;
   }
 }

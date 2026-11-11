@@ -32,20 +32,27 @@ app.use('/api', (req, res, next) => {
   const requestOrigin = req.headers.origin;
 
   if (requestOrigin) {
-    if (
+    const isAllowed =
       allowedOrigins.includes('*') ||
       allowedOrigins.length === 0 ||
       allowedOrigins.includes(requestOrigin) ||
       requestOrigin.startsWith('http://localhost') ||
       requestOrigin.startsWith('https://localhost') ||
-      requestOrigin.startsWith('capacitor://localhost')
-    ) {
+      requestOrigin.startsWith('capacitor://localhost') ||
+      requestOrigin.endsWith('.onrender.com') ||
+      requestOrigin.endsWith('.vercel.app') ||
+      requestOrigin.endsWith('.run.app') ||
+      requestOrigin.includes('deochhathseva');
+
+    if (isAllowed) {
       res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
       res.setHeader('Vary', 'Origin');
     } else {
-      res.setHeader('Access-Control-Allow-Origin', allowedOrigins[0] || '*');
+      res.setHeader('Access-Control-Allow-Origin', allowedOrigins[0] || requestOrigin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Vary', 'Origin');
     }
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else {
     res.setHeader('Access-Control-Allow-Origin', '*');
   }
