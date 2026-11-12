@@ -36,7 +36,7 @@ The DEO CHHATH SEVA platform is architected for zero-downtime high-concurrency p
 
 ### High Availability Principles:
 1. **Offline-aware PWA**: Static assets and selected verified data may be cached for limited offline use. Mutations require a live API connection.
-2. **Production persistence gate**: Production refuses to start or serve database operations without PostgreSQL/PostGIS. In-memory demo data is restricted to non-production development only.
+2. **Production persistence gate**: The process may start without PostgreSQL/PostGIS, but its health is degraded and database-backed operations are unavailable. In-memory demo data is restricted to non-production development only.
 3. **Stateless API layer**: API instances use PostgreSQL for persisted workflows; availability and horizontal scaling still require deployment-level health checks and capacity testing.
 
 ---
@@ -49,22 +49,22 @@ All sensitive credentials must be managed via production secret management (e.g.
 |---|---|---|---|---|
 | `PORT` | Yes | `3000` | No | Internal port for the Express application server. |
 | `NODE_ENV` | Yes | `production` | No | Node execution mode (`development` vs `production`). |
-| `DATABASE_URL` | Yes in production | `""` | No | PostgreSQL connection URI including user, password, host, port, and database name. When unreachable, the server operates in resilient standby mode. |
+| `DATABASE_URL` | Yes in production | `""` | No | PostgreSQL connection URI including user, password, host, port, and database name. When missing or unreachable, health is degraded and database-backed operations fail; this is not a production standby mode. |
 | `AUTH_SECRET` | Yes | `""` | No | High-entropy cryptographic string (min 32 bytes) for signing and verifying JWT tokens. |
-| `ADMIN_INITIAL_EMAIL` | Optional | `admin@nextgendevbhoomi.org` | No | Initial administrator email for automated bootstrapping. |
-| `ADMIN_INITIAL_PASSWORD` | Optional | `""` | No | Initial administrator password for secure zero-touch bootstrapping on first login. |
 | `VITE_MAP_TILE_URL` | No | `https://tile.openstreetmap.org/{z}/{x}/{y}.png` | Yes | Public tile URL baked into the client build. Use only a provider whose tile terms permit the app's usage. |
 | `VITE_MAP_ATTRIBUTION` | No | `OpenStreetMap contributors` | Yes | Required provider attribution displayed on the map canvas. |
-| `ROUTING_ENGINE_URL`| No | `https://router.project-osrm.org` | No | OSRM or GraphHopper server endpoint for route calculations. |
-| `SMS_PROVIDER` | Optional | `fast2sms` | No | SMS provider adapter (`fast2sms`, `twilio`, `msg91`). |
-| `SMS_API_KEY` | Optional | `""` | No | Private API key for dispatching official volunteer & OTP SMS messages. |
+| `VITE_ROUTING_ENGINE_URL` | No | Provider-dependent | Yes | Public routing-engine endpoint baked into the client build; verify provider capacity and terms before use. |
+| `SMS_PROVIDER` | Required for production OTP | `fast2sms` | No | SMS gateway identifier recorded by the server; verify the gateway adapter and message format with the selected provider. |
+| `SMS_API_KEY` | Required for production OTP | `""` | No | Private credential for the configured SMS endpoint. |
 | `SMS_API_URL` | Required for production OTP | `""` | No | Private production SMS gateway endpoint. OTP delivery fails closed when it is not configured. |
 | `SMS_SENDER_ID` | Optional | `DEOSEV` | No | DLT-registered 6-character sender header for India SMS delivery. |
 | `OTP_DEV_MODE` | No | `false` | No | Enables simulated OTP only outside production; production always requires a configured SMS gateway. |
 | `NOTIFICATION_CONFIG`| Optional| `""` | No | Webhook URL for forwarding emergency broadcasts and SOS alerts. |
-| `CORS_ORIGIN` | Yes | `*` | No | Restrict API access to specific domain in production (e.g., `https://deochhathseva.org`). |
+| `CORS_ORIGIN` | Yes in production | No origins | No | Comma-separated exact browser origins, including `https://localhost` for the Capacitor app and the deployed website origin. |
 | `TEAM_IMAGE_DIR` | Recommended | `data/team-images` | No | Persistent server-side directory for validated team profile photos. Mount durable storage here; defaults safely to data/team-images. |
 | `DEMO_TEAM_SEED` | No | `false` | No | Set to `true` together with `NODE_ENV=development` only to insert five fictional, clearly marked team examples once. Never enable in production. |
+
+The client also has an intentional on-device offline OTP flow. It creates a clearly marked, time-limited local session and never acts as proof of phone ownership or a server-authenticated token. Server OTP is disabled in production unless a live SMS provider is configured; `OTP_DEV_MODE` cannot enable a test OTP in production.
 
 ### Administrator account provisioning
 
@@ -86,11 +86,15 @@ The first account's identity and role must be approved by the organization's dat
 
 ### Release readiness gate
 
-The code includes PostgreSQL-backed paths for facilities, parking, volunteers, help requests, announcements, lost-and-found reports, users, audit logs, and team profiles. These paths have **not** been verified against a live database. When PostgreSQL is unavailable, public operational lists do not expose in-memory seed records, and configured mutation routes fail with HTTP 503 instead of claiming a volatile write succeeded. Do not treat development fallback data as operational.
+Database models and some PostgreSQL-backed paths exist for facilities, parking, volunteers, help requests, announcements, lost-and-found reports, users, audit logs, and team profiles; they do not represent complete, verified persistence for every user/admin workflow. These paths have **not** been verified against a live database. When PostgreSQL is unavailable, public operational lists do not expose in-memory seed records, and configured mutation routes fail with HTTP 503 instead of claiming a volatile write succeeded. Do not treat development fallback data as operational.
 
 Public announcements require an authorized publisher, a verified source, an explicit timezone-aware expiry later than publication, and an active published status. No expiry is synthesized. Expired, malformed, future-dated, unverified, and demo-source records are filtered out. Family safety is deliberately disabled until a persistent, consent-based backend exists. Lost-and-found API writes now use UUID-backed PostgreSQL rows and public responses omit report descriptions, names, contact data, and coordinates; the complete client moderation/contact workflow still needs end-to-end verification. Notification delivery and Android APK/device tests are also unverified.
 
-This is **not yet cleared for live government operations**. No provisioned PostgreSQL/PostGIS database, SMS gateway, approved administrator account, or authoritative live facility/announcement dataset was available for end-to-end verification. Map tiles/data are not confirmed available offline, and the map, emergency contacts, SMS/OTP delivery, data retention, and backup/restore procedures require operational validation. Android SDK/JDK and device testing were unavailable.
+This is **not yet cleared for live government operations**. No provisioned PostgreSQL/PostGIS database, SMS gateway, approved administrator account, or authoritative live facility/announcement dataset is configured for end-to-end verification. Map tiles/data are not confirmed available offline, and the map, emergency contacts, SMS/OTP delivery, data retention, and backup/restore procedures require operational validation. Android SDK/JDK and device testing were unavailable. The local offline OTP is usable without SMS but does not verify phone ownership or authorize server/admin access.
+
+### Google Search indexing
+
+The source build includes a canonical homepage, crawlable metadata, structured data for the publisher/application, `robots.txt`, and a sitemap containing only the actual homepage URL. The app's other screens currently share a client-side navigation shell rather than having unique public URLs, so they are not listed as separate sitemap pages. If Cloudflare's managed robots feature is enabled, verify that it does not replace the deployed `robots.txt` without the sitemap directive. After deploying the verified build, the domain owner must verify the property in Google Search Console, submit `/sitemap.xml`, inspect indexing/canonical issues, and ensure the production page is publicly reachable over HTTPS. Search ranking and appearing first are controlled by Google and cannot be guaranteed by code; unique crawlable pages, trusted links/citations, accurate current content, and time are also needed.
 
 Before deployment, provision the production secrets and services, apply/verify the schema migration, verify role-based access with approved accounts, test every mutation across separate clients and a server restart, validate SMS/OTP delivery and incident procedures, and obtain current operational data from the responsible authorities. Do not deploy the development in-memory fallback as a public operations system.
 
@@ -292,20 +296,20 @@ Install Android Studio and the Android SDK, then run `npm run android:sync` and 
    sudo systemctl status deo-chhath
    ```
 
-5. **Nginx Reverse Proxy Configuration (`/etc/nginx/sites-available/deochhath`)**:
+5. **Nginx Reverse Proxy Configuration (`/etc/nginx/sites-available/deo-chhath-seva`)**:
    ```nginx
    server {
        listen 80;
-       server_name deochhathseva.org www.deochhathseva.org;
+       server_name seva.nextgendevbhoomi.org;
        return 301 https://$host$request_uri;
    }
 
    server {
        listen 443 ssl http2;
-       server_name deochhathseva.org www.deochhathseva.org;
+       server_name seva.nextgendevbhoomi.org;
 
-       ssl_certificate /etc/letsencrypt/live/deochhathseva.org/fullchain.pem;
-       ssl_certificate_key /etc/letsencrypt/live/deochhathseva.org/privkey.pem;
+       ssl_certificate /etc/letsencrypt/live/seva.nextgendevbhoomi.org/fullchain.pem;
+       ssl_certificate_key /etc/letsencrypt/live/seva.nextgendevbhoomi.org/privkey.pem;
 
        # Gzip compression for fast mobile loading
        gzip on;
@@ -335,7 +339,7 @@ Verify deployment integrity using built-in health endpoints:
 
 1. **System Health Endpoint**:
    ```bash
-   curl -s -f https://deochhathseva.org/api/health | jq .
+   curl -s -f https://seva.nextgendevbhoomi.org/api/health | jq .
    ```
    Expected response:
    ```json
@@ -357,12 +361,12 @@ Verify deployment integrity using built-in health endpoints:
 
 2. **Database Engine Inspection**:
    ```bash
-   curl -s https://deochhathseva.org/api/database/status | jq .
+   curl -s https://seva.nextgendevbhoomi.org/api/database/status | jq .
    ```
 
 3. **Offline Sync Package Validation**:
    ```bash
-   curl -s -I https://deochhathseva.org/api/sync/bundle
+   curl -s -I https://seva.nextgendevbhoomi.org/api/sync/bundle
    ```
    Must return `HTTP/1.1 200 OK` with `Content-Type: application/json`.
 

@@ -42,6 +42,9 @@ routesRouter.post(
     ) {
       return res.status(400).json({ error: 'Valid start and destination coordinates required' });
     }
+    if (travelMode !== 'WALKING' && travelMode !== 'DRIVING') {
+      return res.status(400).json({ error: 'Supported travel mode required' });
+    }
 
     const apiKey = process.env.GOOGLE_ROUTES_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
 
@@ -130,10 +133,15 @@ routesRouter.post(
       }
     }
 
-    // Fallback: Use server-side Valhalla / OSRM
+    if (travelMode === 'WALKING') {
+      return res.status(503).json({
+        error: 'सत्यापित पैदल मार्ग उपलब्ध नहीं है। कृपया किसी स्थानीय सहायता केंद्र से मार्ग पूछें।',
+      });
+    }
+
+    // The public OSRM endpoint serves driving routes only.
     try {
-      const profile = travelMode === 'WALKING' ? 'foot' : 'car';
-      const osrmUrl = `https://router.project-osrm.org/route/v1/${profile === 'foot' ? 'driving' : 'driving'}/${startLongitude},${startLatitude};${destinationLongitude},${destinationLatitude}?overview=full&geometries=geojson&steps=true`;
+      const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startLongitude},${startLatitude};${destinationLongitude},${destinationLatitude}?overview=full&geometries=geojson&steps=true`;
 
       const osrmResp = await fetch(osrmUrl);
       if (osrmResp.ok) {
@@ -222,4 +230,3 @@ function decodeGooglePolyline(encoded: string): [number, number][] {
   }
   return points;
 }
-

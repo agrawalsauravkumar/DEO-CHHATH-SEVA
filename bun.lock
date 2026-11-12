@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "react-example",
+      "name": "deo-chhath-seva",
       "dependencies": {
         "@capacitor/android": "^8.5.3",
         "@capacitor/core": "^8.5.3",

@@ -12,7 +12,7 @@ import {
   getAuthenticatedUser,
 } from '../middleware/auth';
 import { otpService } from '../providers/sms/OtpService';
-import { verifyPassword, hashPassword } from '../auth/password';
+import { verifyPassword } from '../auth/password';
 import { randomUUID } from 'node:crypto';
 
 export const authRouter = Router();
@@ -30,32 +30,6 @@ authRouter.post('/login', async (req, res) => {
     user = await repository.findUserByPhoneOrUsername(clean);
   } catch (err: any) {
     console.warn('⚠️ [Auth Notice]: Database find error, checking standby state:', err?.message);
-  }
-
-  // Secure Initial Administrator Bootstrapping if configured via environment
-  const configuredAdminEmail = (process.env.ADMIN_INITIAL_EMAIL || 'admin@nextgendevbhoomi.org').trim().toLowerCase();
-  const configuredAdminPassword = process.env.ADMIN_INITIAL_PASSWORD?.trim();
-
-  if (!user && configuredAdminPassword && (clean === configuredAdminEmail || clean === 'admin')) {
-    if (password === configuredAdminPassword) {
-      try {
-        const passwordHash = await hashPassword(configuredAdminPassword);
-        user = await repository.saveUser({
-          id: randomUUID(),
-          email: configuredAdminEmail,
-          username: configuredAdminEmail,
-          fullName: 'अधिकृत व्यवस्थापक (Authorized Administrator)',
-          role: 'SUPER_ADMIN',
-          status: 'ACTIVE',
-          passwordHash,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          lastLoginAt: new Date().toISOString(),
-        });
-      } catch (hashErr) {
-        console.warn('Initial admin provisioning warning:', hashErr);
-      }
-    }
   }
 
   const adminRoles = [

@@ -20,7 +20,7 @@ function getStoredToken(sessionType: ApiSession): string | undefined {
       'token' in session &&
       typeof session.token === 'string'
     ) {
-      return session.token;
+      return session.token.startsWith('offline-') ? undefined : session.token;
     }
   } catch {
     return undefined;

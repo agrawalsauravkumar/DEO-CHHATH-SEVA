@@ -193,7 +193,7 @@ export const OfflineMapService = {
       status: 'not_downloaded',
       poiCount: DEFAULT_AUTHENTIC_FACILITIES.length,
       routeCount: DEO_OFFLINE_WALKING_ROUTES.length,
-      tilePackageFormat: 'GeoJSON Vectors & Cached Tile Package',
+      tilePackageFormat: 'Cached points and routes only; offline map tiles are unavailable',
     };
 
     if (typeof window === 'undefined') return defaultMeta;

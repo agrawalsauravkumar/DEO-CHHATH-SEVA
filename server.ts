@@ -23,7 +23,7 @@ const isProd = process.env.NODE_ENV === 'production';
 // Express Middlewares
 app.use(express.json());
 
-const allowedOrigins = (process.env.CORS_ORIGIN || '*')
+const allowedOrigins = (process.env.CORS_ORIGIN || (isProd ? '' : '*'))
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
@@ -32,27 +32,17 @@ app.use('/api', (req, res, next) => {
   const requestOrigin = req.headers.origin;
 
   if (requestOrigin) {
-    const isAllowed =
-      allowedOrigins.includes('*') ||
-      allowedOrigins.length === 0 ||
-      allowedOrigins.includes(requestOrigin) ||
-      requestOrigin.startsWith('http://localhost') ||
-      requestOrigin.startsWith('https://localhost') ||
-      requestOrigin.startsWith('capacitor://localhost') ||
-      requestOrigin.endsWith('.onrender.com') ||
-      requestOrigin.endsWith('.vercel.app') ||
-      requestOrigin.endsWith('.run.app') ||
-      requestOrigin.includes('deochhathseva');
+    const isAllowed = allowedOrigins.includes('*') || allowedOrigins.includes(requestOrigin);
 
-    if (isAllowed) {
-      res.setHeader('Access-Control-Allow-Origin', requestOrigin);
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Vary', 'Origin');
-    } else {
-      res.setHeader('Access-Control-Allow-Origin', allowedOrigins[0] || requestOrigin);
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Vary', 'Origin');
+    if (!isAllowed) {
+      return res.status(403).json({ error: 'Origin is not allowed' });
     }
+
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigins.includes('*') ? '*' : requestOrigin);
+    if (!allowedOrigins.includes('*')) {
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
+    res.setHeader('Vary', 'Origin');
   } else {
     res.setHeader('Access-Control-Allow-Origin', '*');
   }
@@ -73,8 +63,10 @@ app.use('/api', (req, res, next) => {
 // Production & Operations Health Endpoint
 app.get('/api/health', (_req, res) => {
   const dbStatus = getDatabaseStatus();
+  const operationalReady = dbStatus.connectionState === 'CONNECTED' && dbStatus.hasPostGIS;
   return res.json({
-    status: 'ok',
+    status: operationalReady ? 'HEALTHY' : 'DEGRADED',
+    operationalReady,
     service: 'DEO CHHATH SEVA API',
     organization: 'NEXTGEN DEVBHOOMI FOUNDATION',
     version: '1.4.0',
@@ -142,6 +134,10 @@ async function startServer() {
   } else {
     // Production: serve built static files from dist
     const distPath = path.resolve(__dirname, 'dist');
+    app.get('/sitemap.xml', (_req, res) => {
+      res.type('application/xml');
+      res.sendFile(path.resolve(distPath, 'sitemap.xml'));
+    });
     app.use(express.static(distPath));
     app.get('*', (_req, res) => {
       res.sendFile(path.resolve(distPath, 'index.html'));

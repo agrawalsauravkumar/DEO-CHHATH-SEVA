@@ -34,7 +34,7 @@ if (databaseUrl && !databaseUrl.includes('placeholder_password')) {
     pool = new Pool({
       connectionString: databaseUrl,
       ssl: process.env.NODE_ENV === 'production' && !databaseUrl.includes('localhost')
-        ? { rejectUnauthorized: false }
+        ? { rejectUnauthorized: true }
         : undefined,
       max: 10,
       idleTimeoutMillis: 30000,
@@ -193,7 +193,8 @@ export async function executeQuery<T = any>(text: string, params: any[] = []): P
   } catch (err: any) {
     console.error('Database query error:', err.message);
     if (process.env.NODE_ENV === 'production') {
-      return null;
+      isConnected = false;
+      connectionError = err.message;
     }
     throw err;
   }

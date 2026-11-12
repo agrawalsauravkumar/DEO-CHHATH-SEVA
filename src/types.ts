@@ -730,6 +730,7 @@ export interface AppUserProfile {
   lastLoginAt: string;
   token?: string;
   sessionExpiresAt?: number;
+  authMode?: 'online' | 'offline';
 }
 
 export interface OtpChallenge {
@@ -739,7 +740,8 @@ export interface OtpChallenge {
   expiresAt: number;   // timestamp ms
   remainingAttempts: number;
   isDevelopmentMode: boolean;
-  devOtpHint?: string; // Displayed ONLY in development mode with clear banner
+  isOfflineMode?: boolean;
+  devOtpHint?: string;
 }
 
 export interface SecurityEvent {

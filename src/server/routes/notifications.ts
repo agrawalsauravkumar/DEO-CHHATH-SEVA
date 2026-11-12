@@ -5,10 +5,11 @@
 
 import { Router } from 'express';
 import { repository } from '../db/repository';
+import { asyncHandler } from '../middleware/asyncHandler';
 
 export const notificationsRouter = Router();
 
-notificationsRouter.get('/', async (req, res) => {
+notificationsRouter.get('/', asyncHandler(async (_req, res) => {
   const announcements = await repository.getAnnouncements(true);
   const notifications = announcements.map((a) => ({
     id: `notif-${a.id}`,
@@ -24,4 +25,4 @@ notificationsRouter.get('/', async (req, res) => {
     total: notifications.length,
     notifications,
   });
-});
+}));

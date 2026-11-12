@@ -18,11 +18,12 @@ const MAX_OTP_ATTEMPTS = 5; // Brute force protection
 
 interface StoredOtpData {
   mobileNumber: string;
-  code: string;
+  code?: string;
   expiresAt: number;
   canResendAt: number;
   attemptsCount: number;
   maxAttempts: number;
+  offlineOnly?: boolean;
 }
 
 class AuthServiceManager {
@@ -39,12 +40,16 @@ class AuthServiceManager {
       const savedUserStr = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
       if (savedUserStr) {
         const parsed: AppUserProfile = JSON.parse(savedUserStr);
-        // Verify session expiry (24 hours or timestamp check)
         const expiry = localStorage.getItem(STORAGE_KEYS.SESSION_EXPIRY);
-        if (expiry && Number(expiry) < Date.now()) {
+        if (!expiry || !Number.isFinite(Number(expiry)) || Number(expiry) <= Date.now()) {
           this.logout();
           this.expiredSessionOnInit = true;
         } else {
+          parsed.sessionExpiresAt = Number(expiry);
+          parsed.authMode ||= parsed.token && !parsed.token.startsWith('offline-')
+            ? 'online'
+            : 'offline';
+          if (parsed.authMode === 'offline') delete parsed.token;
           this.currentUser = parsed;
         }
       }
@@ -73,7 +78,7 @@ class AuthServiceManager {
     if (!Number.isFinite(expiry) || expiry <= Date.now()) {
       return { available: false, reason: 'EXPIRED' };
     }
-    if (user.status !== 'ACTIVE' || !user.token) {
+    if (user.status !== 'ACTIVE' || (user.authMode !== 'offline' && !user.token)) {
       return { available: false, reason: 'INVALID_SESSION' };
     }
     if (user.role !== 'USER') {
@@ -84,7 +89,11 @@ class AuthServiceManager {
   }
 
   public isAuthenticated(): boolean {
-    return !!this.currentUser && this.currentUser.status === 'ACTIVE';
+    const expiry = Number(localStorage.getItem(STORAGE_KEYS.SESSION_EXPIRY));
+    return !!this.currentUser &&
+      this.currentUser.status === 'ACTIVE' &&
+      Number.isFinite(expiry) &&
+      expiry > Date.now();
   }
 
   public getUserRole(): AppUserRole {
@@ -102,7 +111,9 @@ class AuthServiceManager {
     }
 
     const tryOfflineSandbox = () => {
-      const simulatedCode = '123456';
+      const randomValue = new Uint32Array(1);
+      crypto.getRandomValues(randomValue);
+      const simulatedCode = String(100000 + (randomValue[0] % 900000));
       const now = Date.now();
       const challenge: OtpChallenge = {
         mobileNumber: cleanNumber,
@@ -111,6 +122,7 @@ class AuthServiceManager {
         expiresAt: now + OTP_EXPIRY_SECONDS * 1000,
         remainingAttempts: MAX_OTP_ATTEMPTS,
         isDevelopmentMode: true,
+        isOfflineMode: true,
         devOtpHint: simulatedCode,
       };
       localStorage.setItem(STORAGE_KEYS.ACTIVE_CHALLENGE, JSON.stringify({
@@ -118,6 +130,9 @@ class AuthServiceManager {
         code: simulatedCode,
         expiresAt: challenge.expiresAt,
         canResendAt: challenge.canResendAt,
+        attemptsCount: 0,
+        maxAttempts: MAX_OTP_ATTEMPTS,
+        offlineOnly: true,
       }));
       return { success: true, challenge };
     };
@@ -160,8 +175,12 @@ class AuthServiceManager {
       };
       localStorage.setItem(STORAGE_KEYS.ACTIVE_CHALLENGE, JSON.stringify({
         mobileNumber: cleanNumber,
+        ...(data.isDevelopmentMode === true && data.devOtpHint
+          ? { code: data.devOtpHint, attemptsCount: 0, maxAttempts: MAX_OTP_ATTEMPTS }
+          : {}),
         expiresAt: challenge.expiresAt,
         canResendAt: challenge.canResendAt,
+        offlineOnly: false,
       }));
       return { success: true, challenge };
     } catch {
@@ -189,7 +208,7 @@ class AuthServiceManager {
       return { success: false, error: 'कोई सक्रिय OTP सत्र नहीं मिला। कृपया दोबारा OTP भेजें।' };
     }
 
-    let stored: Pick<StoredOtpData, 'mobileNumber' | 'expiresAt'> & { code?: string };
+    let stored: StoredOtpData;
     try {
       stored = JSON.parse(rawChallenge);
     } catch {
@@ -207,10 +226,20 @@ class AuthServiceManager {
     }
 
     const tryOfflineVerify = () => {
-      const storedCode = stored.code || '123456';
-      if (cleanOtp === storedCode) {
+      if (!stored.code) {
+        return {
+          success: false,
+          error: 'इस OTP को ऑफलाइन सत्यापित नहीं किया जा सकता। इंटरनेट से जुड़ें या ऑफलाइन OTP नया मंगाएँ।',
+        };
+      }
+      if ((stored.attemptsCount || 0) >= (stored.maxAttempts || MAX_OTP_ATTEMPTS)) {
+        localStorage.removeItem(STORAGE_KEYS.ACTIVE_CHALLENGE);
+        return { success: false, error: 'अधिकतम गलत प्रयास हो चुके हैं। नया OTP मंगाएँ।' };
+      }
+      if (cleanOtp === stored.code) {
         localStorage.removeItem(STORAGE_KEYS.ACTIVE_CHALLENGE);
         const nowIso = new Date().toISOString();
+        const sessionExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
         const user: AppUserProfile = {
           id: `offline-user-${cleanNumber}`,
           mobileNumber: cleanNumber,
@@ -221,17 +250,27 @@ class AuthServiceManager {
           createdAt: nowIso,
           updatedAt: nowIso,
           lastLoginAt: nowIso,
-          token: `offline-token-${Date.now()}`,
+          authMode: 'offline',
+          sessionExpiresAt,
         };
         this.currentUser = user;
         this.expiredSessionOnInit = false;
-        const sessionExpiry = Date.now() + 24 * 60 * 60 * 1000;
         localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-        localStorage.setItem(STORAGE_KEYS.SESSION_EXPIRY, sessionExpiry.toString());
+        localStorage.setItem(STORAGE_KEYS.SESSION_EXPIRY, sessionExpiresAt.toString());
         return { success: true, user };
+      }
+      stored.attemptsCount = (stored.attemptsCount || 0) + 1;
+      if (stored.attemptsCount >= (stored.maxAttempts || MAX_OTP_ATTEMPTS)) {
+        localStorage.removeItem(STORAGE_KEYS.ACTIVE_CHALLENGE);
+      } else {
+        localStorage.setItem(STORAGE_KEYS.ACTIVE_CHALLENGE, JSON.stringify(stored));
       }
       return { success: false, error: 'गलत OTP कोड दर्ज किया गया।' };
     };
+
+    if (stored.offlineOnly) {
+      return tryOfflineVerify();
+    }
 
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       return tryOfflineVerify();
@@ -288,12 +327,14 @@ class AuthServiceManager {
       updatedAt: data.user.updatedAt || nowIso,
       lastLoginAt: data.user.lastLoginAt || nowIso,
       token: data.user.token,
+      authMode: 'online',
     };
     this.currentUser = user;
     this.expiredSessionOnInit = false;
 
     // Set 24 hour session
     const sessionExpiry = Date.now() + 24 * 60 * 60 * 1000;
+    user.sessionExpiresAt = sessionExpiry;
     localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
     localStorage.setItem(STORAGE_KEYS.SESSION_EXPIRY, sessionExpiry.toString());
 

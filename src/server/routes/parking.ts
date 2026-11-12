@@ -8,20 +8,21 @@ import { repository } from '../db/repository';
 import { DbParkingStatus } from '../db/types';
 import { requireAuth, requireRole, AuthenticatedRequest } from '../middleware/auth';
 import { requirePersistentDatabase } from '../middleware/requirePersistentDatabase';
+import { asyncHandler } from '../middleware/asyncHandler';
 
 export const parkingRouter = Router();
 
 // Get All Parking Facilities
-parkingRouter.get('/', async (req, res) => {
+parkingRouter.get('/', asyncHandler(async (_req, res) => {
   const parkings = await repository.getParkings();
   return res.json({
     total: parkings.length,
     parkings,
   });
-});
+}));
 
 // Update Live Parking Occupancy Status (Facility Admin or Police)
-parkingRouter.patch('/:id/status', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN', 'FACILITY_ADMIN'), requirePersistentDatabase, async (req: AuthenticatedRequest, res) => {
+parkingRouter.patch('/:id/status', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN', 'FACILITY_ADMIN'), requirePersistentDatabase, asyncHandler(async (req: AuthenticatedRequest, res) => {
   const { status, availableCapacity } = req.body;
   const validStatuses: DbParkingStatus[] = ['AVAILABLE', 'LIMITED', 'FULL', 'CLOSED', 'UNKNOWN'];
   const parkingStatus = validStatuses.find((validStatus) => validStatus === status);
@@ -62,4 +63,4 @@ parkingRouter.patch('/:id/status', requireAuth, requireRole('SUPER_ADMIN', 'ADMI
   });
 
   return res.json(updated);
-});
+}));

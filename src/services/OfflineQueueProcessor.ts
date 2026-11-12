@@ -135,9 +135,10 @@ class OfflineQueueProcessorManager {
             body: JSON.stringify(payload),
           }
         );
-        if (response.success && response.report?.reportId) {
-          LostFoundService.updateReportStatus(action.id, 'SUBMITTED');
+        if (!response.success || !response.report?.reportId) {
+          throw new Error('रिपोर्ट सर्वर पर दर्ज नहीं हुई; इसे कतार में रखा गया है।');
         }
+        LostFoundService.updateReportStatus(action.id, 'SUBMITTED');
         break;
       }
 
@@ -158,8 +159,7 @@ class OfflineQueueProcessorManager {
       }
 
       default:
-        console.warn('Unknown offline action type:', action.type);
-        break;
+        throw new Error(`Unsupported offline action type: ${action.type}`);
     }
   }
 }

@@ -155,6 +155,8 @@ const MainRouter: React.FC = () => {
   const {
     currentScreen,
     language,
+    currentUser,
+    navigate,
     isOnline,
     networkStatus,
     lastSyncTime,
@@ -220,7 +222,14 @@ const MainRouter: React.FC = () => {
       case 'emergency':
         return <EmergencyScreen />;
       case 'family':
-        return <FamilyScreen />;
+        return (
+          <>
+            <div role="status" className="mx-auto mt-3 max-w-3xl rounded-xl border border-amber-500 bg-amber-50 p-3 text-sm font-bold text-amber-950">
+              परिवार स्थान-साझाकरण अभी स्थायी सर्वर स्टोरेज के बिना उपलब्ध नहीं है। इस सुविधा को लाइव सुरक्षा सेवा न मानें।
+            </div>
+            <FamilyScreen />
+          </>
+        );
       case 'lost-found':
         return <LostFoundScreen />;
       case 'volunteer':
@@ -258,11 +267,25 @@ const MainRouter: React.FC = () => {
       case 'prasad-camps':
         return <PrasadCampsScreen />;
       case 'live-darshan':
-        return <LiveDarshanScreen />;
+        return (
+          <>
+            <div role="status" className="mx-auto mt-3 max-w-3xl rounded-xl border border-amber-500 bg-amber-50 p-3 text-sm font-bold text-amber-950">
+              वास्तविक लाइव वीडियो फीड उपलब्ध नहीं है; इस स्क्रीन की तस्वीरें और जानकारी लाइव प्रसारण नहीं हैं।
+            </div>
+            <LiveDarshanScreen />
+          </>
+        );
       case 'surya-stotra':
         return <SuryaStotraScreen />;
       case 'sankalp':
-        return <SankalpScreen />;
+        return (
+          <>
+            <div role="status" className="mx-auto mt-3 max-w-3xl rounded-xl border border-amber-500 bg-amber-50 p-3 text-sm font-bold text-amber-950">
+              संकल्प केवल इसी डिवाइस पर सहेजा जाता है; यह मंदिर में आधिकारिक पंजीकरण या जमा होने की पुष्टि नहीं है।
+            </div>
+            <SankalpScreen />
+          </>
+        );
       case 'accommodation':
         return <AccommodationScreen />;
       case 'puja-samagri':
@@ -277,6 +300,18 @@ const MainRouter: React.FC = () => {
       <div className="app-shell w-full max-w-4xl min-h-[100dvh] relative flex flex-col bg-[#FFF8E1] border-x border-[#FFD54F]/40 shadow-xl">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,213,79,0.14),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.06),transparent_30%)]" />
         <div className="relative z-10 flex min-h-[100dvh] flex-col">
+          {currentUser?.authMode === 'offline' && currentScreen !== 'splash' && (
+            <div
+              className="flex items-center justify-center gap-2 border-b border-amber-400 bg-amber-100 px-3 py-2 text-center text-xs font-bold text-amber-950"
+              role="status"
+              aria-live="polite"
+            >
+              <span>ऑफलाइन लॉगिन: यह सत्र केवल इस डिवाइस पर मान्य है; सर्वर/प्रशासक सुविधाओं के लिए ऑनलाइन सत्यापन जरूरी है।</span>
+              <button onClick={() => navigate('login')} className="shrink-0 underline">
+                ऑनलाइन लॉगिन
+              </button>
+            </div>
+          )}
           {currentScreen !== 'splash' && (!isOnline || networkStatus === 'SYNCING' || networkStatus === 'SYNC_ERROR' || networkRecovered) && (
             <div
               className={`flex min-h-10 items-center justify-center gap-2 px-3 py-1.5 text-center text-xs font-bold border-b transition-all ${

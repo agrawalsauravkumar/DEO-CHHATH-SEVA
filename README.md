@@ -7,11 +7,13 @@
 
 ## 📌 Overview
 
-**DEO CHHATH SEVA** is a high-reliability, offline-first, Hindi-first progressive web application (PWA) and backend platform engineered to serve millions of pilgrims during the sacred Chhath Puja festival at the Sun Temple (सूर्य मंदिर) and holy ghats (सूर्य कुंड एवं रुद्र कुंड) in Deo, Aurangabad, Bihar.
+**DEO CHHATH SEVA** is a Hindi-first progressive web application (PWA) and backend project for pilgrims visiting the Sun Temple (सूर्य मंदिर) and holy ghats (सूर्य कुंड एवं रुद्र कुंड) in Deo, Aurangabad, Bihar. It includes public-service screens and backend modules, but it has not been load-tested or approved for large-scale live event operations.
 
-The platform provides comprehensive crowd navigation, live facility tracking, emergency medical response, dedicated volunteer coordination, family safety networks, lost & found reporting, and senior citizen assistance with real-time administration and audit compliance.
+Facility status, emergency response, volunteer coordination, family safety, lost-and-found, and administration are not all fully persisted or verified as live workflows. Do not interpret demonstrations, local-only records, or map estimates as authoritative operational information.
 
 > **Production status:** This repository is not yet ready to operate a live government event. Most domain records and administration actions are not persisted to PostgreSQL and may be local to one server/browser. See the release-readiness gate in [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+**Offline login:** The app intentionally supports an on-device OTP for offline/demo access. That OTP creates only a local, time-limited `USER` session; it does not verify a phone number with the server and cannot authorize server-side operations. A server-verified session requires the configured production OTP provider.
 
 ---
 
@@ -19,38 +21,31 @@ The platform provides comprehensive crowd navigation, live facility tracking, em
 
 1. **Interactive GIS Map & Route Navigation**
    - High-performance Leaflet-based interactive map with OpenStreetMap integration.
-   - Offline tile and bundle caching for zero-connectivity situations.
-   - Geo-fenced Chhath Ghats, Surya Mandir zone, and restricted pedestrian corridors.
-   - Live turn-by-turn routing with diversion and road-closure alerts.
+   - Previously cached app assets and map tiles may work offline; there is no downloadable offline map package.
+   - Any route or facility data must be checked against an authorized, current source before operational use.
 
 2. **Essential Public Facilities (PostGIS Spatial Queries)**
-   - **पार्किंग (Parking)**: Real-time bay occupancy (P1 College Ground, P2 High School, P3 Bypass), vehicle type tags, and walking time estimates.
-   - **ई-रिक्शा शटल (Free Shuttles)**: Designated pickup/drop points with dedicated routes for the elderly and Chhath vrattis.
-   - **चिकित्सा शिविर (Medical & First Aid)**: CHC Deo, Surya Kund Emergency Post, 24x7 ambulance coordination, and direct 108 dispatch.
-   - **शौचालय एवं स्नानागार (Sanitation)**: Separate male, female, and divyangjan-accessible sanitation clusters with changing rooms.
-   - **अमृत शीतल जल सेवा (Drinking Water)**: RO pure chilled drinking water kiosks run by NextGen Dev Bhoomi Foundation.
+   - Screens and API modules are available for parking, shuttles, medical aid, toilets, drinking water, and help facilities.
+   - Live location, occupancy, opening status, and service availability require verified data from the responsible authority; they are not guaranteed by this app.
 
 3. **सुरक्षा एवं सहायता (Emergency & Help Response)**
-   - Single-tap SOS distress signal broadcasting with GPS geolocation.
-   - Direct helpline links: Police (112), Ambulance (108), Mela Control Room (`06186-224200`).
-   - Manned emergency help posts across the mela perimeter.
+   - Emergency screens can provide phone links and location-sharing flows, subject to device permissions and connectivity.
+   - Confirm helpline numbers and response coverage with local authorities; the app does not itself guarantee dispatch or staffed help posts.
 
 4. **परिवार सुरक्षा एवं स्थान साझा (Family Location Sharing)**
-   - Secure family groups with 6-digit invite codes.
-   - Battery-efficient GPS heartbeats with privacy killswitches.
-   - Last known location markers and meeting point coordination.
+   - Family sharing is disabled in production until a persistent, consent-based service is implemented and verified.
 
 5. **खोया-पाया केंद्र (Lost & Found)**
-   - Rapid reporting for lost persons, children, elders, and essential belongings.
-   - Integration with central public announcement loudspeakers and volunteer ground posts.
+   - Screens and API routes support lost-and-found reports; the complete client moderation/contact workflow still needs end-to-end verification.
+   - Do not assume a report is reaching staffed ground posts or public-address systems.
 
 6. **स्वयंसेवक प्रबंधन (Volunteer Network)**
-   - On-duty volunteer tracking, badge verification, and zonal assignment.
-   - Help request dispatch and escalation matrix.
+   - Volunteer and help-request management screens/API modules are present.
+   - Live rosters, dispatch, escalation, and cross-device persistence require authorized data and operational testing.
 
 7. **आधिकारिक घोषणाएं एवं मार्ग अलर्ट (Official Broadcasts)**
-   - Push notifications and home screen alert banners for Arghya timings (संध्या व प्रातः अर्घ्य).
-   - Real-time road closures, VIP movement updates, and crowd density advisories.
+   - The app can present announcements and route alerts from an authorized verified feed.
+   - No live feed or real-time crowd/road data is guaranteed until an official source is configured.
 
 8. **सुगम्यता (Senior Citizen & Accessibility Mode)**
    - High-contrast, large-font senior citizen mode.
@@ -64,8 +59,8 @@ The platform provides comprehensive crowd navigation, live facility tracking, em
 - **Frontend**: React 19, TypeScript, Tailwind CSS, Vite, Leaflet, Lucide Icons, Vite PWA Workbox.
 - **Backend API**: Node.js, Express, TypeScript (`tsx` dev runner, modular routing architecture).
 - **Spatial Database**: PostgreSQL 15+ with **PostGIS** spatial extension (WGS84 SRID 4326).
-- **State & Sync**: The PostgreSQL schema and connection pool are present; PostgreSQL-backed repository operations currently cover users/authentication only. Most domain workflows still use in-memory or browser-local state and are not production-persistent.
-- **Offline Architecture**: Service Worker caching, IndexedDB / LocalStorage replication, and `/api/sync/bundle` offline sync packaging.
+- **State & Sync**: PostgreSQL schema and connection pool are present, with selected database-backed routes; other domain workflows still use in-memory or browser-local state and need end-to-end persistence verification.
+- **Offline Architecture**: Service Worker caching, IndexedDB / LocalStorage storage, and a sync-bundle endpoint are present; offline tiles, routing, and reliable mutation sync are not guaranteed.
 
 ### Directory Structure
 ```

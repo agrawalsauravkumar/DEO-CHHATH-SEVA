@@ -5,11 +5,12 @@
 
 import { Router } from 'express';
 import { repository } from '../db/repository';
+import { asyncHandler } from '../middleware/asyncHandler';
 
 export const syncRouter = Router();
 
 // Full Sync Package (Used by Offline Map and Local Storage Sync)
-syncRouter.get(['/bundle', '/package'], async (req, res) => {
+syncRouter.get(['/bundle', '/package'], asyncHandler(async (_req, res) => {
   const facilities = await repository.getFacilities();
   const parkings = await repository.getParkings();
   const shuttleRoutes = await repository.getShuttleRoutes();
@@ -33,7 +34,7 @@ syncRouter.get(['/bundle', '/package'], async (req, res) => {
       routeAlerts: routeAlerts.length,
     },
   });
-});
+}));
 
 // Sync Status Timestamp
 syncRouter.get('/status', (req, res) => {

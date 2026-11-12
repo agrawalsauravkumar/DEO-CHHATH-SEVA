@@ -109,20 +109,22 @@ export const EmergencyScreen: React.FC = () => {
   const handleWhatsAppShare = async () => {
     if (!deviceLocation) {
       const success = await requestDeviceLocation();
-      if (!success) {
-        setLocationSharedNotice('आपकी location उपलब्ध नहीं है। कृपया GPS ऑन करें।');
-        setTimeout(() => setLocationSharedNotice(null), 4000);
-        return;
-      }
+      setLocationSharedNotice(
+        success
+          ? 'GPS स्थान मिल गया है। सही स्थान साझा करने के लिए फिर से टैप करें।'
+          : 'आपकी location उपलब्ध नहीं है। कृपया GPS ऑन करें।'
+      );
+      setTimeout(() => setLocationSharedNotice(null), 4000);
+      return;
     }
-    const lat = deviceLocation ? deviceLocation.latitude.toFixed(5) : '24.6538';
-    const lng = deviceLocation ? deviceLocation.longitude.toFixed(5) : '84.4375';
+    const lat = deviceLocation.latitude.toFixed(5);
+    const lng = deviceLocation.longitude.toFixed(5);
     const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
     const text = encodeURIComponent(
       `🚨 *आपातकालीन संदेश (देव छठ सेवा)*\n` +
       `मैं इस समय देव (औरंगाबाद) छठ मेले में हूँ और मुझे सहायता चाहिए।\n` +
       `📍 मेरी वर्तमान लोकेशन: ${mapsLink}\n` +
-      `सटीकता: ±${deviceLocation?.accuracy ? Math.round(deviceLocation.accuracy) : 10} मीटर\n` +
+      `सटीकता: ±${Math.round(deviceLocation.accuracy)} मीटर\n` +
       `समय: ${new Date().toLocaleTimeString('hi-IN')}\n` +
       `(NEXTGEN DEVBHOOMI FOUNDATION)`
     );

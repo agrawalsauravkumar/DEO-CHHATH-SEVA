@@ -7,20 +7,30 @@ import { Router } from 'express';
 import { randomInt, randomUUID } from 'node:crypto';
 import { repository } from '../db/repository';
 import { requireAuth, AuthenticatedRequest } from '../middleware/auth';
+import { RequestHandler } from 'express';
+import { asyncHandler } from '../middleware/asyncHandler';
 
 export const familyRouter = Router();
 
-// Family Safety Service Information
+const requirePersistentFamilyStore: RequestHandler = (_req, res, next) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(503).json({
+      error: 'Family location sharing is temporarily unavailable until persistent storage is configured.',
+    });
+  }
+  return next();
+};
+
 familyRouter.get('/', (_req, res) => {
   return res.json({
     service: 'Family Safety & Real-time Location Network',
-    status: 'ACTIVE',
-    features: ['GROUP_CREATION', 'CODE_JOIN', 'LOCATION_PING', 'EMERGENCY_ALERTS'],
+    status: process.env.NODE_ENV === 'production' ? 'UNAVAILABLE' : 'DEVELOPMENT_ONLY',
+    features: [],
   });
 });
 
 // 1. Create Family Group
-familyRouter.post('/groups', requireAuth, async (req: AuthenticatedRequest, res) => {
+familyRouter.post('/groups', requireAuth, requirePersistentFamilyStore, asyncHandler(async (req: AuthenticatedRequest, res) => {
   const { groupName, meetingPointName } = req.body;
   if (typeof groupName !== 'string' || !groupName.trim()) {
     return res.status(400).json({ error: 'Group name required' });
@@ -56,10 +66,10 @@ familyRouter.post('/groups', requireAuth, async (req: AuthenticatedRequest, res)
   });
 
   return res.status(201).json({ success: true, group });
-});
+}));
 
 // 2. Join Family Group by Code
-familyRouter.post('/join', requireAuth, async (req: AuthenticatedRequest, res) => {
+familyRouter.post('/join', requireAuth, requirePersistentFamilyStore, asyncHandler(async (req: AuthenticatedRequest, res) => {
   const { groupCode, relation, isElderly } = req.body;
   if (typeof groupCode !== 'string' || !groupCode.trim()) {
     return res.status(400).json({ error: 'Group code required' });
@@ -88,19 +98,19 @@ familyRouter.post('/join', requireAuth, async (req: AuthenticatedRequest, res) =
   });
 
   return res.status(201).json({ success: true, group, member });
-});
+}));
 
 // 3. Get Members of Group
-familyRouter.get('/groups/:groupId/members', requireAuth, async (req: AuthenticatedRequest, res) => {
+familyRouter.get('/groups/:groupId/members', requireAuth, requirePersistentFamilyStore, asyncHandler(async (req: AuthenticatedRequest, res) => {
   const members = await repository.getFamilyMembers(req.params.groupId);
   if (!members.some((member) => member.userId === req.user!.id)) {
     return res.status(403).json({ error: 'Only family group members can view member details' });
   }
   return res.json({ total: members.length, members });
-});
+}));
 
 // 4. Update Location & Safety Status (Heartbeat)
-familyRouter.post('/members/:memberId/ping', requireAuth, async (req: AuthenticatedRequest, res) => {
+familyRouter.post('/members/:memberId/ping', requireAuth, requirePersistentFamilyStore, asyncHandler(async (req: AuthenticatedRequest, res) => {
   const { latitude, longitude, isSafe } = req.body;
   if (
     typeof latitude !== 'number' ||
@@ -140,4 +150,4 @@ familyRouter.post('/members/:memberId/ping', requireAuth, async (req: Authentica
   }
 
   return res.json({ success: true, member: updated });
-});
+}));

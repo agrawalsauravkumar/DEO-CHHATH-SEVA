@@ -66,7 +66,19 @@ export const LoginScreen: React.FC = () => {
         setOtpValue('');
         const wait = Math.max(0, Math.ceil((res.challenge.canResendAt - Date.now()) / 1000));
         setResendCooldown(wait);
-        setSuccessMessage(isEnglish ? 'OTP sent successfully.' : 'OTP सफलतापूर्वक भेज दिया गया है।');
+        setSuccessMessage(
+          res.challenge.isOfflineMode
+            ? isEnglish
+              ? 'A local offline OTP was generated and is shown below. It does not verify your phone or a server account.'
+              : 'स्थानीय ऑफ़लाइन OTP बनाया गया है और नीचे दिखेगा। यह आपके फोन नंबर या सर्वर खाते का सत्यापन नहीं करता।'
+            : res.challenge.isDevelopmentMode
+              ? isEnglish
+                ? 'Development/test OTP is shown on this screen; this does not verify a server account.'
+                : 'विकास/परीक्षण OTP इसी स्क्रीन पर दिखेगा; इससे सर्वर खाते का सत्यापन नहीं होता।'
+              : isEnglish
+                ? 'OTP sent successfully.'
+                : 'OTP आपके मोबाइल पर भेज दिया गया है।'
+        );
       } else {
         setErrorMessage(
           res.error ||
@@ -99,10 +111,17 @@ export const LoginScreen: React.FC = () => {
       const res = await AuthService.verifyOtp(cleanNum, otpValue);
       if (res.success && res.user) {
         setCurrentUser(res.user);
-        setSuccessMessage(isEnglish ? 'Login successful!' : 'सफलतापूर्वक लॉगिन हो गया!');
-        setTimeout(() => {
-          navigate('profile');
-        }, 800);
+        const isOfflineSession = res.user.authMode === 'offline';
+        setSuccessMessage(
+          isOfflineSession
+            ? isEnglish
+              ? 'Offline login is active on this device only. Use the app navigation below; server/admin services still require online verification.'
+              : 'ऑफ़लाइन लॉगिन केवल इस डिवाइस पर सक्रिय है। नीचे ऐप नेविगेशन इस्तेमाल करें; सर्वर/प्रशासक सेवाओं के लिए ऑनलाइन सत्यापन जरूरी है।'
+            : isEnglish ? 'Login successful!' : 'सफलतापूर्वक लॉगिन हो गया!'
+        );
+        if (!isOfflineSession) {
+          window.setTimeout(() => navigate('profile'), 800);
+        }
       } else {
         setErrorMessage(res.error || (isEnglish ? 'OTP verification failed.' : 'OTP सत्यापन असफल।'));
       }
@@ -277,9 +296,13 @@ export const LoginScreen: React.FC = () => {
                   {isEnglish ? 'Enter OTP' : 'OTP दर्ज करें'}
                 </label>
                 <p className="text-xs text-stone-500">
-                  {isEnglish
-                    ? `A 6-digit code was sent to ${challenge?.maskedMobile || mobileNumber}.`
-                    : `${challenge?.maskedMobile || mobileNumber} पर 6 अंकों का कोड भेजा गया है।`}
+                  {challenge?.isOfflineMode
+                    ? isEnglish
+                      ? 'A local code was generated; it was not sent by SMS.'
+                      : 'स्थानीय कोड बनाया गया है; यह SMS से नहीं भेजा गया।'
+                    : isEnglish
+                      ? `A 6-digit code was sent to ${challenge?.maskedMobile || mobileNumber}.`
+                      : `${challenge?.maskedMobile || mobileNumber} पर 6 अंकों का कोड भेजा गया है।`}
                 </p>
               </div>
               <button
@@ -291,19 +314,25 @@ export const LoginScreen: React.FC = () => {
               </button>
             </div>
 
-            {/* Development Mode OTP Display Card */}
+            {/* Local offline and development OTPs are explicitly distinguished from SMS OTPs. */}
             {challenge?.isDevelopmentMode && challenge.devOtpHint && (
               <div className="bg-amber-50 border-2 border-dashed border-amber-400 rounded-2xl p-3 text-center space-y-1">
                 <span className="text-[11px] font-black text-amber-800 uppercase tracking-wider block">
-                  DEVELOPMENT MODE OTP
+                  {challenge.isOfflineMode
+                    ? isEnglish ? 'LOCAL OFFLINE OTP' : 'स्थानीय ऑफ़लाइन OTP'
+                    : isEnglish ? 'DEVELOPMENT MODE OTP' : 'विकास/परीक्षण OTP'}
                 </span>
                 <span className="text-2xl font-black text-stone-900 tracking-widest font-mono select-all">
                   {challenge.devOtpHint}
                 </span>
                 <p className="text-[10px] text-amber-700">
-                  {isEnglish
-                    ? '(This code is shown only in development/testing mode.)'
-                    : '(यह कोड केवल विकास/परीक्षण मोड में दिख रहा है)'}
+                  {challenge.isOfflineMode
+                    ? isEnglish
+                      ? 'This code stays on this device. Login is local-only; phone ownership and server access are not verified.'
+                      : 'यह कोड इसी डिवाइस पर रहता है। लॉगिन केवल स्थानीय है; फोन नंबर और सर्वर पहुँच सत्यापित नहीं होते।'
+                    : isEnglish
+                      ? '(This code is shown only in development/testing mode.)'
+                      : '(यह कोड केवल विकास/परीक्षण मोड में दिख रहा है)'}
                 </p>
                 <button
                   type="button"
@@ -381,12 +410,12 @@ export const LoginScreen: React.FC = () => {
               </span>
               <div>
                 <h2 className="font-black text-[#063B5C]">
-                  {isEnglish ? 'Offline access with a previously verified account' : 'पहले सत्यापित खाते से ऑफलाइन प्रवेश'}
+                  {isEnglish ? 'Offline login is available' : 'ऑफ़लाइन लॉगिन उपलब्ध है'}
                 </h2>
                 <p className="mt-1 text-xs leading-relaxed text-stone-700">
                   {isEnglish
-                    ? 'This does not issue a new OTP. Only an active standard-user session verified online within the last 24 hours can continue. Administrator accounts are not eligible.'
-                    : 'यह नया OTP नहीं है। केवल पिछले ऑनलाइन OTP से सत्यापित, सक्रिय सामान्य-यूज़र सत्र (अधिकतम 24 घंटे) जारी हो सकता है। प्रशासक खाते स्वीकार नहीं होंगे।'}
+                    ? 'Enter your mobile number and select Send OTP to generate a local code shown on this screen. It creates a local-only standard-user session; it does not verify phone ownership or grant server/admin access.'
+                    : 'मोबाइल नंबर दर्ज करके OTP भेजें चुनें; स्थानीय कोड इसी स्क्रीन पर दिखेगा। इससे केवल इसी डिवाइस पर सामान्य-यूज़र सत्र बनेगा—फोन नंबर या सर्वर/प्रशासक पहुँच सत्यापित नहीं होगी।'}
                 </p>
               </div>
             </div>
@@ -395,12 +424,12 @@ export const LoginScreen: React.FC = () => {
               onClick={handleOfflineAccess}
               className="mt-3 min-h-[48px] w-full rounded-xl border-2 border-[#FFB52E] bg-[#075985] px-4 font-black text-white shadow-sm transition-colors hover:bg-[#063B5C] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#F47B20]"
             >
-              {isEnglish ? 'Continue with verified account' : 'पहले से सत्यापित खाते से आगे बढ़ें'}
+              {isEnglish ? 'Continue with previously verified account' : 'पहले से सत्यापित खाते से आगे बढ़ें'}
             </button>
             <p className="mt-2 text-center text-[11px] text-stone-600">
               {isEnglish
-                ? 'Internet access is required to send or verify a new OTP and use online services.'
-                : 'नया OTP भेजना/जाँचना और ऑनलाइन सेवाएँ चलाने के लिए इंटरनेट आवश्यक है।'}
+                ? 'No SMS is sent while offline. Server-verified login and online services require internet.'
+                : 'ऑफ़लाइन होने पर SMS नहीं भेजा जाता। सर्वर द्वारा सत्यापित लॉगिन और ऑनलाइन सेवाओं के लिए इंटरनेट चाहिए।'}
             </p>
           </section>
         )}

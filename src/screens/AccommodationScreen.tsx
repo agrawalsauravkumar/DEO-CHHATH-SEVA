@@ -134,7 +134,12 @@ export const AccommodationScreen: React.FC = () => {
   });
 
   const handleNavigate = (title: string, lat: number, lng: number) => {
-    const matched = DEO_LOCATIONS.find((l) => l.latitude && Math.abs(l.latitude - lat) < 0.005) || {
+    const matched = DEO_LOCATIONS.find((l) =>
+      typeof l.latitude === 'number' &&
+      typeof l.longitude === 'number' &&
+      Math.abs(l.latitude - lat) < 0.001 &&
+      Math.abs(l.longitude - lng) < 0.001
+    ) || {
       id: `acc-${Date.now()}`,
       name: title,
       nameEn: title,
@@ -158,6 +163,9 @@ export const AccommodationScreen: React.FC = () => {
       <TopBar title="रैन बसेरा, टेंट सिटी व धर्मशाला" showBack />
 
       <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-3 sm:p-6 space-y-4">
+        <div role="status" className="rounded-2xl border border-amber-500 bg-amber-50 p-4 text-sm font-bold text-amber-950">
+          इन स्थलों की क्षमता, उपलब्धता, शुल्क और संपर्क विवरण अभी आधिकारिक स्रोत से सत्यापित नहीं हैं। यात्रा से पहले स्थानीय प्रशासन से पुष्टि करें।
+        </div>
         {/* Banner */}
         <div className="bg-gradient-to-br from-[#0B5E8E] via-[#07476F] to-[#04283F] text-white rounded-3xl p-5 shadow-lg border-2 border-amber-400 relative overflow-hidden">
           <div className="space-y-1 relative z-10">

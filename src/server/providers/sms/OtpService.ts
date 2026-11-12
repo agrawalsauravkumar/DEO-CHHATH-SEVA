@@ -30,13 +30,18 @@ class OtpServiceManager {
   constructor() {
     const isDevExplicit = process.env.OTP_DEV_MODE === 'true';
     const sms = new SmsOtpProvider();
-    const isProduction = process.env.NODE_ENV === 'production' && !isDevExplicit;
+    const isProduction = process.env.NODE_ENV === 'production';
 
     if (sms.isConfigured()) {
       this.provider = sms;
-    } else {
-      console.warn('⚠️ [SMS Notice]: Live SMS gateway is unconfigured; operating in resilient OTP standby mode.');
+    } else if (isProduction) {
+      this.provider = null;
+      console.warn('⚠️ [SMS Notice]: Production OTP is disabled until a live SMS gateway is configured.');
+    } else if (isDevExplicit) {
       this.provider = new DevelopmentOtpProvider();
+    } else {
+      this.provider = null;
+      console.warn('⚠️ [SMS Notice]: OTP is disabled; configure a live gateway or explicitly enable OTP_DEV_MODE in development.');
     }
   }
 

@@ -9,7 +9,7 @@ import { TopBar } from '../components/TopBar';
 import { DeoMap } from '../components/DeoMap';
 import { FamilyService } from '../services/FamilyService';
 
-const FAMILY_SAFETY_BACKEND_AVAILABLE = true;
+const FAMILY_SAFETY_BACKEND_AVAILABLE = false;
 import {
   FamilyGroup,
   FamilyGroupMember,

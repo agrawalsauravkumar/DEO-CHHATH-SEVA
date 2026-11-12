@@ -150,6 +150,9 @@ export const PujaSamagriScreen: React.FC = () => {
       <TopBar title="पूजा सामग्री दर व निःशुल्क शिविर" showBack />
 
       <main className="flex-1 max-w-3xl sm:max-w-4xl mx-auto w-full p-3 sm:p-6 space-y-4">
+        <div role="status" className="rounded-2xl border border-amber-500 bg-amber-50 p-4 text-sm font-bold text-amber-950">
+          यह दर सूची और शिविर विवरण अभी प्रशासन/विक्रेताओं से सत्यापित नहीं हैं। खरीदने या यात्रा करने से पहले स्थानीय रूप से पुष्टि करें।
+        </div>
         {/* Banner */}
         <div className="bg-gradient-to-br from-[#0B5E8E] via-[#07476F] to-[#04283F] text-white rounded-3xl p-5 shadow-lg border-2 border-amber-400 relative overflow-hidden">
           <div className="space-y-1 relative z-10">

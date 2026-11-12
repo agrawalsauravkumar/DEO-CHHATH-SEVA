@@ -246,8 +246,9 @@ export const OfflineRouteService = {
       geometry,
       steps,
       travelMode,
-      provider: 'Deo Verified Road Network (Offline Available)',
+      provider: 'Deo local approximate road graph',
       calculatedAt: Date.now(),
+      warning: 'यह सीमित स्थानीय सड़क-ग्राफ पर आधारित अनुमानित मार्ग है; यात्रा से पहले संकेतों और स्थानीय अधिकारियों के निर्देशों की पुष्टि करें।',
     };
   },
 };

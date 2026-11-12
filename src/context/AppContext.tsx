@@ -132,6 +132,13 @@ const SCREEN_IDS: readonly ScreenId[] = [
   'session-expired',
   'offline',
   'error',
+  'chhath-katha',
+  'prasad-camps',
+  'live-darshan',
+  'surya-stotra',
+  'sankalp',
+  'accommodation',
+  'puja-samagri',
   'admin-login',
   'admin-dashboard',
 ];
@@ -180,6 +187,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return AuthService.getCurrentUser();
   });
 
+  useEffect(() => {
+    const expiresAt = currentUser?.sessionExpiresAt;
+    if (typeof expiresAt !== 'number') return;
+
+    const expireSession = () => {
+      if (Date.now() < expiresAt) return;
+      AuthService.logout();
+      AdminService.logout();
+      setCurrentUserState(null);
+      localStorage.removeItem(STORAGE_KEY_AUTH_SCREEN);
+      sessionStorage.removeItem(STORAGE_KEY_SCREEN);
+      setHistory(['session-expired']);
+    };
+
+    const timeoutId = window.setTimeout(expireSession, Math.max(0, expiresAt - Date.now()));
+    return () => window.clearTimeout(timeoutId);
+  }, [currentUser?.sessionExpiresAt]);
+
   const refreshCurrentUser = () => {
     setCurrentUserState(AuthService.getCurrentUser());
   };
@@ -189,7 +214,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const userRole: AppUserRole = currentUser?.role || 'USER';
-  const isAuthenticated = !!currentUser && currentUser.status === 'ACTIVE';
+  const isAuthenticated = !!currentUser &&
+    currentUser.status === 'ACTIVE' &&
+    typeof currentUser.sessionExpiresAt === 'number' &&
+    currentUser.sessionExpiresAt > Date.now();
 
   const logoutUser = (targetScreen: ScreenId = 'splash') => {
     AuthService.logout();

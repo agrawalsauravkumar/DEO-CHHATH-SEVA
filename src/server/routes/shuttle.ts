@@ -5,10 +5,11 @@
 
 import { Router } from 'express';
 import { repository } from '../db/repository';
+import { asyncHandler } from '../middleware/asyncHandler';
 
 export const shuttleRouter = Router();
 
-shuttleRouter.get('/', async (req, res) => {
+shuttleRouter.get('/', asyncHandler(async (_req, res) => {
   const [routes, facilities] = await Promise.all([
     repository.getShuttleRoutes(),
     repository.getFacilities('SHUTTLE'),
@@ -18,20 +19,20 @@ shuttleRouter.get('/', async (req, res) => {
     routes,
     points: facilities,
   });
-});
+}));
 
-shuttleRouter.get('/routes', async (req, res) => {
+shuttleRouter.get('/routes', asyncHandler(async (_req, res) => {
   const routes = await repository.getShuttleRoutes();
   return res.json({
     total: routes.length,
     routes,
   });
-});
+}));
 
-shuttleRouter.get('/points', async (req, res) => {
+shuttleRouter.get('/points', asyncHandler(async (_req, res) => {
   const facilities = await repository.getFacilities('SHUTTLE');
   return res.json({
     total: facilities.length,
     points: facilities,
   });
-});
+}));
